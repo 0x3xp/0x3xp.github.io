@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Piyusha Akash - Cybersecurity & Design Portfolio</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Poppins:wght@300;400;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
+        /* ============ GLOBAL STYLES ============ */
         * {
             margin: 0;
             padding: 0;
@@ -12,90 +14,142 @@
         }
 
         :root {
-            --primary-color: #0f0f23;
-            --secondary-color: #1a1a3e;
-            --accent-color: #00d4ff;
+            --primary-dark: #0a0e27;
+            --secondary-dark: #1a1f3a;
+            --tertiary-dark: #252d47;
+            --accent-cyan: #00f0ff;
             --accent-purple: #b300ff;
-            --text-light: #e0e0e0;
-            --text-muted: #999;
-            --success-color: #00ff88;
-            --danger-color: #ff0055;
+            --accent-pink: #ff006e;
+            --accent-green: #00ff88;
+            --text-primary: #f8f9fa;
+            --text-secondary: #b0b8c8;
+            --border-color: rgba(0, 240, 255, 0.2);
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+            --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.4);
+            --shadow-lg: 0 20px 60px rgba(0, 240, 255, 0.15);
+        }
+
+        html {
+            scroll-behavior: smooth;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-            color: var(--text-light);
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--secondary-dark) 50%, var(--primary-dark) 100%);
+            color: var(--text-primary);
             line-height: 1.6;
             overflow-x: hidden;
+            min-height: 100vh;
+            position: relative;
         }
 
-        /* Navigation */
+        /* Animated background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 50%, rgba(179, 0, 255, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 80%, rgba(0, 240, 255, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+            animation: gradientShift 15s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% {
+                background: radial-gradient(circle at 20% 50%, rgba(179, 0, 255, 0.1) 0%, transparent 50%),
+                            radial-gradient(circle at 80% 80%, rgba(0, 240, 255, 0.1) 0%, transparent 50%);
+            }
+            50% {
+                background: radial-gradient(circle at 80% 50%, rgba(179, 0, 255, 0.1) 0%, transparent 50%),
+                            radial-gradient(circle at 20% 80%, rgba(0, 240, 255, 0.1) 0%, transparent 50%);
+            }
+        }
+
+        main {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ============ NAVIGATION ============ */
         nav {
             position: fixed;
             top: 0;
             width: 100%;
-            background: rgba(15, 15, 35, 0.95);
-            backdrop-filter: blur(10px);
+            background: rgba(10, 14, 39, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-color);
             z-index: 1000;
-            padding: 1rem 2rem;
-            border-bottom: 2px solid var(--accent-color);
+            padding: 1.2rem 2rem;
+            box-shadow: var(--shadow-md);
         }
 
         nav ul {
             list-style: none;
             display: flex;
             justify-content: center;
-            gap: 2rem;
+            gap: 3rem;
             flex-wrap: wrap;
+            max-width: 1200px;
+            margin: 0 auto;
         }
 
         nav a {
-            color: var(--text-light);
+            color: var(--text-secondary);
             text-decoration: none;
-            transition: all 0.3s ease;
-            font-weight: 500;
+            font-family: 'Space Mono', monospace;
+            font-weight: 600;
+            font-size: 0.95rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
         }
 
-        nav a:hover {
-            color: var(--accent-color);
-        }
-
-        nav a::after {
+        nav a::before {
             content: '';
             position: absolute;
             bottom: -5px;
             left: 0;
             width: 0;
             height: 2px;
-            background: var(--accent-color);
-            transition: width 0.3s ease;
+            background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple));
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        nav a:hover::after {
+        nav a:hover {
+            color: var(--accent-cyan);
+            text-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
+        }
+
+        nav a:hover::before {
             width: 100%;
         }
 
-        /* Main Container */
+        /* ============ MAIN CONTAINER ============ */
         main {
-            margin-top: 80px;
+            margin-top: 100px;
             max-width: 1200px;
             margin-left: auto;
             margin-right: auto;
             padding: 2rem;
         }
 
-        /* Hero Section */
+        /* ============ HERO SECTION ============ */
         .hero {
             text-align: center;
-            padding: 4rem 2rem;
-            background: linear-gradient(135deg, rgba(0, 212, 255, 0.1) 0%, rgba(179, 0, 255, 0.1) 100%);
-            border-radius: 10px;
-            border: 2px solid var(--accent-color);
-            margin-bottom: 4rem;
+            padding: 6rem 2rem;
+            background: linear-gradient(135deg, rgba(26, 31, 58, 0.8) 0%, rgba(37, 45, 71, 0.8) 100%);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            margin-bottom: 5rem;
             position: relative;
             overflow: hidden;
+            box-shadow: var(--shadow-lg);
+            animation: heroSlideIn 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
         .hero::before {
@@ -105,8 +159,8 @@
             right: -50%;
             width: 500px;
             height: 500px;
-            background: radial-gradient(circle, rgba(179, 0, 255, 0.2) 0%, transparent 70%);
-            animation: float 6s ease-in-out infinite;
+            background: radial-gradient(circle, rgba(0, 240, 255, 0.15) 0%, transparent 70%);
+            animation: float 8s ease-in-out infinite;
         }
 
         .hero::after {
@@ -116,77 +170,164 @@
             left: -50%;
             width: 500px;
             height: 500px;
-            background: radial-gradient(circle, rgba(0, 212, 255, 0.2) 0%, transparent 70%);
-            animation: float 8s ease-in-out infinite reverse;
+            background: radial-gradient(circle, rgba(179, 0, 255, 0.15) 0%, transparent 70%);
+            animation: float 10s ease-in-out infinite reverse;
+        }
+
+        @keyframes heroSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) scale(1); }
+            50% { transform: translateY(20px) scale(1.05); }
         }
 
         .hero-content {
             position: relative;
-            z-index: 1;
+            z-index: 2;
         }
 
         .hero h1 {
-            font-size: 3.5rem;
-            margin-bottom: 1rem;
-            background: linear-gradient(135deg, var(--accent-color), var(--accent-purple));
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 4.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, var(--accent-cyan) 0%, var(--accent-purple) 50%, var(--accent-pink) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            font-weight: bold;
+            letter-spacing: 2px;
+            text-shadow: 0 0 20px rgba(0, 240, 255, 0.3);
+            animation: titleGlow 2s ease-in-out infinite;
         }
 
-        .hero p {
-            font-size: 1.3rem;
-            color: var(--text-muted);
-            margin-bottom: 2rem;
+        @keyframes titleGlow {
+            0%, 100% { filter: drop-shadow(0 0 10px rgba(0, 240, 255, 0.3)); }
+            50% { filter: drop-shadow(0 0 20px rgba(179, 0, 255, 0.5)); }
         }
 
         .hero .subtitle {
+            font-family: 'Space Mono', monospace;
+            font-size: 1.5rem;
+            color: var(--accent-cyan);
+            font-weight: 700;
+            margin-bottom: 1rem;
+            letter-spacing: 1px;
+            animation: fadeInUp 0.8s ease-out 0.2s both;
+        }
+
+        .hero p {
             font-size: 1.1rem;
-            color: var(--accent-color);
-            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+            animation: fadeInUp 0.8s ease-out 0.4s both;
         }
 
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(20px); }
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
-        /* Section Styles */
+        /* ============ SECTIONS ============ */
         section {
-            margin-bottom: 4rem;
+            margin-bottom: 5rem;
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+        }
+
+        section.visible {
+            opacity: 1;
+            transform: translateY(0);
         }
 
         section h2 {
-            font-size: 2.5rem;
-            margin-bottom: 2rem;
-            color: var(--accent-color);
-            border-bottom: 3px solid var(--accent-purple);
-            padding-bottom: 1rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 3rem;
+            color: var(--accent-cyan);
+            letter-spacing: 2px;
             position: relative;
+            display: inline-block;
+            animation: sectionTitleSlide 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
-        section h2::before {
-            content: '▶ ';
-            color: var(--accent-purple);
-            margin-right: 0.5rem;
+        @keyframes sectionTitleSlide {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
         }
 
-        /* Skills Section */
+        section h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple), transparent);
+            border-radius: 2px;
+            animation: underlineExpand 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes underlineExpand {
+            from {
+                width: 0;
+            }
+            to {
+                width: 100%;
+            }
+        }
+
+        /* ============ SKILLS SECTION ============ */
         .skills-container {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2.5rem;
+            margin-bottom: 2rem;
         }
 
         .skill-card {
-            background: rgba(26, 26, 62, 0.8);
-            border: 2px solid var(--accent-color);
-            border-radius: 8px;
-            padding: 1.5rem;
-            transition: all 0.3s ease;
+            background: linear-gradient(135deg, rgba(26, 31, 58, 0.6) 0%, rgba(37, 45, 71, 0.6) 100%);
+            border: 1px solid var(--border-color);
+            border-radius: 15px;
+            padding: 2.5rem;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
             position: relative;
             overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            animation: cardFadeIn 0.6s ease-out;
+        }
+
+        @keyframes cardFadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
         }
 
         .skill-card::before {
@@ -196,8 +337,8 @@
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(0, 212, 255, 0.2), transparent);
-            transition: left 0.5s ease;
+            background: linear-gradient(90deg, transparent, rgba(0, 240, 255, 0.1), transparent);
+            transition: left 0.6s ease;
         }
 
         .skill-card:hover::before {
@@ -206,37 +347,53 @@
 
         .skill-card:hover {
             border-color: var(--accent-purple);
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.2);
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(179, 0, 255, 0.2);
+            background: linear-gradient(135deg, rgba(26, 31, 58, 0.9) 0%, rgba(37, 45, 71, 0.9) 100%);
         }
 
         .skill-card h3 {
-            color: var(--accent-color);
-            margin-bottom: 1rem;
-            font-size: 1.3rem;
+            font-family: 'Space Mono', monospace;
+            color: var(--accent-cyan);
+            margin-bottom: 1.5rem;
+            font-size: 1.4rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            border-left: 4px solid var(--accent-purple);
+            padding-left: 12px;
         }
 
         .skill-item {
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.8rem;
         }
 
         .skill-item label {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
+            margin-bottom: 0.7rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 1rem;
         }
 
         .skill-item input[type="text"],
         .skill-item input[type="number"] {
-            background: rgba(15, 15, 35, 0.8);
-            border: 1px solid var(--accent-color);
-            color: var(--accent-color);
-            padding: 0.5rem;
-            border-radius: 4px;
+            background: rgba(10, 14, 39, 0.8);
+            border: 1px solid var(--accent-cyan);
+            color: var(--accent-cyan);
+            padding: 0.7rem;
+            border-radius: 8px;
             margin-bottom: 0.5rem;
             width: 100%;
-            font-size: 0.9rem;
+            font-size: 1rem;
+            font-family: 'JetBrains Mono', monospace;
+            transition: all 0.3s ease;
+        }
+
+        .skill-item input:focus {
+            outline: none;
+            border-color: var(--accent-purple);
+            box-shadow: 0 0 10px rgba(179, 0, 255, 0.3);
         }
 
         .skill-item input[type="number"] {
@@ -245,271 +402,321 @@
         }
 
         .skill-item button {
-            background: var(--danger-color);
+            background: var(--accent-pink);
             color: white;
             border: none;
-            padding: 0.4rem 0.8rem;
-            border-radius: 4px;
+            padding: 0.6rem 1.2rem;
+            border-radius: 6px;
             cursor: pointer;
-            font-size: 0.85rem;
+            font-weight: 700;
+            font-family: 'Space Mono', monospace;
             transition: all 0.3s ease;
+            font-size: 0.9rem;
         }
 
         .skill-item button:hover {
-            background: #ff1a4d;
-            transform: scale(1.05);
-        }
-
-        .add-skill-btn {
-            background: var(--success-color);
-            color: var(--primary-color);
-            border: none;
-            padding: 0.7rem 1.5rem;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            margin-top: 1rem;
-            width: 100%;
-        }
-
-        .add-skill-btn:hover {
-            background: #00dd77;
+            background: #ff0055;
             transform: scale(1.05);
         }
 
         .progress-bar {
             width: 100%;
-            height: 8px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 4px;
+            height: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 6px;
             overflow: hidden;
-            border: 1px solid var(--accent-color);
+            border: 1px solid var(--text-secondary);
+            position: relative;
         }
 
         .progress-fill {
             height: 100%;
-            background: linear-gradient(90deg, var(--accent-color), var(--accent-purple));
-            border-radius: 4px;
-            transition: width 0.3s ease;
-            box-shadow: 0 0 10px var(--accent-color);
+            background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple));
+            border-radius: 6px;
+            transition: width 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 0 15px var(--accent-cyan);
         }
 
         .proficiency-text {
-            font-size: 0.85rem;
-            color: var(--accent-color);
-            margin-top: 0.3rem;
-            font-weight: 600;
+            font-size: 1rem;
+            color: var(--accent-cyan);
+            font-weight: 700;
+            margin-top: 0.5rem;
+            font-family: 'JetBrains Mono', monospace;
+            text-shadow: 0 0 5px rgba(0, 240, 255, 0.5);
         }
 
-        /* Programming Languages Section */
+        .add-skill-btn {
+            background: linear-gradient(135deg, var(--accent-green), #00dd77);
+            color: var(--primary-dark);
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 700;
+            font-family: 'Space Mono', monospace;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            margin-top: 1.5rem;
+            width: 100%;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .add-skill-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 25px rgba(0, 255, 136, 0.3);
+        }
+
+        /* ============ PROGRAMMING LANGUAGES ============ */
         .languages-container {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2.5rem;
+            margin-bottom: 2rem;
         }
 
         .language-item {
-            background: rgba(26, 26, 62, 0.8);
-            border: 2px solid var(--accent-color);
-            border-radius: 8px;
-            padding: 1.5rem;
-            transition: all 0.3s ease;
+            background: linear-gradient(135deg, rgba(26, 31, 58, 0.6) 0%, rgba(37, 45, 71, 0.6) 100%);
+            border: 1px solid var(--border-color);
+            border-radius: 15px;
+            padding: 2.5rem;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: var(--shadow-sm);
         }
 
         .language-item:hover {
             border-color: var(--accent-purple);
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.2);
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(179, 0, 255, 0.2);
         }
 
         .language-item h4 {
-            color: var(--accent-color);
-            margin-bottom: 0.5rem;
+            color: var(--accent-cyan);
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+            font-weight: 700;
+            font-family: 'Space Mono', monospace;
         }
 
         .language-item .controls {
             display: flex;
             gap: 0.5rem;
-            margin-top: 1rem;
+            margin-top: 1.5rem;
         }
 
         .language-item input {
             flex: 1;
-            background: rgba(15, 15, 35, 0.8);
-            border: 1px solid var(--accent-color);
-            color: var(--accent-color);
-            padding: 0.5rem;
-            border-radius: 4px;
-            font-size: 0.9rem;
+            background: rgba(10, 14, 39, 0.8);
+            border: 1px solid var(--accent-cyan);
+            color: var(--accent-cyan);
+            padding: 0.7rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: 'JetBrains Mono', monospace;
         }
 
         .language-item .proficiency-input {
-            width: 70px;
+            width: 80px;
         }
 
         .language-item .delete-btn {
-            background: var(--danger-color);
+            background: var(--accent-pink);
             color: white;
             border: none;
-            padding: 0.5rem 0.8rem;
-            border-radius: 4px;
+            padding: 0.7rem 1rem;
+            border-radius: 6px;
             cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .language-item .delete-btn:hover {
-            background: #ff1a4d;
+            font-weight: 700;
+            font-family: 'Space Mono', monospace;
         }
 
         .add-language-btn {
-            background: var(--success-color);
-            color: var(--primary-color);
+            background: linear-gradient(135deg, var(--accent-green), #00dd77);
+            color: var(--primary-dark);
             border: none;
-            padding: 0.7rem 1.5rem;
-            border-radius: 4px;
+            padding: 1rem 2rem;
+            border-radius: 8px;
             cursor: pointer;
-            font-weight: 600;
+            font-weight: 700;
+            font-family: 'Space Mono', monospace;
+            font-size: 1rem;
             transition: all 0.3s ease;
-            margin-top: 1rem;
+            margin-top: 1.5rem;
             width: 100%;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         .add-language-btn:hover {
-            background: #00dd77;
             transform: scale(1.05);
+            box-shadow: 0 10px 25px rgba(0, 255, 136, 0.3);
         }
 
-        /* Software Skills Section */
+        /* ============ SOFTWARE SECTION ============ */
         .software-container {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 2rem;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2.5rem;
         }
 
         .software-card {
-            background: rgba(26, 26, 62, 0.8);
-            border: 2px solid var(--accent-color);
-            border-radius: 8px;
-            padding: 1.5rem;
-            transition: all 0.3s ease;
+            background: linear-gradient(135deg, rgba(26, 31, 58, 0.6) 0%, rgba(37, 45, 71, 0.6) 100%);
+            border: 1px solid var(--border-color);
+            border-radius: 15px;
+            padding: 2.5rem;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: var(--shadow-sm);
         }
 
         .software-card:hover {
             border-color: var(--accent-purple);
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.2);
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(179, 0, 255, 0.2);
         }
 
         .software-card h3 {
-            color: var(--accent-color);
-            margin-bottom: 1rem;
-            font-size: 1.2rem;
+            font-family: 'Space Mono', monospace;
+            color: var(--accent-cyan);
+            margin-bottom: 1.5rem;
+            font-size: 1.4rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            border-left: 4px solid var(--accent-purple);
+            padding-left: 12px;
         }
 
         .software-item {
-            background: rgba(15, 15, 35, 0.6);
-            padding: 0.8rem;
-            margin-bottom: 0.8rem;
-            border-radius: 4px;
+            background: rgba(10, 14, 39, 0.5);
+            padding: 1.2rem;
+            margin-bottom: 1rem;
+            border-radius: 8px;
             border-left: 3px solid var(--accent-purple);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .software-item:hover {
+            border-left-color: var(--accent-cyan);
+            background: rgba(10, 14, 39, 0.8);
         }
 
         .software-item span {
-            color: var(--text-light);
+            color: var(--text-primary);
+            font-weight: 600;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .software-item button {
+            background: var(--accent-pink);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 700;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.85rem;
         }
 
         .add-software-input {
             display: flex;
             gap: 0.5rem;
-            margin-top: 1rem;
+            margin-top: 1.5rem;
         }
 
         .add-software-input input {
             flex: 1;
-            background: rgba(15, 15, 35, 0.8);
-            border: 1px solid var(--accent-color);
-            color: var(--accent-color);
-            padding: 0.5rem;
-            border-radius: 4px;
-            font-size: 0.9rem;
+            background: rgba(10, 14, 39, 0.8);
+            border: 1px solid var(--accent-cyan);
+            color: var(--accent-cyan);
+            padding: 0.7rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: 'JetBrains Mono', monospace;
         }
 
         .add-software-input button {
-            background: var(--success-color);
-            color: var(--primary-color);
+            background: linear-gradient(135deg, var(--accent-green), #00dd77);
+            color: var(--primary-dark);
             border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 4px;
+            padding: 0.7rem 1.5rem;
+            border-radius: 8px;
             cursor: pointer;
-            font-weight: 600;
+            font-weight: 700;
+            font-family: 'Space Mono', monospace;
             transition: all 0.3s ease;
         }
 
         .add-software-input button:hover {
-            background: #00dd77;
             transform: scale(1.05);
         }
 
-        /* Footer */
+        /* ============ CONTACT SECTION ============ */
+        .contact-card {
+            background: linear-gradient(135deg, rgba(26, 31, 58, 0.8) 0%, rgba(37, 45, 71, 0.8) 100%);
+            border: 1px solid var(--border-color);
+            border-radius: 15px;
+            padding: 3rem;
+            text-align: center;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .contact-card p {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .social-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(0, 240, 255, 0.1), rgba(179, 0, 255, 0.1));
+            border: 2px solid var(--border-color);
+            color: var(--accent-cyan);
+            text-decoration: none;
+            font-size: 1.5rem;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            font-weight: 700;
+        }
+
+        .social-link:hover {
+            border-color: var(--accent-purple);
+            background: linear-gradient(135deg, rgba(0, 240, 255, 0.2), rgba(179, 0, 255, 0.2));
+            transform: translateY(-5px) scale(1.1);
+            box-shadow: 0 10px 25px rgba(179, 0, 255, 0.3);
+        }
+
+        /* ============ FOOTER ============ */
         footer {
             text-align: center;
-            padding: 2rem;
-            border-top: 2px solid var(--accent-color);
-            color: var(--text-muted);
-            margin-top: 4rem;
+            padding: 2.5rem;
+            border-top: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            margin-top: 5rem;
+            background: rgba(10, 14, 39, 0.5);
         }
 
         footer p {
             margin-bottom: 0.5rem;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.95rem;
         }
 
-        .social-links {
-            margin-top: 1rem;
-            display: flex;
-            justify-content: center;
-            gap: 1rem;
-        }
-
-        .social-links a {
-            color: var(--accent-color);
-            text-decoration: none;
-            transition: all 0.3s ease;
-        }
-
-        .social-links a:hover {
-            color: var(--accent-purple);
-            transform: scale(1.2);
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            nav ul {
-                gap: 1rem;
-            }
-
-            .hero h1 {
-                font-size: 2rem;
-            }
-
-            section h2 {
-                font-size: 1.8rem;
-            }
-
-            .skills-container,
-            .software-container {
-                grid-template-columns: 1fr;
-            }
-
-            main {
-                padding: 1rem;
-            }
-        }
-
-        /* --- EDIT MODE STYLES --- */
+        /* ============ EDIT MODE ============ */
         .edit-mode-control {
             display: none !important;
         }
@@ -519,57 +726,71 @@
         }
 
         .edit-mode-active .skill-item label {
-            display: none; /* Hide public view label in edit mode */
-        }
-
-        .edit-mode-active .skill-item input[type="text"],
-        .edit-mode-active .skill-item input[type="number"] {
-            display: block !important;
-            margin-bottom: 0.5rem;
-        }
-
-        .edit-mode-active .language-item .controls {
-            display: flex !important;
-        }
-
-        .edit-mode-active .software-item button {
-            display: inline-block !important;
-        }
-
-        .edit-mode-active .add-software-input {
-            display: flex !important;
+            display: none;
         }
 
         .edit-mode-active .language-item .proficiency-text {
             display: none;
         }
 
-        .edit-mode-active .language-item h4 {
-            margin-bottom: 0.2rem;
-        }
-
-        .edit-mode-active .skill-item button {
-            display: block !important;
-            margin-top: 0.5rem;
-        }
-
-        .edit-mode-active .skill-item .progress-bar {
-            margin-bottom: 0.5rem;
-        }
-
-        /* Edit Mode Indicator */
         .edit-indicator {
             position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: var(--success-color);
-            color: var(--primary-color);
-            padding: 0.8rem 1.5rem;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, var(--accent-green), #00dd77);
+            color: var(--primary-dark);
+            padding: 1rem 1.5rem;
             border-radius: 50px;
-            font-weight: 600;
-            box-shadow: 0 5px 20px rgba(0, 255, 136, 0.3);
+            font-weight: 700;
+            font-family: 'Space Mono', monospace;
+            box-shadow: 0 10px 30px rgba(0, 255, 136, 0.4);
             z-index: 999;
             cursor: pointer;
+            animation: pulse 2s ease-in-out infinite;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                box-shadow: 0 10px 30px rgba(0, 255, 136, 0.4);
+            }
+            50% {
+                box-shadow: 0 10px 50px rgba(0, 255, 136, 0.7);
+            }
+        }
+
+        /* ============ RESPONSIVE ============ */
+        @media (max-width: 768px) {
+            nav ul {
+                gap: 1.5rem;
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            section h2 {
+                font-size: 2rem;
+            }
+
+            .skills-container,
+            .software-container,
+            .languages-container {
+                grid-template-columns: 1fr;
+            }
+
+            main {
+                padding: 1rem;
+            }
+
+            .contact-card {
+                padding: 2rem;
+            }
+
+            .social-links {
+                gap: 1rem;
+            }
         }
     </style>
 </head>
@@ -591,9 +812,9 @@
         <!-- Hero Section -->
         <section class="hero" id="home">
             <div class="hero-content">
-                <h1>Piyusha Akash</h1>
-                <p class="subtitle">Offensive Security Specialist | Graphic Designer</p>
-                <p>Welcome to my portfolio. Penetration Testing | Web Security | Network Analysis | Creative Design</p>
+                <h1>PIYUSHA AKASH</h1>
+                <p class="subtitle">Offensive Security | Creative Designer</p>
+                <p>Penetration Testing • Web Security • Network Analysis • Graphic Design • Creative Innovation</p>
             </div>
         </section>
 
@@ -601,28 +822,21 @@
         <section id="core-skills">
             <h2>Core Security Skills</h2>
             <div class="skills-container">
-                <!-- Web Security -->
                 <div class="skill-card">
                     <h3>Web Security</h3>
                     <div id="web-security-skills"></div>
                     <button class="add-skill-btn edit-mode-control" onclick="addSkill('web-security')">+ Add Skill</button>
                 </div>
-
-                <!-- Network Penetration Testing -->
                 <div class="skill-card">
                     <h3>Network Penetration Testing</h3>
                     <div id="network-pentest-skills"></div>
                     <button class="add-skill-btn edit-mode-control" onclick="addSkill('network-pentest')">+ Add Skill</button>
                 </div>
-
-                <!-- API Penetration Testing -->
                 <div class="skill-card">
                     <h3>API Penetration Testing</h3>
                     <div id="api-pentest-skills"></div>
                     <button class="add-skill-btn edit-mode-control" onclick="addSkill('api-pentest')">+ Add Skill</button>
                 </div>
-
-                <!-- Linux -->
                 <div class="skill-card">
                     <h3>Linux</h3>
                     <div id="linux-skills"></div>
@@ -642,21 +856,16 @@
         <section id="other-skills">
             <h2>Other Skills</h2>
             <div class="skills-container">
-                <!-- Network Diagram Creation -->
                 <div class="skill-card">
                     <h3>Network Diagram Creation</h3>
                     <div id="network-diagram-skills"></div>
                     <button class="add-skill-btn edit-mode-control" onclick="addSkill('network-diagram')">+ Add Skill</button>
                 </div>
-
-                <!-- Graphic Design -->
                 <div class="skill-card">
                     <h3>Graphic Design</h3>
                     <div id="graphic-design-skills"></div>
                     <button class="add-skill-btn edit-mode-control" onclick="addSkill('graphic-design')">+ Add Skill</button>
                 </div>
-
-                <!-- Generative AI Tools -->
                 <div class="skill-card">
                     <h3>Generative AI Tools</h3>
                     <div id="ai-tools-skills"></div>
@@ -669,7 +878,6 @@
         <section id="software">
             <h2>Software & Tools</h2>
             <div class="software-container">
-                <!-- Design Software -->
                 <div class="software-card">
                     <h3>Design Software</h3>
                     <div id="design-software"></div>
@@ -678,8 +886,6 @@
                         <button onclick="addSoftware('design')">Add</button>
                     </div>
                 </div>
-
-                <!-- Security Tools -->
                 <div class="software-card">
                     <h3>Security Tools</h3>
                     <div id="security-software"></div>
@@ -688,8 +894,6 @@
                         <button onclick="addSoftware('security')">Add</button>
                     </div>
                 </div>
-
-                <!-- Diagramming Tools -->
                 <div class="software-card">
                     <h3>Diagramming Tools</h3>
                     <div id="diagram-software"></div>
@@ -703,14 +907,17 @@
 
         <!-- Contact Section -->
         <section id="contact">
-            <h2>Get In Touch</h2>
-            <div style="background: rgba(26, 26, 62, 0.8); border: 2px solid var(--accent-color); border-radius: 8px; padding: 2rem; text-align: center;">
-                <p style="margin-bottom: 1rem;">Feel free to reach out for collaborations or inquiries.</p>
+            <h2>Connect With Me</h2>
+            <div class="contact-card">
+                <p>Follow me on social media for the latest updates on cybersecurity, design, and creative projects.</p>
                 <div class="social-links">
-                    <a href="mailto:your.email@example.com">Email</a>
-                    <a href="https://linkedin.com" target="_blank">LinkedIn</a>
-                    <a href="https://github.com" target="_blank">GitHub</a>
-                    <a href="https://twitter.com" target="_blank">Twitter</a>
+                    <a href="https://pinterest.com/aivoradesigns" target="_blank" class="social-link" title="Pinterest">📌</a>
+                    <a href="https://facebook.com/aivoradesigns" target="_blank" class="social-link" title="Facebook">f</a>
+                    <a href="https://lintr.ee/piyushaakash" target="_blank" class="social-link" title="Linktree">🔗</a>
+                    <a href="https://instagram.com/piyushaakash.lk" target="_blank" class="social-link" title="Instagram">📷</a>
+                    <a href="https://linkedin.com/in/piyushaakash" target="_blank" class="social-link" title="LinkedIn">in</a>
+                    <a href="https://youtube.com/@infoseclk" target="_blank" class="social-link" title="YouTube">▶</a>
+                    <a href="https://tiktok.com/@infoseclk" target="_blank" class="social-link" title="TikTok">♪</a>
                 </div>
             </div>
         </section>
@@ -718,27 +925,45 @@
 
     <!-- Footer -->
     <footer>
-        <p>&copy; 2024 Piyusha Akash Portfolio. All rights reserved.</p>
-        <p>Built with HTML, CSS & JavaScript | Single Page Application</p>
+        <p>&copy; 2024 Piyusha Akash. All rights reserved.</p>
+        <p>Cybersecurity Specialist | Graphic Designer | Creative Innovator</p>
     </footer>
 
     <!-- Edit Mode Indicator -->
-    <div class="edit-indicator edit-mode-control" id="edit-indicator">Edit Mode Active</div>
+    <div class="edit-indicator edit-mode-control" id="edit-indicator">EDIT MODE</div>
 
     <script>
-        // Data Structure
+        // ============ DATA STRUCTURE ============
         const portfolioData = {
             skills: {
-                'web-security': [{ name: 'OWASP Top 10', proficiency: 80 }, { name: 'Burp Suite', proficiency: 70 }],
-                'network-pentest': [{ name: 'Nmap Scanning', proficiency: 75 }, { name: 'Metasploit', proficiency: 65 }],
-                'api-pentest': [{ name: 'REST API Testing', proficiency: 60 }],
-                'linux': [{ name: 'Shell Scripting', proficiency: 75 }, { name: 'System Hardening', proficiency: 60 }],
-                'network-diagram': [{ name: 'UML/Network Topologies', proficiency: 85 }],
-                'graphic-design': [{ name: 'Branding & Identity', proficiency: 70 }],
-                'ai-tools': [{ name: 'Prompt Engineering', proficiency: 80 }]
+                'web-security': [
+                    { name: 'OWASP Top 10', proficiency: 85 },
+                    { name: 'Burp Suite', proficiency: 80 }
+                ],
+                'network-pentest': [
+                    { name: 'Nmap Scanning', proficiency: 85 },
+                    { name: 'Metasploit', proficiency: 75 }
+                ],
+                'api-pentest': [
+                    { name: 'REST API Testing', proficiency: 70 }
+                ],
+                'linux': [
+                    { name: 'Shell Scripting', proficiency: 85 },
+                    { name: 'System Hardening', proficiency: 75 }
+                ],
+                'network-diagram': [
+                    { name: 'Network Topologies', proficiency: 90 }
+                ],
+                'graphic-design': [
+                    { name: 'UI/UX Design', proficiency: 85 },
+                    { name: 'Branding', proficiency: 80 }
+                ],
+                'ai-tools': [
+                    { name: 'Prompt Engineering', proficiency: 90 }
+                ]
             },
             languages: [
-                { name: 'Bash Shell Scripting', proficiency: 75 }
+                { name: 'Bash Shell Scripting', proficiency: 85 }
             ],
             software: {
                 'design': ['Photoshop', 'Illustrator', 'Canva'],
@@ -749,183 +974,205 @@
 
         let isEditMode = false;
 
-        // Check for edit mode
+        // ============ INITIALIZATION ============
         function checkEditMode() {
             const urlParams = new URLSearchParams(window.location.search);
             isEditMode = urlParams.get('edit') === 'true';
-
             if (isEditMode) {
                 document.body.classList.add('edit-mode-active');
             }
         }
 
-        // Initialize from localStorage
         function initializeData() {
             checkEditMode();
             const saved = localStorage.getItem('portfolioData');
             if (saved) {
-                Object.assign(portfolioData, JSON.parse(saved));
+                try {
+                    const parsed = JSON.parse(saved);
+                    Object.assign(portfolioData, parsed);
+                } catch (e) {
+                    console.error('Error parsing saved data:', e);
+                }
             }
             renderAll();
+            setupIntersectionObserver();
         }
 
-        // Save to localStorage
         function saveData() {
             localStorage.setItem('portfolioData', JSON.stringify(portfolioData));
         }
 
-        // Render all sections
+        // ============ RENDERING FUNCTIONS ============
         function renderAll() {
             renderSkills();
             renderLanguages();
             renderSoftware();
         }
 
-        // Render Skills
         function renderSkills() {
             const categories = [
-                { id: 'web-security', title: 'Web Security' },
-                { id: 'network-pentest', title: 'Network Penetration Testing' },
-                { id: 'api-pentest', title: 'API Penetration Testing' },
-                { id: 'linux', title: 'Linux' },
-                { id: 'network-diagram', title: 'Network Diagram Creation' },
-                { id: 'graphic-design', title: 'Graphic Design' },
-                { id: 'ai-tools', title: 'Generative AI Tools' }
+                { id: 'web-security' },
+                { id: 'network-pentest' },
+                { id: 'api-pentest' },
+                { id: 'linux' },
+                { id: 'network-diagram' },
+                { id: 'graphic-design' },
+                { id: 'ai-tools' }
             ];
 
             categories.forEach(cat => {
                 const container = document.getElementById(`${cat.id}-skills`);
+                if (!container) return;
+
                 container.innerHTML = '';
-                
-                portfolioData.skills[cat.id].forEach((skill, index) => {
-                    const skillHTML = `
-                        <div class="skill-item">
-                            <label>
-                                <span>${skill.name}</span>
-                                <span class="proficiency-text">${skill.proficiency}%</span>
-                            </label>
-                            <input type="text" class="edit-mode-control" value="${skill.name}" onchange="updateSkillName('${cat.id}', ${index}, this.value)">
-                            <input type="number" class="edit-mode-control" min="0" max="100" value="${skill.proficiency}" onchange="updateSkillProficiency('${cat.id}', ${index}, this.value)">
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: ${skill.proficiency}%"></div>
-                            </div>
-                            <button class="edit-mode-control" onclick="removeSkill('${cat.id}', ${index})">Remove</button>
+                const skills = portfolioData.skills[cat.id] || [];
+
+                skills.forEach((skill, index) => {
+                    const skillDiv = document.createElement('div');
+                    skillDiv.className = 'skill-item';
+                    skillDiv.innerHTML = `
+                        <label>
+                            <span>${skill.name}</span>
+                            <span class="proficiency-text">${skill.proficiency}%</span>
+                        </label>
+                        <input type="text" class="edit-mode-control" value="${skill.name}" onchange="updateSkillName('${cat.id}', ${index}, this.value)">
+                        <input type="number" class="edit-mode-control" min="0" max="100" value="${skill.proficiency}" onchange="updateSkillProficiency('${cat.id}', ${index}, this.value)">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${skill.proficiency}%"></div>
                         </div>
+                        <button class="edit-mode-control" onclick="removeSkill('${cat.id}', ${index})">Remove</button>
                     `;
-                    container.innerHTML += skillHTML;
+                    container.appendChild(skillDiv);
                 });
             });
         }
 
-        // Add Skill
         function addSkill(category) {
+            if (!portfolioData.skills[category]) {
+                portfolioData.skills[category] = [];
+            }
             portfolioData.skills[category].push({ name: 'New Skill', proficiency: 50 });
             saveData();
             renderSkills();
         }
 
-        // Update Skill Name
         function updateSkillName(category, index, value) {
-            portfolioData.skills[category][index].name = value;
-            saveData();
-            renderSkills(); // Re-render to update public view
+            if (portfolioData.skills[category] && portfolioData.skills[category][index]) {
+                portfolioData.skills[category][index].name = value;
+                saveData();
+                renderSkills();
+            }
         }
 
-        // Update Skill Proficiency
         function updateSkillProficiency(category, index, value) {
-            portfolioData.skills[category][index].proficiency = parseInt(value);
-            saveData();
-            renderSkills(); // Re-render to update public view
+            if (portfolioData.skills[category] && portfolioData.skills[category][index]) {
+                portfolioData.skills[category][index].proficiency = Math.min(100, Math.max(0, parseInt(value) || 0));
+                saveData();
+                renderSkills();
+            }
         }
 
-        // Remove Skill
         function removeSkill(category, index) {
-            portfolioData.skills[category].splice(index, 1);
-            saveData();
-            renderSkills();
+            if (portfolioData.skills[category]) {
+                portfolioData.skills[category].splice(index, 1);
+                saveData();
+                renderSkills();
+            }
         }
 
-        // Render Languages
         function renderLanguages() {
             const container = document.getElementById('languages-container');
-            container.innerHTML = '';
+            if (!container) return;
 
-            portfolioData.languages.forEach((lang, index) => {
-                const langHTML = `
-                    <div class="language-item">
-                        <h4>${lang.name}</h4>
-                        <div class="progress-bar">
-                            <div class="progress-fill" style="width: ${lang.proficiency}%"></div>
-                        </div>
-                        <div class="proficiency-text">${lang.proficiency}% Proficient</div>
-                        <div class="controls edit-mode-control">
-                            <input type="text" value="${lang.name}" onchange="updateLanguageName(${index}, this.value)" placeholder="Language name">
-                            <input type="number" class="proficiency-input" min="0" max="100" value="${lang.proficiency}" onchange="updateLanguageProficiency(${index}, this.value)">
-                            <button class="delete-btn" onclick="removeLanguage(${index})">Delete</button>
-                        </div>
+            container.innerHTML = '';
+            const languages = portfolioData.languages || [];
+
+            languages.forEach((lang, index) => {
+                const langDiv = document.createElement('div');
+                langDiv.className = 'language-item';
+                langDiv.innerHTML = `
+                    <h4>${lang.name}</h4>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${lang.proficiency}%"></div>
+                    </div>
+                    <div class="proficiency-text">${lang.proficiency}% Proficient</div>
+                    <div class="controls edit-mode-control">
+                        <input type="text" value="${lang.name}" onchange="updateLanguageName(${index}, this.value)" placeholder="Language name">
+                        <input type="number" class="proficiency-input" min="0" max="100" value="${lang.proficiency}" onchange="updateLanguageProficiency(${index}, this.value)">
+                        <button class="delete-btn" onclick="removeLanguage(${index})">Delete</button>
                     </div>
                 `;
-                container.innerHTML += langHTML;
+                container.appendChild(langDiv);
             });
         }
 
-        // Add Language
         function addLanguage() {
             const name = prompt('Enter programming language name:');
-            if (name) {
-                portfolioData.languages.push({ name: name, proficiency: 50 });
+            if (name && name.trim()) {
+                if (!portfolioData.languages) {
+                    portfolioData.languages = [];
+                }
+                portfolioData.languages.push({ name: name.trim(), proficiency: 50 });
                 saveData();
                 renderLanguages();
             }
         }
 
-        // Update Language Name
         function updateLanguageName(index, value) {
-            portfolioData.languages[index].name = value;
-            saveData();
-            renderLanguages();
+            if (portfolioData.languages && portfolioData.languages[index]) {
+                portfolioData.languages[index].name = value;
+                saveData();
+                renderLanguages();
+            }
         }
 
-        // Update Language Proficiency
         function updateLanguageProficiency(index, value) {
-            portfolioData.languages[index].proficiency = parseInt(value);
-            saveData();
-            renderLanguages();
+            if (portfolioData.languages && portfolioData.languages[index]) {
+                portfolioData.languages[index].proficiency = Math.min(100, Math.max(0, parseInt(value) || 0));
+                saveData();
+                renderLanguages();
+            }
         }
 
-        // Remove Language
         function removeLanguage(index) {
-            portfolioData.languages.splice(index, 1);
-            saveData();
-            renderLanguages();
+            if (portfolioData.languages) {
+                portfolioData.languages.splice(index, 1);
+                saveData();
+                renderLanguages();
+            }
         }
 
-        // Render Software
         function renderSoftware() {
             const categories = ['design', 'security', 'diagram'];
 
             categories.forEach(cat => {
                 const container = document.getElementById(`${cat}-software`);
-                container.innerHTML = '';
+                if (!container) return;
 
-                portfolioData.software[cat].forEach((soft, index) => {
-                    const softHTML = `
-                        <div class="software-item">
-                            <span>${soft}</span>
-                            <button class="edit-mode-control" onclick="removeSoftware('${cat}', ${index})">Remove</button>
-                        </div>
+                container.innerHTML = '';
+                const software = portfolioData.software[cat] || [];
+
+                software.forEach((soft, index) => {
+                    const softDiv = document.createElement('div');
+                    softDiv.className = 'software-item';
+                    softDiv.innerHTML = `
+                        <span>${soft}</span>
+                        <button class="edit-mode-control" onclick="removeSoftware('${cat}', ${index})">Remove</button>
                     `;
-                    container.innerHTML += softHTML;
+                    container.appendChild(softDiv);
                 });
             });
         }
 
-        // Add Software
         function addSoftware(category) {
             const input = document.getElementById(`${category}-input`);
-            const value = input.value.trim();
+            if (!input) return;
 
+            const value = input.value.trim();
             if (value) {
+                if (!portfolioData.software[category]) {
+                    portfolioData.software[category] = [];
+                }
                 portfolioData.software[category].push(value);
                 saveData();
                 renderSoftware();
@@ -933,17 +1180,37 @@
             }
         }
 
-        // Remove Software
         function removeSoftware(category, index) {
-            portfolioData.software[category].splice(index, 1);
-            saveData();
-            renderSoftware();
+            if (portfolioData.software[category]) {
+                portfolioData.software[category].splice(index, 1);
+                saveData();
+                renderSoftware();
+            }
         }
 
-        // Allow Enter key to add software
+        // ============ INTERSECTION OBSERVER ============
+        function setupIntersectionObserver() {
+            const sections = document.querySelectorAll('section');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+        }
+
+        // ============ EVENT LISTENERS ============
         document.addEventListener('DOMContentLoaded', function() {
-            const inputs = ['design-input', 'security-input', 'diagram-input'];
-            inputs.forEach(id => {
+            // Initialize
+            initializeData();
+
+            // Software input enter key
+            ['design-input', 'security-input', 'diagram-input'].forEach(id => {
                 const input = document.getElementById(id);
                 if (input) {
                     input.addEventListener('keypress', function(e) {
@@ -955,16 +1222,15 @@
                 }
             });
 
-            // Initialize data
-            initializeData();
-        });
-
-        // Smooth scroll for navigation
-        document.querySelectorAll('nav a').forEach(anchor => {
-            anchor.addEventListener('click', function(e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                target.scrollIntoView({ behavior: 'smooth' });
+            // Smooth scroll for navigation
+            document.querySelectorAll('nav a').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({ behavior: 'smooth' });
+                    }
+                });
             });
         });
     </script>
