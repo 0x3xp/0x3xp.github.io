@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -79,6 +78,8 @@
         nav {
             position: fixed;
             top: 0;
+            left: 0;
+            right: 0;
             width: 100%;
             background: rgba(10, 14, 39, 0.95);
             backdrop-filter: blur(20px);
@@ -87,6 +88,7 @@
             padding: 1.2rem 2rem;
             box-shadow: var(--shadow-md);
             animation: navSlideDown 0.6s ease-out;
+            box-sizing: border-box;
         }
 
         @keyframes navSlideDown {
@@ -106,8 +108,9 @@
             justify-content: center;
             gap: 3rem;
             flex-wrap: wrap;
-            max-width: 1200px;
+            max-width: 100%;
             margin: 0 auto;
+            padding: 0;
         }
 
         nav a {
@@ -145,10 +148,12 @@
         /* ============ MAIN CONTAINER ============ */
         main {
             margin-top: 100px;
-            max-width: 1200px;
+            max-width: 100%;
+            width: 100%;
             margin-left: auto;
             margin-right: auto;
             padding: 2rem;
+            box-sizing: border-box;
         }
 
         /* ============ HERO SECTION ============ */
@@ -780,6 +785,12 @@
         }
 
         /* ============ RESPONSIVE ============ */
+        @media (max-width: 1024px) {
+            nav ul {
+                gap: 1.5rem;
+            }
+        }
+
         @media (max-width: 768px) {
             nav ul {
                 gap: 1.5rem;
