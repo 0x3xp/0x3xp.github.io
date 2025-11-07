@@ -85,6 +85,18 @@
             z-index: 1000;
             padding: 1.2rem 2rem;
             box-shadow: var(--shadow-md);
+            animation: navSlideDown 0.6s ease-out;
+        }
+
+        @keyframes navSlideDown {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
         }
 
         nav ul {
@@ -205,7 +217,6 @@
             -webkit-text-fill-color: transparent;
             background-clip: text;
             letter-spacing: 2px;
-            text-shadow: 0 0 20px rgba(0, 240, 255, 0.3);
             animation: titleGlow 2s ease-in-out infinite;
         }
 
@@ -245,14 +256,18 @@
         /* ============ SECTIONS ============ */
         section {
             margin-bottom: 5rem;
-            opacity: 0;
-            transform: translateY(40px);
-            transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+            animation: sectionFadeIn 0.8s ease-out forwards;
         }
 
-        section.visible {
-            opacity: 1;
-            transform: translateY(0);
+        @keyframes sectionFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         section h2 {
@@ -302,7 +317,7 @@
         /* ============ SKILLS SECTION ============ */
         .skills-container {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 2.5rem;
             margin-bottom: 2rem;
         }
@@ -311,7 +326,7 @@
             background: linear-gradient(135deg, rgba(26, 31, 58, 0.6) 0%, rgba(37, 45, 71, 0.6) 100%);
             border: 1px solid var(--border-color);
             border-radius: 15px;
-            padding: 2.5rem;
+            padding: 1.5rem;
             transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
             position: relative;
             overflow: hidden;
@@ -356,7 +371,7 @@
             font-family: 'Space Mono', monospace;
             color: var(--accent-cyan);
             margin-bottom: 1.5rem;
-            font-size: 1.4rem;
+            font-size: 1.2rem;
             font-weight: 700;
             letter-spacing: 1px;
             border-left: 4px solid var(--accent-purple);
@@ -364,7 +379,7 @@
         }
 
         .skill-item {
-            margin-bottom: 1.8rem;
+            margin-bottom: 1rem;
         }
 
         .skill-item label {
@@ -471,7 +486,7 @@
         /* ============ PROGRAMMING LANGUAGES ============ */
         .languages-container {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 2.5rem;
             margin-bottom: 2rem;
         }
@@ -480,7 +495,7 @@
             background: linear-gradient(135deg, rgba(26, 31, 58, 0.6) 0%, rgba(37, 45, 71, 0.6) 100%);
             border: 1px solid var(--border-color);
             border-radius: 15px;
-            padding: 2.5rem;
+            padding: 1.5rem;
             transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
             box-shadow: var(--shadow-sm);
         }
@@ -494,7 +509,7 @@
         .language-item h4 {
             color: var(--accent-cyan);
             margin-bottom: 1rem;
-            font-size: 1.3rem;
+            font-size: 1.1rem;
             font-weight: 700;
             font-family: 'Space Mono', monospace;
         }
@@ -556,7 +571,7 @@
         /* ============ SOFTWARE SECTION ============ */
         .software-container {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 2.5rem;
         }
 
@@ -564,7 +579,7 @@
             background: linear-gradient(135deg, rgba(26, 31, 58, 0.6) 0%, rgba(37, 45, 71, 0.6) 100%);
             border: 1px solid var(--border-color);
             border-radius: 15px;
-            padding: 2.5rem;
+            padding: 1.5rem;
             transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
             box-shadow: var(--shadow-sm);
         }
@@ -579,7 +594,7 @@
             font-family: 'Space Mono', monospace;
             color: var(--accent-cyan);
             margin-bottom: 1.5rem;
-            font-size: 1.4rem;
+            font-size: 1.2rem;
             font-weight: 700;
             letter-spacing: 1px;
             border-left: 4px solid var(--accent-purple);
@@ -681,29 +696,32 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
             background: linear-gradient(135deg, rgba(0, 240, 255, 0.1), rgba(179, 0, 255, 0.1));
             border: 2px solid var(--border-color);
             color: var(--accent-cyan);
             text-decoration: none;
-            font-size: 1.5rem;
-            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            font-size: 1rem;
             font-weight: 700;
+            font-family: 'Space Mono', monospace;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            letter-spacing: 1px;
+            text-transform: uppercase;
         }
 
         .social-link:hover {
             border-color: var(--accent-purple);
             background: linear-gradient(135deg, rgba(0, 240, 255, 0.2), rgba(179, 0, 255, 0.2));
-            transform: translateY(-5px) scale(1.1);
+            transform: translateY(-5px) scale(1.05);
             box-shadow: 0 10px 25px rgba(179, 0, 255, 0.3);
+            color: var(--accent-purple);
         }
 
         /* ============ FOOTER ============ */
         footer {
             text-align: center;
-            padding: 2.5rem;
+            padding: 1.5rem;
             border-top: 1px solid var(--border-color);
             color: var(--text-secondary);
             margin-top: 5rem;
@@ -790,6 +808,11 @@
 
             .social-links {
                 gap: 1rem;
+            }
+
+            .social-link {
+                font-size: 0.9rem;
+                padding: 0.6rem 1.2rem;
             }
         }
     </style>
@@ -911,13 +934,13 @@
             <div class="contact-card">
                 <p>Follow me on social media for the latest updates on cybersecurity, design, and creative projects.</p>
                 <div class="social-links">
-                    <a href="https://pinterest.com/aivoradesigns" target="_blank" class="social-link" title="Pinterest">📌</a>
-                    <a href="https://facebook.com/aivoradesigns" target="_blank" class="social-link" title="Facebook">f</a>
-                    <a href="https://lintr.ee/piyushaakash" target="_blank" class="social-link" title="Linktree">🔗</a>
-                    <a href="https://instagram.com/piyushaakash.lk" target="_blank" class="social-link" title="Instagram">📷</a>
-                    <a href="https://linkedin.com/in/piyushaakash" target="_blank" class="social-link" title="LinkedIn">in</a>
-                    <a href="https://youtube.com/@infoseclk" target="_blank" class="social-link" title="YouTube">▶</a>
-                    <a href="https://tiktok.com/@infoseclk" target="_blank" class="social-link" title="TikTok">♪</a>
+                    <a href="https://pinterest.com/aivoradesigns" target="_blank" class="social-link">Pinterest</a>
+                    <a href="https://facebook.com/aivoradesigns" target="_blank" class="social-link">Facebook</a>
+                    <a href="https://lintr.ee/piyushaakash" target="_blank" class="social-link">Linktree</a>
+                    <a href="https://instagram.com/piyushaakash.lk" target="_blank" class="social-link">Instagram</a>
+                    <a href="https://linkedin.com/in/piyushaakash" target="_blank" class="social-link">LinkedIn</a>
+                    <a href="https://youtube.com/@infoseclk" target="_blank" class="social-link">YouTube</a>
+                    <a href="https://tiktok.com/@infoseclk" target="_blank" class="social-link">TikTok</a>
                 </div>
             </div>
         </section>
@@ -948,7 +971,6 @@
                     { name: 'REST API Testing', proficiency: 70 }
                 ],
                 'linux': [
-                    { name: 'Shell Scripting', proficiency: 85 },
                     { name: 'System Hardening', proficiency: 75 }
                 ],
                 'network-diagram': [
@@ -963,12 +985,12 @@
                 ]
             },
             languages: [
-                { name: 'Bash Shell Scripting', proficiency: 85 }
+                { name: 'Bash Shell Scripting', proficiency: 70 }
             ],
             software: {
                 'design': ['Photoshop', 'Illustrator', 'Canva'],
-                'security': ['CISCO Packet Tracer', 'Wireshark', 'Kali Linux'],
-                'diagram': ['Draw.io', 'Lucidchart']
+                'security': ['Wireshark', 'Kali Linux'],
+                'diagram': ['CISCO Packet Tracer', 'Draw.io']
             }
         };
 
@@ -995,7 +1017,6 @@
                 }
             }
             renderAll();
-            setupIntersectionObserver();
         }
 
         function saveData() {
@@ -1186,22 +1207,6 @@
                 saveData();
                 renderSoftware();
             }
-        }
-
-        // ============ INTERSECTION OBSERVER ============
-        function setupIntersectionObserver() {
-            const sections = document.querySelectorAll('section');
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('visible');
-                    }
-                });
-            }, { threshold: 0.1 });
-
-            sections.forEach(section => {
-                observer.observe(section);
-            });
         }
 
         // ============ EVENT LISTENERS ============
