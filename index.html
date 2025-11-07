@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cybersecurity & Design Portfolio</title>
+    <title>Piyusha Akash - Cybersecurity & Design Portfolio</title>
     <style>
         * {
             margin: 0;
@@ -422,21 +422,6 @@
             color: var(--text-light);
         }
 
-        .software-item button {
-            background: var(--danger-color);
-            color: white;
-            border: none;
-            padding: 0.3rem 0.6rem;
-            border-radius: 3px;
-            cursor: pointer;
-            font-size: 0.8rem;
-            transition: all 0.3s ease;
-        }
-
-        .software-item button:hover {
-            background: #ff1a4d;
-        }
-
         .add-software-input {
             display: flex;
             gap: 0.5rem;
@@ -524,6 +509,54 @@
             }
         }
 
+        /* --- EDIT MODE STYLES --- */
+        .edit-mode-control {
+            display: none !important;
+        }
+
+        .edit-mode-active .edit-mode-control {
+            display: block !important;
+        }
+
+        .edit-mode-active .skill-item label {
+            display: none; /* Hide public view label in edit mode */
+        }
+
+        .edit-mode-active .skill-item input[type="text"],
+        .edit-mode-active .skill-item input[type="number"] {
+            display: block !important;
+            margin-bottom: 0.5rem;
+        }
+
+        .edit-mode-active .language-item .controls {
+            display: flex !important;
+        }
+
+        .edit-mode-active .software-item button {
+            display: inline-block !important;
+        }
+
+        .edit-mode-active .add-software-input {
+            display: flex !important;
+        }
+
+        .edit-mode-active .language-item .proficiency-text {
+            display: none;
+        }
+
+        .edit-mode-active .language-item h4 {
+            margin-bottom: 0.2rem;
+        }
+
+        .edit-mode-active .skill-item button {
+            display: block !important;
+            margin-top: 0.5rem;
+        }
+
+        .edit-mode-active .skill-item .progress-bar {
+            margin-bottom: 0.5rem;
+        }
+
         /* Edit Mode Indicator */
         .edit-indicator {
             position: fixed;
@@ -536,6 +569,7 @@
             font-weight: 600;
             box-shadow: 0 5px 20px rgba(0, 255, 136, 0.3);
             z-index: 999;
+            cursor: pointer;
         }
     </style>
 </head>
@@ -557,9 +591,9 @@
         <!-- Hero Section -->
         <section class="hero" id="home">
             <div class="hero-content">
-                <h1>Cybersecurity & Design Portfolio</h1>
+                <h1>Piyusha Akash</h1>
                 <p class="subtitle">Offensive Security Specialist | Graphic Designer</p>
-                <p>Penetration Testing | Web Security | Network Analysis | Creative Design</p>
+                <p>Welcome to my portfolio. Penetration Testing | Web Security | Network Analysis | Creative Design</p>
             </div>
         </section>
 
@@ -571,28 +605,28 @@
                 <div class="skill-card">
                     <h3>Web Security</h3>
                     <div id="web-security-skills"></div>
-                    <button class="add-skill-btn" onclick="addSkill('web-security')">+ Add Skill</button>
+                    <button class="add-skill-btn edit-mode-control" onclick="addSkill('web-security')">+ Add Skill</button>
                 </div>
 
                 <!-- Network Penetration Testing -->
                 <div class="skill-card">
                     <h3>Network Penetration Testing</h3>
                     <div id="network-pentest-skills"></div>
-                    <button class="add-skill-btn" onclick="addSkill('network-pentest')">+ Add Skill</button>
+                    <button class="add-skill-btn edit-mode-control" onclick="addSkill('network-pentest')">+ Add Skill</button>
                 </div>
 
                 <!-- API Penetration Testing -->
                 <div class="skill-card">
                     <h3>API Penetration Testing</h3>
                     <div id="api-pentest-skills"></div>
-                    <button class="add-skill-btn" onclick="addSkill('api-pentest')">+ Add Skill</button>
+                    <button class="add-skill-btn edit-mode-control" onclick="addSkill('api-pentest')">+ Add Skill</button>
                 </div>
 
                 <!-- Linux -->
                 <div class="skill-card">
                     <h3>Linux</h3>
                     <div id="linux-skills"></div>
-                    <button class="add-skill-btn" onclick="addSkill('linux')">+ Add Skill</button>
+                    <button class="add-skill-btn edit-mode-control" onclick="addSkill('linux')">+ Add Skill</button>
                 </div>
             </div>
         </section>
@@ -601,7 +635,7 @@
         <section id="programming">
             <h2>Programming Languages</h2>
             <div class="languages-container" id="languages-container"></div>
-            <button class="add-language-btn" onclick="addLanguage()">+ Add Programming Language</button>
+            <button class="add-language-btn edit-mode-control" onclick="addLanguage()">+ Add Programming Language</button>
         </section>
 
         <!-- Other Skills Section -->
@@ -612,21 +646,21 @@
                 <div class="skill-card">
                     <h3>Network Diagram Creation</h3>
                     <div id="network-diagram-skills"></div>
-                    <button class="add-skill-btn" onclick="addSkill('network-diagram')">+ Add Skill</button>
+                    <button class="add-skill-btn edit-mode-control" onclick="addSkill('network-diagram')">+ Add Skill</button>
                 </div>
 
                 <!-- Graphic Design -->
                 <div class="skill-card">
                     <h3>Graphic Design</h3>
                     <div id="graphic-design-skills"></div>
-                    <button class="add-skill-btn" onclick="addSkill('graphic-design')">+ Add Skill</button>
+                    <button class="add-skill-btn edit-mode-control" onclick="addSkill('graphic-design')">+ Add Skill</button>
                 </div>
 
                 <!-- Generative AI Tools -->
                 <div class="skill-card">
                     <h3>Generative AI Tools</h3>
                     <div id="ai-tools-skills"></div>
-                    <button class="add-skill-btn" onclick="addSkill('ai-tools')">+ Add Skill</button>
+                    <button class="add-skill-btn edit-mode-control" onclick="addSkill('ai-tools')">+ Add Skill</button>
                 </div>
             </div>
         </section>
@@ -639,7 +673,7 @@
                 <div class="software-card">
                     <h3>Design Software</h3>
                     <div id="design-software"></div>
-                    <div class="add-software-input">
+                    <div class="add-software-input edit-mode-control">
                         <input type="text" placeholder="Add software..." id="design-input">
                         <button onclick="addSoftware('design')">Add</button>
                     </div>
@@ -649,7 +683,7 @@
                 <div class="software-card">
                     <h3>Security Tools</h3>
                     <div id="security-software"></div>
-                    <div class="add-software-input">
+                    <div class="add-software-input edit-mode-control">
                         <input type="text" placeholder="Add tool..." id="security-input">
                         <button onclick="addSoftware('security')">Add</button>
                     </div>
@@ -659,7 +693,7 @@
                 <div class="software-card">
                     <h3>Diagramming Tools</h3>
                     <div id="diagram-software"></div>
-                    <div class="add-software-input">
+                    <div class="add-software-input edit-mode-control">
                         <input type="text" placeholder="Add tool..." id="diagram-input">
                         <button onclick="addSoftware('diagram')">Add</button>
                     </div>
@@ -684,34 +718,50 @@
 
     <!-- Footer -->
     <footer>
-        <p>&copy; 2024 Cybersecurity & Design Portfolio. All rights reserved.</p>
+        <p>&copy; 2024 Piyusha Akash Portfolio. All rights reserved.</p>
         <p>Built with HTML, CSS & JavaScript | Single Page Application</p>
     </footer>
+
+    <!-- Edit Mode Indicator -->
+    <div class="edit-indicator edit-mode-control" id="edit-indicator">Edit Mode Active</div>
 
     <script>
         // Data Structure
         const portfolioData = {
             skills: {
-                'web-security': [],
-                'network-pentest': [],
-                'api-pentest': [],
-                'linux': [],
-                'network-diagram': [],
-                'graphic-design': [],
-                'ai-tools': []
+                'web-security': [{ name: 'OWASP Top 10', proficiency: 80 }, { name: 'Burp Suite', proficiency: 70 }],
+                'network-pentest': [{ name: 'Nmap Scanning', proficiency: 75 }, { name: 'Metasploit', proficiency: 65 }],
+                'api-pentest': [{ name: 'REST API Testing', proficiency: 60 }],
+                'linux': [{ name: 'Shell Scripting', proficiency: 75 }, { name: 'System Hardening', proficiency: 60 }],
+                'network-diagram': [{ name: 'UML/Network Topologies', proficiency: 85 }],
+                'graphic-design': [{ name: 'Branding & Identity', proficiency: 70 }],
+                'ai-tools': [{ name: 'Prompt Engineering', proficiency: 80 }]
             },
             languages: [
                 { name: 'Bash Shell Scripting', proficiency: 75 }
             ],
             software: {
                 'design': ['Photoshop', 'Illustrator', 'Canva'],
-                'security': ['CISCO Packet Tracer'],
-                'diagram': ['Draw.io']
+                'security': ['CISCO Packet Tracer', 'Wireshark', 'Kali Linux'],
+                'diagram': ['Draw.io', 'Lucidchart']
             }
         };
 
+        let isEditMode = false;
+
+        // Check for edit mode
+        function checkEditMode() {
+            const urlParams = new URLSearchParams(window.location.search);
+            isEditMode = urlParams.get('edit') === 'true';
+
+            if (isEditMode) {
+                document.body.classList.add('edit-mode-active');
+            }
+        }
+
         // Initialize from localStorage
         function initializeData() {
+            checkEditMode();
             const saved = localStorage.getItem('portfolioData');
             if (saved) {
                 Object.assign(portfolioData, JSON.parse(saved));
@@ -751,14 +801,15 @@
                     const skillHTML = `
                         <div class="skill-item">
                             <label>
-                                <input type="text" value="${skill.name}" onchange="updateSkillName('${cat.id}', ${index}, this.value)">
+                                <span>${skill.name}</span>
                                 <span class="proficiency-text">${skill.proficiency}%</span>
                             </label>
-                            <input type="number" min="0" max="100" value="${skill.proficiency}" onchange="updateSkillProficiency('${cat.id}', ${index}, this.value)">
+                            <input type="text" class="edit-mode-control" value="${skill.name}" onchange="updateSkillName('${cat.id}', ${index}, this.value)">
+                            <input type="number" class="edit-mode-control" min="0" max="100" value="${skill.proficiency}" onchange="updateSkillProficiency('${cat.id}', ${index}, this.value)">
                             <div class="progress-bar">
                                 <div class="progress-fill" style="width: ${skill.proficiency}%"></div>
                             </div>
-                            <button onclick="removeSkill('${cat.id}', ${index})">Remove</button>
+                            <button class="edit-mode-control" onclick="removeSkill('${cat.id}', ${index})">Remove</button>
                         </div>
                     `;
                     container.innerHTML += skillHTML;
@@ -777,13 +828,14 @@
         function updateSkillName(category, index, value) {
             portfolioData.skills[category][index].name = value;
             saveData();
+            renderSkills(); // Re-render to update public view
         }
 
         // Update Skill Proficiency
         function updateSkillProficiency(category, index, value) {
             portfolioData.skills[category][index].proficiency = parseInt(value);
             saveData();
-            renderSkills();
+            renderSkills(); // Re-render to update public view
         }
 
         // Remove Skill
@@ -806,7 +858,7 @@
                             <div class="progress-fill" style="width: ${lang.proficiency}%"></div>
                         </div>
                         <div class="proficiency-text">${lang.proficiency}% Proficient</div>
-                        <div class="controls">
+                        <div class="controls edit-mode-control">
                             <input type="text" value="${lang.name}" onchange="updateLanguageName(${index}, this.value)" placeholder="Language name">
                             <input type="number" class="proficiency-input" min="0" max="100" value="${lang.proficiency}" onchange="updateLanguageProficiency(${index}, this.value)">
                             <button class="delete-btn" onclick="removeLanguage(${index})">Delete</button>
@@ -860,7 +912,7 @@
                     const softHTML = `
                         <div class="software-item">
                             <span>${soft}</span>
-                            <button onclick="removeSoftware('${cat}', ${index})">Remove</button>
+                            <button class="edit-mode-control" onclick="removeSoftware('${cat}', ${index})">Remove</button>
                         </div>
                     `;
                     container.innerHTML += softHTML;
