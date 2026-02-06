@@ -26,11 +26,48 @@
         }
         
         .glow-text {
-            text-shadow: 0 0 10px rgba(0, 255, 157, 0.5);
+            text-shadow: 0 0 10px rgba(0, 255, 157, 0.5), 0 0 20px rgba(0, 255, 157, 0.3), 0 0 30px rgba(0, 255, 157, 0.2);
+            animation: glow-pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes glow-pulse {
+            0%, 100% { text-shadow: 0 0 10px rgba(0, 255, 157, 0.5), 0 0 20px rgba(0, 255, 157, 0.3), 0 0 30px rgba(0, 255, 157, 0.2); }
+            50% { text-shadow: 0 0 15px rgba(0, 255, 157, 0.7), 0 0 25px rgba(0, 255, 157, 0.5), 0 0 40px rgba(0, 255, 157, 0.3); }
         }
         
         .glow-border {
-            box-shadow: 0 0 15px rgba(0, 255, 157, 0.3);
+            box-shadow: 0 0 15px rgba(0, 255, 157, 0.3), 0 0 30px rgba(0, 255, 157, 0.1);
+        }
+        
+        .matrix-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.05;
+        }
+        
+        .grid-pattern {
+            background-image: 
+                linear-gradient(rgba(0, 255, 157, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 157, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+        }
+        
+        .scan-line {
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(0, 255, 157, 0.5), transparent);
+            animation: scan 4s linear infinite;
+        }
+        
+        @keyframes scan {
+            0% { top: 0; }
+            100% { top: 100%; }
         }
         
         .terminal-output {
@@ -132,15 +169,91 @@
         #terminal-content::-webkit-scrollbar-thumb:hover {
             background: #3a3a3a;
         }
+        
+        .cert-card {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            background: linear-gradient(145deg, #151515, #0d0d0d);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .cert-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(0, 255, 157, 0.1), transparent);
+            transform: rotate(45deg);
+            transition: all 0.6s;
+        }
+        
+        .cert-card:hover::before {
+            left: 100%;
+        }
+        
+        .cert-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 10px 40px rgba(0, 255, 157, 0.3);
+            border-color: #00ff9d;
+        }
+        
+        .cert-icon {
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 255, 157, 0.1);
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+        
+        .org-badge {
+            background: linear-gradient(135deg, rgba(0, 255, 157, 0.2), rgba(0, 255, 157, 0.05));
+            border: 1px solid rgba(0, 255, 157, 0.3);
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .hexagon {
+            clip-path: polygon(30% 0%, 70% 0%, 100% 50%, 70% 100%, 30% 100%, 0% 50%);
+            background: rgba(0, 255, 157, 0.1);
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .floating {
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
     </style>
 </head>
 <body class="bg-[#0a0a0a]">
     
+    <!-- Matrix Background -->
+    <div class="matrix-bg grid-pattern">
+        <div class="scan-line"></div>
+    </div>
+    
     <!-- Hero Section -->
     <section class="min-h-screen flex items-center justify-center px-6 relative overflow-hidden">
         <div class="absolute inset-0 opacity-10">
-            <div class="absolute top-20 left-10 w-64 h-64 bg-[#00ff9d] rounded-full blur-3xl"></div>
-            <div class="absolute bottom-20 right-10 w-96 h-96 bg-[#00ff9d] rounded-full blur-3xl"></div>
+            <div class="absolute top-20 left-10 w-64 h-64 bg-[#00ff9d] rounded-full blur-3xl animate-pulse"></div>
+            <div class="absolute bottom-20 right-10 w-96 h-96 bg-[#00ff9d] rounded-full blur-3xl animate-pulse" style="animation-delay: 1s;"></div>
+            <div class="absolute top-1/2 left-1/2 w-48 h-48 bg-[#00ff9d] rounded-full blur-3xl animate-pulse" style="animation-delay: 2s;"></div>
         </div>
         
         <div class="max-w-4xl mx-auto text-center relative z-10">
@@ -170,6 +283,56 @@
         </div>
     </section>
 
+    <!-- About Section -->
+    <section class="py-20 px-6 bg-[#0d0d0d] relative overflow-hidden">
+        <div class="absolute inset-0 opacity-5">
+            <div class="absolute top-10 right-20 w-96 h-96 bg-[#00ff9d] rounded-full blur-3xl"></div>
+        </div>
+        <div class="max-w-4xl mx-auto relative z-10">
+            <div class="flex items-center gap-3 mb-8 justify-center">
+                <div class="h-px w-12 bg-gradient-to-r from-transparent to-[#00ff9d]"></div>
+                <h2 class="text-4xl md:text-5xl font-bold text-center text-[#00ff9d] glow-text">
+                    About Me
+                </h2>
+                <div class="h-px w-12 bg-gradient-to-l from-transparent to-[#00ff9d]"></div>
+            </div>
+            
+            <div class="bg-[#151515] border border-[#1a1a1a] rounded-lg p-8 md:p-12 glow-border relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-2 h-full bg-gradient-to-b from-[#00ff9d] to-transparent opacity-50"></div>
+                <div class="absolute bottom-0 right-0 w-2 h-full bg-gradient-to-t from-[#00ff9d] to-transparent opacity-50"></div>
+                
+                <div class="relative z-10">
+                    <div class="flex items-start gap-4 mb-6">
+                        <div class="hexagon flex-shrink-0 mt-1">
+                            <svg class="w-5 h-5 text-[#00ff9d]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                            </svg>
+                        </div>
+                        <p class="text-gray-300 text-lg leading-relaxed">
+                            I specialize in the art of <span class="text-[#00ff9d] font-semibold">Adversary Emulation</span>, focusing on the intersection of <span class="text-[#00ff9d] font-semibold">Malware Development</span> and <span class="text-[#00ff9d] font-semibold">Reverse Engineering</span>. My work revolves around breaking the "unbreakable" by crafting custom exploits and stealthy payloads that bypass modern EDR/AV solutions.
+                        </p>
+                    </div>
+                    
+                    <p class="text-gray-300 text-lg leading-relaxed ml-12">
+                        From deep-diving into <span class="text-[#00ff9d] font-semibold">Windows Internals</span> to orchestrating complex <span class="text-[#00ff9d] font-semibold">Social Engineering</span> campaigns, I am driven by a passion for understanding the mechanics of a breach to build a more resilient defense.
+                    </p>
+                    
+                    <div class="mt-8 flex flex-wrap gap-3 ml-12">
+                        <span class="px-4 py-2 bg-[#1a1a1a] border border-[#00ff9d] text-[#00ff9d] rounded text-sm font-mono">
+                            adversary_emulation.exe
+                        </span>
+                        <span class="px-4 py-2 bg-[#1a1a1a] border border-[#00ff9d] text-[#00ff9d] rounded text-sm font-mono">
+                            evasion_tactics.dll
+                        </span>
+                        <span class="px-4 py-2 bg-[#1a1a1a] border border-[#00ff9d] text-[#00ff9d] rounded text-sm font-mono">
+                            threat_research.bin
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Skills Section -->
     <section class="py-20 px-6 bg-[#0d0d0d]">
         <div class="max-w-6xl mx-auto">
@@ -179,42 +342,42 @@
             
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <!-- Skill Card 1 -->
-                <div class="skill-card bg-[#151515] p-6 rounded-lg border border-[#1a1a1a]">
+                <div class="skill-card bg-[#151515] p-6 rounded-lg border border-[#1a1a1a] floating" style="animation-delay: 0s;">
                     <div class="text-[#00ff9d] text-4xl mb-4">⚙️</div>
                     <h3 class="text-xl font-semibold mb-2 text-[#00ff9d]">C & C++</h3>
                     <p class="text-gray-400">Low-level programming for system exploitation and malware development</p>
                 </div>
                 
                 <!-- Skill Card 2 -->
-                <div class="skill-card bg-[#151515] p-6 rounded-lg border border-[#1a1a1a]">
+                <div class="skill-card bg-[#151515] p-6 rounded-lg border border-[#1a1a1a] floating" style="animation-delay: 0.2s;">
                     <div class="text-[#00ff9d] text-4xl mb-4">🔧</div>
                     <h3 class="text-xl font-semibold mb-2 text-[#00ff9d]">x64 Assembly</h3>
                     <p class="text-gray-400">Direct hardware manipulation and shellcode development</p>
                 </div>
                 
                 <!-- Skill Card 3 -->
-                <div class="skill-card bg-[#151515] p-6 rounded-lg border border-[#1a1a1a]">
+                <div class="skill-card bg-[#151515] p-6 rounded-lg border border-[#1a1a1a] floating" style="animation-delay: 0.4s;">
                     <div class="text-[#00ff9d] text-4xl mb-4">🪟</div>
                     <h3 class="text-xl font-semibold mb-2 text-[#00ff9d]">Windows Internals</h3>
                     <p class="text-gray-400">Deep understanding of OS architecture and kernel mechanisms</p>
                 </div>
                 
                 <!-- Skill Card 4 -->
-                <div class="skill-card bg-[#151515] p-6 rounded-lg border border-[#1a1a1a]">
+                <div class="skill-card bg-[#151515] p-6 rounded-lg border border-[#1a1a1a] floating" style="animation-delay: 0.6s;">
                     <div class="text-[#00ff9d] text-4xl mb-4">🔌</div>
                     <h3 class="text-xl font-semibold mb-2 text-[#00ff9d]">Win32 API</h3>
                     <p class="text-gray-400">Native Windows programming for advanced exploitation</p>
                 </div>
                 
                 <!-- Skill Card 5 -->
-                <div class="skill-card bg-[#151515] p-6 rounded-lg border border-[#1a1a1a]">
+                <div class="skill-card bg-[#151515] p-6 rounded-lg border border-[#1a1a1a] floating" style="animation-delay: 0.8s;">
                     <div class="text-[#00ff9d] text-4xl mb-4">🔍</div>
                     <h3 class="text-xl font-semibold mb-2 text-[#00ff9d]">Reverse Engineering</h3>
                     <p class="text-gray-400">Binary analysis, decompilation, and vulnerability research</p>
                 </div>
                 
                 <!-- Skill Card 6 -->
-                <div class="skill-card bg-[#151515] p-6 rounded-lg border border-[#1a1a1a]">
+                <div class="skill-card bg-[#151515] p-6 rounded-lg border border-[#1a1a1a] floating" style="animation-delay: 1s;">
                     <div class="text-[#00ff9d] text-4xl mb-4">💣</div>
                     <h3 class="text-xl font-semibold mb-2 text-[#00ff9d]">Exploit Development</h3>
                     <p class="text-gray-400">Crafting exploits for memory corruption and privilege escalation</p>
@@ -410,6 +573,192 @@
         </div>
     </section>
 
+    <!-- ======================== CERTIFICATIONS SECTION - EDIT HERE ======================== -->
+    <!-- To add a new certification:
+         1. Find the appropriate organization section below
+         2. Copy an existing certification card within that organization
+         3. Update the certification name
+         4. To add a new organization, copy an entire organization div and update the details
+    -->
+    <section class="py-20 px-6 bg-[#0a0a0a] relative">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="text-4xl md:text-5xl font-bold text-center mb-4 text-[#00ff9d] glow-text">
+                Certifications
+            </h2>
+            <p class="text-center text-gray-400 mb-16">Professional credentials and continuous learning</p>
+            
+            <div class="space-y-12">
+                
+                <!-- CISCO Network Academy -->
+                <div>
+                    <div class="org-badge">
+                        <div class="hexagon">
+                            <svg class="w-6 h-6 text-[#00ff9d]" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5zm0 18c-3.54-.93-6-4.62-6-8V8.3l6-3.1 6 3.1V12c0 3.38-2.46 7.07-6 8z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold text-[#00ff9d]">CISCO Network Academy</h3>
+                            <p class="text-sm text-gray-400">Networking & Security</p>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <!-- Cert 1 -->
+                        <div class="cert-card border border-[#1a1a1a] rounded-lg p-6">
+                            <div class="cert-icon">
+                                <svg class="w-6 h-6 text-[#00ff9d]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                                </svg>
+                            </div>
+                            <h4 class="text-lg font-semibold text-white mb-2">Introduction to Cybersecurity</h4>
+                            <p class="text-sm text-gray-400">Foundational cybersecurity concepts and practices</p>
+                        </div>
+                        <!-- Cert 2 -->
+                        <div class="cert-card border border-[#1a1a1a] rounded-lg p-6">
+                            <div class="cert-icon">
+                                <svg class="w-6 h-6 text-[#00ff9d]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                </svg>
+                            </div>
+                            <h4 class="text-lg font-semibold text-white mb-2">Computer Hardware</h4>
+                            <p class="text-sm text-gray-400">Hardware fundamentals and system architecture</p>
+                        </div>
+                        <!-- Cert 3 -->
+                        <div class="cert-card border border-[#1a1a1a] rounded-lg p-6">
+                            <div class="cert-icon">
+                                <svg class="w-6 h-6 text-[#00ff9d]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path>
+                                </svg>
+                            </div>
+                            <h4 class="text-lg font-semibold text-white mb-2">Getting Started with Packet Tracer</h4>
+                            <p class="text-sm text-gray-400">Network simulation and configuration skills</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Security Blue Team -->
+                <div>
+                    <div class="org-badge">
+                        <div class="hexagon">
+                            <svg class="w-6 h-6 text-[#00ff9d]" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold text-[#00ff9d]">Security Blue Team</h3>
+                            <p class="text-sm text-gray-400">Defensive Security Training</p>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <!-- Cert 1 -->
+                        <div class="cert-card border border-[#1a1a1a] rounded-lg p-6">
+                            <div class="cert-icon">
+                                <svg class="w-6 h-6 text-[#00ff9d]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                </svg>
+                            </div>
+                            <h4 class="text-lg font-semibold text-white mb-2">Introduction to OSINT</h4>
+                            <p class="text-sm text-gray-400">Open-source intelligence gathering techniques</p>
+                        </div>
+                        <!-- Cert 2 -->
+                        <div class="cert-card border border-[#1a1a1a] rounded-lg p-6">
+                            <div class="cert-icon">
+                                <svg class="w-6 h-6 text-[#00ff9d]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01"></path>
+                                </svg>
+                            </div>
+                            <h4 class="text-lg font-semibold text-white mb-2">Introduction to Virtual Machines</h4>
+                            <p class="text-sm text-gray-400">Virtualization and lab environment setup</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- OPSWAT Academy -->
+                <div>
+                    <div class="org-badge">
+                        <div class="hexagon">
+                            <svg class="w-6 h-6 text-[#00ff9d]" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold text-[#00ff9d]">OPSWAT Academy</h3>
+                            <p class="text-sm text-gray-400">Critical Infrastructure Protection</p>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <!-- Cert 1 -->
+                        <div class="cert-card border border-[#1a1a1a] rounded-lg p-6">
+                            <div class="cert-icon">
+                                <svg class="w-6 h-6 text-[#00ff9d]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                                </svg>
+                            </div>
+                            <h4 class="text-lg font-semibold text-white mb-2">Introduction to Cybersecurity</h4>
+                            <p class="text-sm text-gray-400">Core security principles and threat landscape</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Red Team Leaders -->
+                <div>
+                    <div class="org-badge">
+                        <div class="hexagon">
+                            <svg class="w-6 h-6 text-[#00ff9d]" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold text-[#00ff9d]">Red Team Leaders</h3>
+                            <p class="text-sm text-gray-400">Offensive Security Specialization</p>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <!-- Cert 1 -->
+                        <div class="cert-card border border-[#1a1a1a] rounded-lg p-6">
+                            <div class="cert-icon">
+                                <svg class="w-6 h-6 text-[#00ff9d]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
+                                </svg>
+                            </div>
+                            <h4 class="text-lg font-semibold text-white mb-2">Certified Offensive Windows API (COWA)</h4>
+                            <p class="text-sm text-gray-400">Advanced Windows API exploitation techniques</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Linux Foundation -->
+                <div>
+                    <div class="org-badge">
+                        <div class="hexagon">
+                            <svg class="w-6 h-6 text-[#00ff9d]" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12.504 0c-.155 0-.315.008-.48.021-4.226.333-3.105 4.807-3.17 6.298-.076 1.092-.3 1.953-1.05 3.02-.885 1.051-2.127 2.75-2.716 4.521-.278.84-.41 1.74-.348 2.652.893-.062 1.832-.145 2.679-.145 1.135 0 2.271.145 3.406.145.855 0 1.71-.145 2.565-.145.706 0 1.411.145 2.117.145.855 0 1.71-.145 2.565-.145.706 0 1.411.145 2.117.145.855 0 1.71-.145 2.565-.145.706 0 1.411.145 2.117.145.541 0 1.081-.021 1.622-.062.062-.911-.07-1.811-.348-2.652-.589-1.771-1.831-3.47-2.716-4.521-.75-1.067-.974-1.928-1.05-3.02-.065-1.491 1.056-5.965-3.17-6.298-.165-.013-.325-.021-.48-.021z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold text-[#00ff9d]">Linux Foundation</h3>
+                            <p class="text-sm text-gray-400">Open Source & Linux Expertise</p>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <!-- Cert 1 -->
+                        <div class="cert-card border border-[#1a1a1a] rounded-lg p-6">
+                            <div class="cert-icon">
+                                <svg class="w-6 h-6 text-[#00ff9d]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                </svg>
+                            </div>
+                            <h4 class="text-lg font-semibold text-white mb-2">Introduction to Linux (LFS 101)</h4>
+                            <p class="text-sm text-gray-400">Linux fundamentals and system administration</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+    <!-- ======================== END CERTIFICATIONS SECTION ======================== -->
+
     <!-- Project Gallery Section -->
     <section class="py-20 px-6 bg-[#0a0a0a]">
         <div class="max-w-6xl mx-auto">
@@ -521,7 +870,7 @@
                     </div>
                     <p class="text-gray-400 mb-4">Linux system performance monitoring dashboard with real-time metrics</p>
                     <div class="flex gap-2 flex-wrap">
-                        <span class="text-xs bg-[#1a1a1a] text-[#00ff9d] px-2 py-1 rounded">C</span>
+                        <span class="text-xs bg-[#1a1a1a] text-[#00ff9d] px-2 py-1 rounded">Bash</span>
                         <span class="text-xs bg-[#1a1a1a] text-[#00ff9d] px-2 py-1 rounded">Linux</span>
                         <span class="text-xs bg-[#1a1a1a] text-[#00ff9d] px-2 py-1 rounded">Dashboard</span>
                     </div>
