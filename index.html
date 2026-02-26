@@ -589,7 +589,7 @@
             border: 1px solid var(--border);
             background: var(--surface);
             padding: 10px 18px;
-            cursor: none;
+            cursor: pointer;
             transition: all 0.25s ease;
             display: flex;
             align-items: center;
@@ -638,16 +638,42 @@
             font-weight: 700;
         }
 
-        /* Panel */
-        .cert-panel { display: none; }
+        /* Panel — smooth fade+slide using opacity/pointer-events, not display:none */
+        .cert-panel {
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(18px);
+            transition: none;
+        }
         .cert-panel.active {
-            display: block;
-            animation: panelIn 0.35s cubic-bezier(0.2,0,0.2,1) forwards;
+            position: relative;
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0);
+            transition: opacity 0.55s cubic-bezier(0.2,0,0.2,1),
+                        transform 0.55s cubic-bezier(0.2,0,0.2,1);
         }
-        @keyframes panelIn {
-            from { opacity: 0; transform: translateY(12px); }
-            to   { opacity: 1; transform: translateY(0); }
+        /* Panel header slides in from left */
+        .cert-panel.active .panel-header {
+            animation: slideInLeft 0.45s 0.06s cubic-bezier(0.2,0,0.2,1) both;
         }
+        @keyframes slideInLeft {
+            from { opacity: 0; transform: translateX(-20px); }
+            to   { opacity: 1; transform: translateX(0); }
+        }
+        /* Each cert card pops in with stagger */
+        .cert-panel.active .cert-card:nth-child(1) { animation: cardPop 0.42s 0.13s cubic-bezier(0.2,0,0.2,1) both; }
+        .cert-panel.active .cert-card:nth-child(2) { animation: cardPop 0.42s 0.24s cubic-bezier(0.2,0,0.2,1) both; }
+        .cert-panel.active .cert-card:nth-child(3) { animation: cardPop 0.42s 0.35s cubic-bezier(0.2,0,0.2,1) both; }
+        .cert-panel.active .cert-card:nth-child(4) { animation: cardPop 0.42s 0.46s cubic-bezier(0.2,0,0.2,1) both; }
+        @keyframes cardPop {
+            from { opacity: 0; transform: translateY(22px) scale(0.97); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        /* Wrapper keeps relative context while absolute panels overlap during transition */
+        .cert-panels-wrap { position: relative; min-height: 220px; }
 
         .panel-header {
             display: flex;
@@ -1334,6 +1360,9 @@
             </button>
         </div>
 
+        <!-- PANELS WRAPPER -->
+        <div class="cert-panels-wrap">
+
         <!-- ── PANEL: Hackviser ── -->
         <div class="cert-panel active" id="panel-hackviser">
             <div class="panel-header ph-red">
@@ -1349,7 +1378,7 @@
                     <div class="cert-badge">CAPT</div>
                     <div class="cert-name">Certified Associate Penetration Tester</div>
                     <div class="cert-desc">Hands-on penetration testing certification covering real-world offensive security techniques, vulnerability assessment, and methodology.</div>
-                    <a href="https://hackviser.com/verify?id=HV-CAPT-HKXRNSLE" target="_blank" class="cert-verify">
+                    <a href="https://hackviser.com/verify?id=HV-CAPT-HKXRNSLE" target="_blank" rel="noopener noreferrer" class="cert-verify" style="position:relative;z-index:10;cursor:pointer;">
                         <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
                         verify credential ↗
                     </a>
@@ -1462,6 +1491,7 @@
             </div>
         </div>
 
+        </div><!-- end .cert-panels-wrap -->
     </div>
 </section>
 
@@ -1856,15 +1886,40 @@
     });
 
     // --- CERT TABS ---
+    // Small delay lets the old panel fade out before the new one fades in
+    let certSwitching = false;
     document.querySelectorAll('.cert-tab').forEach(tab => {
         tab.addEventListener('click', () => {
-            // Deactivate all tabs and panels
+            if (certSwitching) return;
+            const targetId = 'panel-' + tab.dataset.panel;
+            const currentActive = document.querySelector('.cert-panel.active');
+            const next = document.getElementById(targetId);
+            if (!next || next === currentActive) return;
+
+            certSwitching = true;
+
+            // Update tab active states immediately
             document.querySelectorAll('.cert-tab').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.cert-panel').forEach(p => p.classList.remove('active'));
-            // Activate clicked tab + matching panel
             tab.classList.add('active');
-            const panel = document.getElementById('panel-' + tab.dataset.panel);
-            if (panel) panel.classList.add('active');
+
+            // Fade out current panel
+            if (currentActive) {
+                currentActive.style.transition = 'opacity 0.25s ease, transform 0.25s ease';
+                currentActive.style.opacity = '0';
+                currentActive.style.transform = 'translateY(10px)';
+                setTimeout(() => {
+                    currentActive.classList.remove('active');
+                    currentActive.style.transition = '';
+                    currentActive.style.opacity = '';
+                    currentActive.style.transform = '';
+                    // Fade in new panel
+                    next.classList.add('active');
+                    certSwitching = false;
+                }, 260);
+            } else {
+                next.classList.add('active');
+                certSwitching = false;
+            }
         });
     });
     const observer = new IntersectionObserver((entries) => {
