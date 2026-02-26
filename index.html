@@ -943,6 +943,18 @@
             display: flex;
             align-items: center;
         }
+        .term-input-line {
+            display: flex;
+            align-items: center;
+            flex-wrap: nowrap;
+        }
+        /* Wrapper holds input + caret overlay together */
+        .term-input-wrap {
+            position: relative;
+            flex: 1;
+            display: flex;
+            align-items: center;
+        }
         #term-input {
             background: transparent;
             border: none;
@@ -950,15 +962,23 @@
             color: var(--white);
             font-family: 'Fira Code', monospace;
             font-size: 13px;
-            flex: 1;
-            caret-color: var(--acid);
+            width: 100%;
+            caret-color: transparent; /* hide native browser caret */
             cursor: none;
+            letter-spacing: 0;
         }
+        /* Fake caret — absolutely positioned, moves with text via JS */
         .term-caret {
-            display: inline-block;
-            width: 8px; height: 14px;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 8px;
+            height: 15px;
             background: var(--acid);
+            box-shadow: 0 0 6px rgba(0,255,157,0.8);
             animation: blink 1s step-end infinite;
+            pointer-events: none;
+            left: 0; /* JS will update this */
         }
         @keyframes blink { 50% { opacity: 0; } }
 
@@ -1636,10 +1656,12 @@
                 </div>
                 <div class="term-out"><span class="t-d">// Piyusha Akash — Red Team Operator · v2.0 · Type 'help' to begin</span></div>
                 <div id="term-output"></div>
-                <div class="term-input-line">
+                <div class="term-input-line" id="term-input-line">
                     <span class="tp-user">piyusha</span><span class="tp-at">@</span><span class="tp-host">native-framework</span><span class="tp-colon">:</span><span class="tp-path">~</span><span class="tp-sym">$ </span>
-                    <input type="text" id="term-input" spellcheck="false" autocomplete="off" />
-                    <span class="term-caret"></span>
+                    <div class="term-input-wrap" id="term-input-wrap">
+                        <input type="text" id="term-input" spellcheck="false" autocomplete="off" />
+                        <span class="term-caret" id="term-caret"></span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1936,6 +1958,43 @@
     const termInput = document.getElementById('term-input');
     const termOutput = document.getElementById('term-output');
     const termBody = document.getElementById('term-body');
+    const termCaret = document.getElementById('term-caret');
+
+    // --- REAL CARET POSITIONING ---
+    // Uses a hidden canvas to measure exact pixel width of text up to cursor position.
+    // This makes the caret sit right after the last typed character, exactly like a real terminal.
+    const _caretCanvas = document.createElement('canvas');
+    const _caretCtx = _caretCanvas.getContext('2d');
+
+    function measureTextWidth(text) {
+        _caretCtx.font = '13px "Fira Code", monospace';
+        return _caretCtx.measureText(text).width;
+    }
+
+    function updateCaret() {
+        const val = termInput.value;
+        const pos = termInput.selectionStart ?? val.length;
+        const textBeforeCursor = val.substring(0, pos);
+        const px = measureTextWidth(textBeforeCursor);
+        termCaret.style.left = px + 'px';
+    }
+
+    // Keep caret blinking only when input is focused
+    termInput.addEventListener('focus', () => {
+        termCaret.style.animationPlayState = 'running';
+        updateCaret();
+    });
+    termInput.addEventListener('blur', () => {
+        termCaret.style.animationPlayState = 'running'; // keep blinking always
+    });
+
+    // All events that change cursor position
+    ['input', 'keydown', 'keyup', 'click', 'select', 'paste', 'cut'].forEach(evt => {
+        termInput.addEventListener(evt, () => requestAnimationFrame(updateCaret));
+    });
+
+    // Init caret at position 0
+    requestAnimationFrame(updateCaret);
 
     const projects = {
         'NAF': 'https://github.com/0x3xp/Native-Adversary-Framework',
@@ -2030,6 +2089,7 @@ Resume   → <span class="t-b">https://0x3xp.github.io/assets/PiyushaAkash-Resum
 
         prompt(raw);
         termInput.value = '';
+        requestAnimationFrame(updateCaret); // snap caret back to start
 
         if (!raw) { termBody.scrollTop = termBody.scrollHeight; return; }
 
@@ -2048,8 +2108,14 @@ Resume   → <span class="t-b">https://0x3xp.github.io/assets/PiyushaAkash-Resum
         }
     });
 
-    document.getElementById('term-body').addEventListener('click', () => termInput.focus());
-    window.addEventListener('load', () => termInput.focus());
+    document.getElementById('term-body').addEventListener('click', () => {
+        termInput.focus();
+        requestAnimationFrame(updateCaret);
+    });
+    window.addEventListener('load', () => {
+        termInput.focus();
+        requestAnimationFrame(updateCaret);
+    });
 </script>
 </body>
 </html>
