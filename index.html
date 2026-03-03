@@ -1354,38 +1354,17 @@
         #ctf { background: var(--bg); }
         .ctf-container { max-width: 1100px; margin: 0 auto; }
 
-        .ctf-grid {
+        /* 3-column profile row */
+        .ctf-row {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 24px;
-            align-items: start;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
         }
-        /* Badge wrap fills its column fully, content centred */
-        .ctf-badge-wrap {
-            display: flex;
-            flex-direction: column;
+        @media (max-width: 700px) {
+            .ctf-row { grid-template-columns: 1fr; }
         }
 
         /* Left col — THM live badge */
-        .ctf-badge-wrap {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            padding: 28px;
-            position: relative;
-            overflow: hidden;
-            transition: all 0.3s;
-        }
-        .ctf-badge-wrap:hover {
-            border-color: var(--border-bright);
-            box-shadow: 0 8px 32px rgba(0,0,0,0.5);
-        }
-        .ctf-badge-wrap::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0;
-            width: 3px; height: 100%;
-            background: linear-gradient(180deg, #ff4655, #c0392b);
-        }
         .ctf-badge-label {
             font-family: 'Fira Code', monospace;
             font-size: 10px;
@@ -1408,25 +1387,6 @@
             color: var(--white);
             font-family: 'Syne', sans-serif;
             font-weight: 700;
-        }
-        .thm-iframe-wrap {
-            width: 100%;
-            /* Height set by JS after scale is computed */
-            overflow: visible;
-            border-radius: 4px;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-        }
-        .thm-iframe-wrap iframe {
-            border: none;
-            display: block;
-            flex-shrink: 0;
-            /* Actual dimensions of the THM badge content */
-            width: 480px;
-            height: 200px;
-            transform-origin: top center;
-            filter: brightness(0.97) saturate(1.05);
         }
 
         /* Right col — profile cards stack */
@@ -1527,11 +1487,46 @@
         .ctf-profile-card:hover::before { animation: btn-shimmer 0.5s ease forwards; }
 
         @media (max-width: 900px) {
-            .ctf-grid { grid-template-columns: 1fr; }
         }
         @media (max-width: 600px) {
-            .ctf-badge-wrap { padding: 20px; }
             .ctf-profile-card { padding: 16px 18px; }
+        }
+
+        /* TryHackMe live badge in hero sidebar */
+        .thm-live-chip {
+            border-color: rgba(255,70,85,0.3) !important;
+            background: rgba(255,70,85,0.05) !important;
+        }
+        .thm-live-tag {
+            margin-left: auto;
+            font-size: 8px;
+            font-family: 'Fira Code', monospace;
+            letter-spacing: 0.15em;
+            color: #ff4655;
+            border: 1px solid rgba(255,70,85,0.4);
+            padding: 2px 5px;
+            animation: pulse-dot 2s infinite;
+        }
+        .thm-badge-embed {
+            width: 240px;
+            height: 112px;
+            overflow: hidden;
+            border: 1px solid rgba(255,70,85,0.2);
+            background: rgba(255,70,85,0.03);
+            border-radius: 2px;
+            position: relative;
+        }
+        /* Scale the 480px-wide badge to fit 240px = 0.5x scale */
+        .thm-badge-embed iframe {
+            width: 480px !important;
+            height: 224px !important;
+            transform: scale(0.5);
+            transform-origin: top left;
+            pointer-events: none;
+        }
+        @media (max-width: 900px) {
+            .thm-badge-embed { display: none; }
+            .thm-live-chip { display: none; }
         }
     </style>
 </head>
@@ -1601,6 +1596,22 @@
         <div class="stat-chip"><span class="dot"></span>Available for Red Team Engagements</div>
         <div class="stat-chip"><span class="dot" style="background:var(--acid2);box-shadow:0 0 6px var(--acid2)"></span>Windows Internals · Win32 API</div>
         <div class="stat-chip"><span class="dot" style="background:var(--red);box-shadow:0 0 6px var(--red); animation:none; opacity:1;"></span>Exploit &amp; Malware Dev</div>
+        <!-- TryHackMe Live Badge -->
+        <div class="stat-chip thm-live-chip">
+            <span class="dot" style="background:#ff4655;box-shadow:0 0 6px #ff4655;"></span>
+            <span style="color:var(--white);font-weight:600;">TryHackMe</span>
+            <span class="thm-live-tag">LIVE</span>
+        </div>
+        <div class="thm-badge-embed">
+            <iframe
+                id="thm-badge"
+                src="https://tryhackme.com/api/v2/badges/public-profile?userPublicId=3099596"
+                scrolling="no"
+                loading="lazy"
+                title="TryHackMe Badge"
+                style="border:none; display:block; width:100%; height:100%;">
+            </iframe>
+        </div>
     </div>
 </section>
 
@@ -2018,58 +2029,36 @@
             <h2 class="section-title">CTF <span class="a">Platforms</span></h2>
         </div>
 
-        <div class="ctf-grid">
+        <!-- 3 platform cards — clean horizontal row -->
+        <div class="ctf-row reveal">
 
-            <!-- TryHackMe live badge -->
-            <div class="ctf-badge-wrap reveal">
-                <div class="ctf-badge-label">
-                    <span class="live-dot"></span>
-                    <span>LIVE STATS</span>
-                    <span style="margin-left:auto;" class="ctf-platform-name">TryHackMe</span>
+            <a href="https://tryhackme.com/p/0x3xp" target="_blank" rel="noopener noreferrer" class="ctf-profile-card ctf-thm">
+                <div class="ctf-logo">🟥</div>
+                <div class="ctf-info">
+                    <div class="ctf-platform">TryHackMe</div>
+                    <div class="ctf-handle">// tryhackme.com/p/0x3xp</div>
                 </div>
-                <div class="thm-iframe-wrap" id="thm-wrap">
-                    <iframe
-                        id="thm-badge"
-                        src="https://tryhackme.com/api/v2/badges/public-profile?userPublicId=3099596"
-                        scrolling="no"
-                        title="TryHackMe Public Profile Badge"
-                        loading="lazy"
-                        style="border:none; display:block; width:480px; height:200px;">
-                    </iframe>
+                <span class="ctf-arrow">↗</span>
+            </a>
+
+            <a href="https://app.hackthebox.com/users/1981311" target="_blank" rel="noopener noreferrer" class="ctf-profile-card ctf-htb">
+                <div class="ctf-logo">🟩</div>
+                <div class="ctf-info">
+                    <div class="ctf-platform">Hack The Box</div>
+                    <div class="ctf-handle">// hackthebox.com · ID 1981311</div>
                 </div>
-            </div>
+                <span class="ctf-arrow">↗</span>
+            </a>
 
-            <!-- Profile links -->
-            <div class="ctf-profiles reveal" style="transition-delay:0.12s">
+            <a href="https://app.hackviser.com/profile/0x3xp" target="_blank" rel="noopener noreferrer" class="ctf-profile-card ctf-hv">
+                <div class="ctf-logo">⚡</div>
+                <div class="ctf-info">
+                    <div class="ctf-platform">Hackviser</div>
+                    <div class="ctf-handle">// hackviser.com/profile/0x3xp</div>
+                </div>
+                <span class="ctf-arrow">↗</span>
+            </a>
 
-                <a href="https://tryhackme.com/p/0x3xp" target="_blank" rel="noopener noreferrer" class="ctf-profile-card ctf-thm">
-                    <div class="ctf-logo">🟥</div>
-                    <div class="ctf-info">
-                        <div class="ctf-platform">TryHackMe</div>
-                        <div class="ctf-handle">// tryhackme.com/p/0x3xp</div>
-                    </div>
-                    <span class="ctf-arrow">↗</span>
-                </a>
-
-                <a href="https://app.hackthebox.com/users/1981311" target="_blank" rel="noopener noreferrer" class="ctf-profile-card ctf-htb">
-                    <div class="ctf-logo">🟩</div>
-                    <div class="ctf-info">
-                        <div class="ctf-platform">Hack The Box</div>
-                        <div class="ctf-handle">// hackthebox.com · ID 1981311</div>
-                    </div>
-                    <span class="ctf-arrow">↗</span>
-                </a>
-
-                <a href="https://app.hackviser.com/profile/0x3xp" target="_blank" rel="noopener noreferrer" class="ctf-profile-card ctf-hv">
-                    <div class="ctf-logo">⚡</div>
-                    <div class="ctf-info">
-                        <div class="ctf-platform">Hackviser</div>
-                        <div class="ctf-handle">// hackviser.com/profile/0x3xp</div>
-                    </div>
-                    <span class="ctf-arrow">↗</span>
-                </a>
-
-            </div>
         </div>
     </div>
 </section>
@@ -2598,29 +2587,6 @@ Resume   → <span class="t-b">https://0x3xp.github.io/assets/PiyushaAkash-Resum
     addGlitch(document.querySelector('h1.hero-name'));
     addGlitch(document.querySelector('.contact-title'));
 
-    // --- THM BADGE SCALE-TO-FIT ---
-    // The TryHackMe badge iframe has fixed internal dimensions (~480px wide).
-    // We scale it via CSS transform so it always fits its container, centred.
-    function scaleTHMBadge() {
-        const wrap = document.getElementById('thm-wrap');
-        const iframe = document.getElementById('thm-badge');
-        if (!wrap || !iframe) return;
-        const BADGE_W = 480;
-        const BADGE_H = 200;
-        const containerW = wrap.clientWidth;
-        const scale = Math.min(1, containerW / BADGE_W);
-        iframe.style.transform = `scale(${scale})`;
-        iframe.style.transformOrigin = 'top center';
-        iframe.style.width  = BADGE_W + 'px';
-        iframe.style.height = BADGE_H + 'px';
-        wrap.style.height = Math.round(BADGE_H * scale) + 'px';
-    }
-    // Run after layout is complete, not immediately
-    requestAnimationFrame(() => requestAnimationFrame(scaleTHMBadge));
-    window.addEventListener('resize', scaleTHMBadge);
-    // Also re-run when iframe content loads
-    const thmIframe = document.getElementById('thm-badge');
-    if (thmIframe) thmIframe.addEventListener('load', scaleTHMBadge);
 </script>
 </body>
 </html>
