@@ -1200,49 +1200,26 @@
            PREMIUM ANIMATION LAYER
         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
-        /* 1 — GLITCH on hero name hover (safe — text never disappears) */
+        /* 1 — GLITCH: transform + filter only, NO pseudo-element text clones
+           (text-clone approach breaks because of <br> inside h1 and opacity
+            conflicts with the fadeUp entrance animation) */
         h1.hero-name {
             position: relative;
-            isolation: isolate; /* keeps pseudo-elements from covering real text */
+            display: inline-block;
         }
-        h1.hero-name::before, h1.hero-name::after {
-            content: attr(data-text);
-            position: absolute; inset: 0;
-            opacity: 0;
-            pointer-events: none;
-            z-index: -1; /* always behind the real text */
-            white-space: nowrap;
-            overflow: hidden;
-        }
-        h1.hero-name:hover {
-            animation: glitch-shake 0.5s steps(3) forwards;
-        }
-        h1.hero-name:hover::before {
-            color: var(--acid);
-            clip-path: polygon(0 20%, 100% 20%, 100% 42%, 0 42%);
-            opacity: 0.6;
-            animation: glitch-a 0.5s steps(3) forwards;
-        }
-        h1.hero-name:hover::after {
-            color: var(--red);
-            clip-path: polygon(0 58%, 100% 58%, 100% 80%, 0 80%);
-            opacity: 0.6;
-            animation: glitch-b 0.5s steps(3) forwards;
+        /* Trigger class added/removed by JS — avoids CSS :hover + animation
+           forwards freezing conflict */
+        h1.hero-name.glitching {
+            animation: glitch-shake 0.5s steps(3) both !important;
         }
         @keyframes glitch-shake {
-            0%,100% { transform: translate(0); filter: none; }
-            20% { transform: translate(-2px, 1px); filter: hue-rotate(15deg); }
-            40% { transform: translate(2px, -1px); filter: hue-rotate(-15deg); }
-            60% { transform: translate(-1px, 0px); }
-            80% { transform: translate(1px, 1px); }
-        }
-        @keyframes glitch-a {
-            0%,100% { transform: translateX(-3px); opacity:.6; }
-            50%     { transform: translateX(3px);  opacity:.3; }
-        }
-        @keyframes glitch-b {
-            0%,100% { transform: translateX(3px);  opacity:.6; }
-            50%     { transform: translateX(-3px); opacity:.3; }
+            0%   { transform: translate(0,0);      filter: none; }
+            15%  { transform: translate(-3px,1px); filter: hue-rotate(20deg) brightness(1.1); }
+            30%  { transform: translate(3px,-1px); filter: hue-rotate(-20deg) brightness(0.95); }
+            45%  { transform: translate(-2px,2px); filter: none; }
+            60%  { transform: translate(2px,-1px); filter: hue-rotate(10deg); }
+            75%  { transform: translate(-1px,0px); filter: none; }
+            100% { transform: translate(0,0);      filter: none; }
         }
 
         /* 2 — TYPEWRITER on hero-title */
@@ -1351,9 +1328,9 @@
         }
         @keyframes code-scan { from { top: -30%; } to { top: 110%; } }
 
-        /* 12 — CONTACT title glitch */
+        /* 12 — CONTACT title glitch (class-based) */
         .contact-title { position: relative; cursor: default; }
-        .contact-title:hover { animation: glitch-shake 0.35s steps(2) forwards; }
+        .contact-title.glitching { animation: glitch-shake 0.4s steps(3) both !important; }
 
         /* 13 — STAT CHIP entrance stagger */
         .hero-stats .stat-chip:nth-child(1) { animation: fadeLeft 0.6s 1.1s both; }
@@ -1434,22 +1411,20 @@
         }
         .thm-iframe-wrap {
             width: 100%;
-            overflow: hidden;
+            /* Height set by JS after scale is computed */
+            overflow: visible;
             border-radius: 4px;
             display: flex;
-            align-items: center;
             justify-content: center;
+            align-items: flex-start;
         }
-        /* The THM badge iframe has a fixed internal width (~480px).
-           We scale it down to fit our container while keeping it centered. */
         .thm-iframe-wrap iframe {
             border: none;
             display: block;
-            /* Fixed dimensions matching the badge's actual content */
+            flex-shrink: 0;
+            /* Actual dimensions of the THM badge content */
             width: 480px;
             height: 200px;
-            /* Scale to fit container width */
-            max-width: 100%;
             transform-origin: top center;
             filter: brightness(0.97) saturate(1.05);
         }
@@ -2614,9 +2589,14 @@ Resume   → <span class="t-b">https://0x3xp.github.io/assets/PiyushaAkash-Resum
         if (orb2) orb2.style.transform = `translate(${-rx * 0.6}px, ${-ry * 0.6}px)`;
     });
 
-    // --- HERO NAME GLITCH data-text ---
-    const heroName = document.querySelector('h1.hero-name');
-    if (heroName) heroName.setAttribute('data-text', heroName.textContent);
+    // --- GLITCH (class-based — no pseudo-element text clone) ---
+    function addGlitch(el) {
+        if (!el) return;
+        el.addEventListener('mouseenter', () => el.classList.add('glitching'));
+        el.addEventListener('animationend', () => el.classList.remove('glitching'));
+    }
+    addGlitch(document.querySelector('h1.hero-name'));
+    addGlitch(document.querySelector('.contact-title'));
 
     // --- THM BADGE SCALE-TO-FIT ---
     // The TryHackMe badge iframe has fixed internal dimensions (~480px wide).
@@ -2635,8 +2615,12 @@ Resume   → <span class="t-b">https://0x3xp.github.io/assets/PiyushaAkash-Resum
         iframe.style.height = BADGE_H + 'px';
         wrap.style.height = Math.round(BADGE_H * scale) + 'px';
     }
-    scaleTHMBadge();
+    // Run after layout is complete, not immediately
+    requestAnimationFrame(() => requestAnimationFrame(scaleTHMBadge));
     window.addEventListener('resize', scaleTHMBadge);
+    // Also re-run when iframe content loads
+    const thmIframe = document.getElementById('thm-badge');
+    if (thmIframe) thmIframe.addEventListener('load', scaleTHMBadge);
 </script>
 </body>
 </html>
