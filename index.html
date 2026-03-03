@@ -1362,6 +1362,178 @@
         .cert-card:hover::before { animation: cert-shimmer 0.5s ease forwards; }
         .cert-card.featured::before { background: linear-gradient(90deg, transparent, rgba(255,45,85,0.07), transparent); }
         @keyframes cert-shimmer { from { left: -100%; } to { left: 150%; } }
+
+        /* CTF PLATFORMS */
+        #ctf { background: var(--bg); }
+        .ctf-container { max-width: 1100px; margin: 0 auto; }
+
+        .ctf-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            align-items: start;
+        }
+
+        /* Left col — THM live badge */
+        .ctf-badge-wrap {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 28px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+        .ctf-badge-wrap:hover {
+            border-color: var(--border-bright);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+        }
+        .ctf-badge-wrap::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 3px; height: 100%;
+            background: linear-gradient(180deg, #ff4655, #c0392b);
+        }
+        .ctf-badge-label {
+            font-family: 'Fira Code', monospace;
+            font-size: 10px;
+            letter-spacing: 0.15em;
+            color: #ff4655;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .ctf-badge-label .live-dot {
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: #ff4655;
+            box-shadow: 0 0 6px #ff4655;
+            animation: pulse-dot 2s infinite;
+        }
+        .ctf-badge-label .ctf-platform-name {
+            font-size: 14px;
+            color: var(--white);
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
+        }
+        .thm-iframe-wrap {
+            width: 100%;
+            overflow: hidden;
+            border-radius: 4px;
+        }
+        .thm-iframe-wrap iframe {
+            width: 100%;
+            min-height: 180px;
+            border: none;
+            display: block;
+            filter: brightness(0.95) saturate(1.1);
+        }
+
+        /* Right col — profile cards stack */
+        .ctf-profiles {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+        .ctf-profile-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 20px 24px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            text-decoration: none;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.2,0,0.2,1);
+            cursor: pointer;
+        }
+        .ctf-profile-card::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 3px; height: 100%;
+            transform: scaleY(0);
+            transform-origin: bottom;
+            transition: transform 0.3s ease;
+        }
+        .ctf-profile-card:hover {
+            transform: translateX(6px);
+            border-color: var(--border-bright);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+        }
+        .ctf-profile-card:hover::after { transform: scaleY(1); }
+
+        /* Per-platform accent colours */
+        .ctf-thm  { --ctf-color: #ff4655; }
+        .ctf-htb  { --ctf-color: #9fef00; }
+        .ctf-hv   { --ctf-color: #ff6b35; }
+        .ctf-thm::after  { background: #ff4655; }
+        .ctf-htb::after  { background: #9fef00; }
+        .ctf-hv::after   { background: #ff6b35; }
+        .ctf-thm:hover  { border-color: rgba(255,70,85,0.4); }
+        .ctf-htb:hover  { border-color: rgba(159,239,0,0.4); }
+        .ctf-hv:hover   { border-color: rgba(255,107,53,0.4); }
+
+        .ctf-logo {
+            width: 44px; height: 44px;
+            border-radius: 6px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 22px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.06);
+            flex-shrink: 0;
+            transition: box-shadow 0.3s;
+        }
+        .ctf-profile-card:hover .ctf-logo {
+            box-shadow: 0 0 16px rgba(var(--ctf-color-rgb, 0,255,157), 0.3);
+        }
+        .ctf-thm:hover .ctf-logo  { box-shadow: 0 0 16px rgba(255,70,85,0.35); }
+        .ctf-htb:hover .ctf-logo  { box-shadow: 0 0 16px rgba(159,239,0,0.35); }
+        .ctf-hv:hover  .ctf-logo  { box-shadow: 0 0 16px rgba(255,107,53,0.35); }
+
+        .ctf-info { flex: 1; min-width: 0; }
+        .ctf-platform {
+            font-family: 'Syne', sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 4px;
+        }
+        .ctf-handle {
+            font-family: 'Fira Code', monospace;
+            font-size: 12px;
+            color: var(--text-dim);
+            letter-spacing: 0.06em;
+        }
+        .ctf-arrow {
+            font-size: 18px;
+            color: var(--text-dim);
+            transition: all 0.3s;
+            flex-shrink: 0;
+        }
+        .ctf-profile-card:hover .ctf-arrow { color: var(--acid); transform: translate(3px,-3px); }
+
+        /* Shimmer on profile cards */
+        .ctf-profile-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -80%;
+            width: 50%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.04), transparent);
+            transform: skewX(-15deg);
+            pointer-events: none;
+        }
+        .ctf-profile-card:hover::before { animation: btn-shimmer 0.5s ease forwards; }
+
+        @media (max-width: 900px) {
+            .ctf-grid { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 600px) {
+            .ctf-badge-wrap { padding: 20px; }
+            .ctf-profile-card { padding: 16px 18px; }
+        }
     </style>
 </head>
 <body>
@@ -1379,6 +1551,7 @@
         <li><a href="#certs">certs</a></li>
         <li><a href="#projects">projects</a></li>
         <li><a href="#terminal">lab</a></li>
+        <li><a href="#ctf">ctf</a></li>
         <li><a href="#contact">contact</a></li>
         <li><a href="https://0x3xp.github.io/assets/PiyushaAkash-Resume.pdf" target="_blank" class="nav-cv-btn">resume.pdf</a></li>
     </ul>
@@ -1394,6 +1567,7 @@
     <a href="#certs" class="mob-link">certs</a>
     <a href="#projects" class="mob-link">projects</a>
     <a href="#terminal" class="mob-link">lab</a>
+    <a href="#ctf" class="mob-link">ctf</a>
     <a href="#contact" class="mob-link">contact</a>
     <a href="https://0x3xp.github.io/assets/PiyushaAkash-Resume.pdf" target="_blank" class="mob-cv">resume.pdf ↗</a>
 </div>
@@ -1835,6 +2009,71 @@
     </div>
 </section>
 
+
+<!-- CTF PLATFORMS -->
+<section id="ctf">
+    <div class="ctf-container">
+        <div class="section-header reveal">
+            <div class="section-num">06</div>
+            <div class="section-line"></div>
+            <h2 class="section-title">CTF <span class="a">Platforms</span></h2>
+        </div>
+
+        <div class="ctf-grid">
+
+            <!-- TryHackMe live badge -->
+            <div class="ctf-badge-wrap reveal">
+                <div class="ctf-badge-label">
+                    <span class="live-dot"></span>
+                    <span>LIVE STATS</span>
+                    <span style="margin-left:auto;" class="ctf-platform-name">TryHackMe</span>
+                </div>
+                <div class="thm-iframe-wrap">
+                    <iframe
+                        src="https://tryhackme.com/api/v2/badges/public-profile?userPublicId=3099596"
+                        scrolling="no"
+                        title="TryHackMe Public Profile Badge"
+                        loading="lazy"
+                        style="border:none; width:100%; min-height:200px; display:block;">
+                    </iframe>
+                </div>
+            </div>
+
+            <!-- Profile links -->
+            <div class="ctf-profiles reveal" style="transition-delay:0.12s">
+
+                <a href="https://tryhackme.com/p/0x3xp" target="_blank" rel="noopener noreferrer" class="ctf-profile-card ctf-thm">
+                    <div class="ctf-logo">🟥</div>
+                    <div class="ctf-info">
+                        <div class="ctf-platform">TryHackMe</div>
+                        <div class="ctf-handle">// tryhackme.com/p/0x3xp</div>
+                    </div>
+                    <span class="ctf-arrow">↗</span>
+                </a>
+
+                <a href="https://app.hackthebox.com/users/1981311" target="_blank" rel="noopener noreferrer" class="ctf-profile-card ctf-htb">
+                    <div class="ctf-logo">🟩</div>
+                    <div class="ctf-info">
+                        <div class="ctf-platform">Hack The Box</div>
+                        <div class="ctf-handle">// hackthebox.com · ID 1981311</div>
+                    </div>
+                    <span class="ctf-arrow">↗</span>
+                </a>
+
+                <a href="https://app.hackviser.com/profile/0x3xp" target="_blank" rel="noopener noreferrer" class="ctf-profile-card ctf-hv">
+                    <div class="ctf-logo">⚡</div>
+                    <div class="ctf-info">
+                        <div class="ctf-platform">Hackviser</div>
+                        <div class="ctf-handle">// hackviser.com/profile/0x3xp</div>
+                    </div>
+                    <span class="ctf-arrow">↗</span>
+                </a>
+
+            </div>
+        </div>
+    </div>
+</section>
+
 <!-- CONTACT -->
 <section id="contact">
     <div class="contact-pre">// LET'S WORK TOGETHER</div>
@@ -2196,6 +2435,7 @@
   <span class="t-b">whoami</span>      — Operator profile
   <span class="t-b">skills</span>      — Technical skill set
   <span class="t-b">certs</span>       — Certifications list
+  <span class="t-b">ctf</span>         — CTF platform profiles
   <span class="t-b">cv</span>          — Open resume PDF
   <span class="t-b">clear</span>       — Clear terminal
   <span class="t-b">socials</span>     — Contact links
@@ -2232,6 +2472,12 @@ OSINT     : Open Source Intel, Recon techniques`,
        Security Blue     — Introduction to Virtual Machines
        OPSWAT            — Introduction to Cybersecurity
        Linux Foundation  — Introduction to Linux (LFS101)`,
+
+        ctf: () => `<span class="t-g">CTF Platforms:</span>
+<span class="t-d">─────────────────────────────────</span>
+<span class="t-r">[THM]</span> TryHackMe  → <span class="t-b">tryhackme.com/p/0x3xp</span>
+<span class="t-r">[HTB]</span> HackTheBox → <span class="t-b">hackthebox.com/users/1981311</span>
+<span class="t-r">[HV] </span> Hackviser  → <span class="t-b">hackviser.com/profile/0x3xp</span>`,
 
         cv: () => {
             setTimeout(() => window.open('https://0x3xp.github.io/assets/PiyushaAkash-Resume.pdf', '_blank'), 500);
