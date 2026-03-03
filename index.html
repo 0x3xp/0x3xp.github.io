@@ -1200,39 +1200,49 @@
            PREMIUM ANIMATION LAYER
         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
-        /* 1 — GLITCH on hero name hover */
-        h1.hero-name { position: relative; }
+        /* 1 — GLITCH on hero name hover (safe — text never disappears) */
+        h1.hero-name {
+            position: relative;
+            isolation: isolate; /* keeps pseudo-elements from covering real text */
+        }
         h1.hero-name::before, h1.hero-name::after {
             content: attr(data-text);
             position: absolute; inset: 0;
-            opacity: 0; pointer-events: none;
+            opacity: 0;
+            pointer-events: none;
+            z-index: -1; /* always behind the real text */
+            white-space: nowrap;
+            overflow: hidden;
         }
-        h1.hero-name:hover { animation: glitch-shake 0.45s steps(2) forwards; }
+        h1.hero-name:hover {
+            animation: glitch-shake 0.5s steps(3) forwards;
+        }
         h1.hero-name:hover::before {
-            color: var(--acid2);
-            clip-path: polygon(0 15%, 100% 15%, 100% 45%, 0 45%);
-            opacity: 0.75;
-            animation: glitch-a 0.45s steps(2) forwards;
+            color: var(--acid);
+            clip-path: polygon(0 20%, 100% 20%, 100% 42%, 0 42%);
+            opacity: 0.6;
+            animation: glitch-a 0.5s steps(3) forwards;
         }
         h1.hero-name:hover::after {
             color: var(--red);
-            clip-path: polygon(0 60%, 100% 60%, 100% 85%, 0 85%);
-            opacity: 0.75;
-            animation: glitch-b 0.45s steps(2) forwards;
+            clip-path: polygon(0 58%, 100% 58%, 100% 80%, 0 80%);
+            opacity: 0.6;
+            animation: glitch-b 0.5s steps(3) forwards;
         }
         @keyframes glitch-shake {
-            0%,100% { transform: translate(0); }
-            25% { transform: translate(-2px,1px) skewX(-1deg); }
-            50% { transform: translate(2px,-1px) skewX(1deg); }
-            75% { transform: translate(-1px,2px); }
+            0%,100% { transform: translate(0); filter: none; }
+            20% { transform: translate(-2px, 1px); filter: hue-rotate(15deg); }
+            40% { transform: translate(2px, -1px); filter: hue-rotate(-15deg); }
+            60% { transform: translate(-1px, 0px); }
+            80% { transform: translate(1px, 1px); }
         }
         @keyframes glitch-a {
-            0%,100% { transform: translateX(-4px); opacity:.75; }
-            50%     { transform: translateX(4px);  opacity:.4; }
+            0%,100% { transform: translateX(-3px); opacity:.6; }
+            50%     { transform: translateX(3px);  opacity:.3; }
         }
         @keyframes glitch-b {
-            0%,100% { transform: translateX(4px);  opacity:.75; }
-            50%     { transform: translateX(-4px); opacity:.4; }
+            0%,100% { transform: translateX(3px);  opacity:.6; }
+            50%     { transform: translateX(-3px); opacity:.3; }
         }
 
         /* 2 — TYPEWRITER on hero-title */
@@ -1373,6 +1383,11 @@
             gap: 24px;
             align-items: start;
         }
+        /* Badge wrap fills its column fully, content centred */
+        .ctf-badge-wrap {
+            display: flex;
+            flex-direction: column;
+        }
 
         /* Left col — THM live badge */
         .ctf-badge-wrap {
@@ -1421,13 +1436,22 @@
             width: 100%;
             overflow: hidden;
             border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
+        /* The THM badge iframe has a fixed internal width (~480px).
+           We scale it down to fit our container while keeping it centered. */
         .thm-iframe-wrap iframe {
-            width: 100%;
-            min-height: 180px;
             border: none;
             display: block;
-            filter: brightness(0.95) saturate(1.1);
+            /* Fixed dimensions matching the badge's actual content */
+            width: 480px;
+            height: 200px;
+            /* Scale to fit container width */
+            max-width: 100%;
+            transform-origin: top center;
+            filter: brightness(0.97) saturate(1.05);
         }
 
         /* Right col — profile cards stack */
@@ -2028,13 +2052,14 @@
                     <span>LIVE STATS</span>
                     <span style="margin-left:auto;" class="ctf-platform-name">TryHackMe</span>
                 </div>
-                <div class="thm-iframe-wrap">
+                <div class="thm-iframe-wrap" id="thm-wrap">
                     <iframe
+                        id="thm-badge"
                         src="https://tryhackme.com/api/v2/badges/public-profile?userPublicId=3099596"
                         scrolling="no"
                         title="TryHackMe Public Profile Badge"
                         loading="lazy"
-                        style="border:none; width:100%; min-height:200px; display:block;">
+                        style="border:none; display:block; width:480px; height:200px;">
                     </iframe>
                 </div>
             </div>
@@ -2592,6 +2617,26 @@ Resume   → <span class="t-b">https://0x3xp.github.io/assets/PiyushaAkash-Resum
     // --- HERO NAME GLITCH data-text ---
     const heroName = document.querySelector('h1.hero-name');
     if (heroName) heroName.setAttribute('data-text', heroName.textContent);
+
+    // --- THM BADGE SCALE-TO-FIT ---
+    // The TryHackMe badge iframe has fixed internal dimensions (~480px wide).
+    // We scale it via CSS transform so it always fits its container, centred.
+    function scaleTHMBadge() {
+        const wrap = document.getElementById('thm-wrap');
+        const iframe = document.getElementById('thm-badge');
+        if (!wrap || !iframe) return;
+        const BADGE_W = 480;
+        const BADGE_H = 200;
+        const containerW = wrap.clientWidth;
+        const scale = Math.min(1, containerW / BADGE_W);
+        iframe.style.transform = `scale(${scale})`;
+        iframe.style.transformOrigin = 'top center';
+        iframe.style.width  = BADGE_W + 'px';
+        iframe.style.height = BADGE_H + 'px';
+        wrap.style.height = Math.round(BADGE_H * scale) + 'px';
+    }
+    scaleTHMBadge();
+    window.addEventListener('resize', scaleTHMBadge);
 </script>
 </body>
 </html>
