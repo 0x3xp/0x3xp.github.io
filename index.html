@@ -1492,47 +1492,32 @@
             .ctf-profile-card { padding: 16px 18px; }
         }
     
-        /* ── BLOG nav button ── */
-        .nav-blog-btn {
-            font-family: 'Fira Code', monospace;
-            font-size: 11px;
-            color: var(--acid2) !important;
-            border: 1px solid rgba(0,229,255,0.25);
-            padding: 6px 14px;
-            border-radius: 2px;
-            text-decoration: none;
-            transition: all 0.3s !important;
-            letter-spacing: 0.08em;
+        /* blog + academy nav links — same as all other nav links, no special treatment */
+        .nav-blog-btn, .nav-academy-btn {
+            font-family: 'Fira Code', monospace !important;
+            font-size: 12px !important;
+            color: var(--text-dim) !important;
+            text-decoration: none !important;
+            letter-spacing: 0.08em !important;
+            border: none !important;
+            padding: 0 !important;
+            background: none !important;
+            border-radius: 0 !important;
+            transition: color 0.2s !important;
+            box-shadow: none !important;
         }
-        .nav-blog-btn::before { content: none !important; }
-        .nav-blog-btn::after  { display: none !important; }
-        .nav-blog-btn:hover {
-            background: rgba(0,229,255,0.08) !important;
-            border-color: var(--acid2) !important;
-            box-shadow: 0 0 14px rgba(0,229,255,0.18);
+        .nav-blog-btn::before, .nav-academy-btn::before {
+            content: './';
+            color: var(--acid);
+            opacity: 0.5;
         }
-        .mob-blog { color: var(--acid2) !important; }
-        .mob-academy { color: var(--acid) !important; }
-
-        /* ── ACADEMY nav button ── */
-        .nav-academy-btn {
-            font-family: 'Fira Code', monospace;
-            font-size: 11px;
+        .nav-blog-btn:hover, .nav-academy-btn:hover {
             color: var(--acid) !important;
-            border: 1px solid rgba(0,255,157,0.3);
-            padding: 6px 14px;
-            border-radius: 2px;
-            text-decoration: none;
-            transition: all 0.3s !important;
-            letter-spacing: 0.08em;
+            background: none !important;
+            box-shadow: none !important;
         }
-        .nav-academy-btn::before { content: none !important; }
-        .nav-academy-btn::after  { display: none !important; }
-        .nav-academy-btn:hover {
-            background: rgba(0,255,157,0.08) !important;
-            border-color: var(--acid) !important;
-            box-shadow: 0 0 14px rgba(0,255,157,0.2);
-        }
+        .mob-blog { color: var(--text-dim) !important; }
+        .mob-academy { color: var(--text-dim) !important; }
     </style>
 </head>
 <body>
@@ -1548,11 +1533,11 @@
         <li><a href="#about">about</a></li>
         <li><a href="#skills">skills</a></li>
         <li><a href="#certs">certs</a></li>
+        <li><a href="./academy" target="_blank" class="nav-academy-btn">academy</a></li>
         <li><a href="#projects">projects</a></li>
+        <li><a href="./blog" target="_blank" class="nav-blog-btn">blog</a></li>
         <li><a href="#terminal">lab</a></li>
         <li><a href="#ctf">ctf</a></li>
-        <li><a href="./blog" target="_blank" class="nav-blog-btn">./blog</a></li>
-        <li><a href="./academy" target="_blank" class="nav-academy-btn">academy</a></li>
         <li><a href="#contact">contact</a></li>
         <li><a href="https://0x3xp.github.io/assets/PiyushaAkash-Resume.pdf" target="_blank" class="nav-cv-btn">resume.pdf</a></li>
     </ul>
@@ -1566,11 +1551,11 @@
     <a href="#about" class="mob-link">about</a>
     <a href="#skills" class="mob-link">skills</a>
     <a href="#certs" class="mob-link">certs</a>
+    <a href="./academy" target="_blank" class="mob-link">academy</a>
     <a href="#projects" class="mob-link">projects</a>
+    <a href="./blog" target="_blank" class="mob-link">blog</a>
     <a href="#terminal" class="mob-link">lab</a>
     <a href="#ctf" class="mob-link">ctf</a>
-    <a href="./blog" target="_blank" class="mob-link mob-blog">./blog ↗</a>
-    <a href="./academy" target="_blank" class="mob-link mob-academy">academy ↗</a>
     <a href="#contact" class="mob-link">contact</a>
     <a href="https://0x3xp.github.io/assets/PiyushaAkash-Resume.pdf" target="_blank" class="mob-cv">resume.pdf ↗</a>
 </div>
