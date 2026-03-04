@@ -1,94 +1,930 @@
-Gemini said
-Windows Hardening
-Introduction
-Windows hardening is the process of securing a system by reducing its attack surface and eliminating potential vectors for exploitation. In a modern threat landscape, a default Windows installation is not sufficiently protected against advanced persistent threats or automated malware. Hardening involves a multi-layered approach that includes encrypting data at rest, enforcing strict identity controls, and restricting the execution of unauthorized code. By applying the following configurations, you transition from a reactive security posture to a proactive, defense-in-depth strategy.
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Windows Hardening: From Default Install to Fortress — Piyusha Akash</title>
+    <meta name="description" content="A systematic walkthrough of hardening a Windows 11 endpoint — BitLocker, LAPS, WDAC, PowerShell CLM, and configurations that actually hold against modern threats.">
 
-Storage Security
-Protecting data at rest is the first line of defense against physical theft or unauthorized access to the filesystem.
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;600;700;800&family=Fira+Code:wght@300;400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;1,6..72,300;1,6..72,400&display=swap" rel="stylesheet">
 
-BitLocker Drive Encryption: Use BitLocker with XTS-AES 256-bit encryption. Modern Windows 11 systems (version 24H2 and later) support hardware-accelerated BitLocker, which offloads cryptographic operations to the SoC to improve performance.
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/base16/tomorrow-night.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 
-TPM 2.0: Ensure the Trusted Platform Module is enabled in the BIOS/UEFI to provide hardware-based root of trust.
+    <style>
+        :root {
+            --acid:   #00ff9d;
+            --acid2:  #00e5ff;
+            --red:    #ff2d55;
+            --bg:     #060608;
+            --bg2:    #0a0a0f;
+            --surface:  #0e0e16;
+            --surface2: #14141f;
+            --border:        rgba(0,255,157,0.10);
+            --border-bright: rgba(0,255,157,0.38);
+            --text:     #c8ccd8;
+            --text-dim: #555870;
+            --white:    #f0f2ff;
+            --prose-width: 740px;
+            --code-bg: #0c0c14;
+        }
 
-DMA Protection: Enable Kernel DMA Protection to prevent Drive-by DMA attacks via Thunderbolt or PCIe ports.
+        *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+        html { scroll-behavior:smooth; }
 
-Command to check BitLocker status:
+        body {
+            background:var(--bg); color:var(--text);
+            font-family:'Newsreader',Georgia,serif;
+            overflow-x:hidden; cursor:none;
+        }
 
-PowerShell
+        .cursor {
+            position:fixed; width:8px; height:8px;
+            background:var(--acid); border-radius:50%;
+            pointer-events:none; z-index:9999;
+            transform:translate(-50%,-50%);
+            box-shadow:0 0 12px var(--acid),0 0 30px rgba(0,255,157,.3);
+            transition:transform .1s;
+        }
+        .cursor-ring {
+            position:fixed; width:32px; height:32px;
+            border:1px solid rgba(0,255,157,.5); border-radius:50%;
+            pointer-events:none; z-index:9998;
+            transform:translate(-50%,-50%); transition:all .15s ease;
+        }
+
+        body::before {
+            content:''; position:fixed; inset:0;
+            background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+            opacity:.022; pointer-events:none; z-index:1000;
+        }
+
+        .grid-bg {
+            position:fixed; inset:0;
+            background-image:
+                linear-gradient(rgba(0,255,157,.02) 1px,transparent 1px),
+                linear-gradient(90deg,rgba(0,255,157,.02) 1px,transparent 1px);
+            background-size:60px 60px; pointer-events:none;
+        }
+
+        .scanline {
+            position:fixed; width:100%; height:1px;
+            background:linear-gradient(90deg,transparent,rgba(0,255,157,.2) 50%,transparent);
+            animation:scan 8s linear infinite; pointer-events:none; z-index:2;
+        }
+        @keyframes scan { 0%{top:-1px} 100%{top:100%} }
+
+        nav {
+            position:fixed; top:0; left:0; right:0; z-index:900;
+            padding:16px 48px;
+            display:flex; justify-content:space-between; align-items:center;
+            background:rgba(6,6,8,.9); backdrop-filter:blur(24px);
+            border-bottom:1px solid var(--border);
+        }
+        .nav-logo {
+            font-family:'Space Mono',monospace; font-size:14px;
+            color:var(--acid); letter-spacing:.1em; text-decoration:none;
+        }
+        .nav-logo span { color:var(--text-dim); }
+        .nav-right { display:flex; align-items:center; gap:24px; }
+        .nav-link {
+            font-family:'Fira Code',monospace; font-size:11px; color:var(--text-dim);
+            text-decoration:none; letter-spacing:.08em; transition:color .2s;
+        }
+        .nav-link::before { content:'./'; color:var(--acid); opacity:.5; }
+        .nav-link:hover { color:var(--acid); }
+
+        #reading-progress {
+            position:fixed; top:0; left:0; z-index:950;
+            height:2px; width:0%;
+            background:linear-gradient(90deg,var(--acid),var(--acid2));
+            transition:width .1s linear;
+            box-shadow:0 0 8px rgba(0,255,157,.5);
+        }
+
+        .post-wrap {
+            max-width:var(--prose-width);
+            margin:0 auto;
+            padding:120px 24px 100px;
+            position:relative; z-index:5;
+        }
+
+        .post-header { margin-bottom:56px; }
+
+        .post-tags-top { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:24px; }
+        .post-tag-top {
+            font-family:'Fira Code',monospace; font-size:10px;
+            padding:3px 12px; letter-spacing:.08em; border:1px solid;
+        }
+
+        .post-title {
+            font-family:'Syne',sans-serif;
+            font-size:clamp(36px,5vw,60px); font-weight:800;
+            line-height:1.0; letter-spacing:-.03em;
+            color:var(--white); margin-bottom:24px;
+        }
+
+        .post-meta-bar {
+            display:flex; flex-wrap:wrap; align-items:center; gap:20px;
+            font-family:'Fira Code',monospace; font-size:11px; color:var(--text-dim);
+            padding:18px 0; border-top:1px solid var(--border); border-bottom:1px solid var(--border);
+            margin-top:28px;
+        }
+        .pm-item { display:flex; align-items:center; gap:7px; }
+        .pm-divider { color:var(--border-bright); }
+        .pm-author { color:var(--acid); }
+
+        .toc {
+            background:var(--surface); border:1px solid var(--border);
+            border-left:3px solid var(--acid);
+            padding:24px 28px; margin:40px 0;
+        }
+        .toc-title {
+            font-family:'Fira Code',monospace; font-size:11px;
+            color:var(--acid); letter-spacing:.15em; margin-bottom:16px;
+        }
+        .toc ol { list-style:none; counter-reset:toc-counter; }
+        .toc li {
+            counter-increment:toc-counter;
+            font-family:'Fira Code',monospace; font-size:12px;
+            color:var(--text-dim); margin-bottom:10px;
+            display:flex; align-items:flex-start; gap:10px;
+        }
+        .toc li::before {
+            content:counter(toc-counter,decimal-leading-zero) '.';
+            color:var(--acid); opacity:.6; flex-shrink:0;
+        }
+        .toc a { color:var(--text-dim); text-decoration:none; transition:color .2s; line-height:1.5; }
+        .toc a:hover { color:var(--acid); }
+
+        .post-body { line-height:1.85; font-size:17.5px; font-weight:300; color:var(--text); }
+
+        .post-body h2 {
+            font-family:'Syne',sans-serif; font-size:clamp(22px,3vw,30px);
+            font-weight:800; color:var(--white); letter-spacing:-.02em;
+            margin:56px 0 20px; padding-bottom:12px;
+            border-bottom:1px solid var(--border);
+            scroll-margin-top:90px;
+        }
+        .post-body h2::before {
+            content:'// '; color:var(--acid); opacity:.7;
+            font-family:'Fira Code',monospace; font-size:.7em;
+        }
+        .post-body h3 {
+            font-family:'Syne',sans-serif; font-size:18px;
+            font-weight:700; color:var(--white);
+            margin:36px 0 14px; scroll-margin-top:90px;
+        }
+        .post-body h3::before {
+            content:'> '; color:var(--acid2); opacity:.6;
+            font-family:'Fira Code',monospace;
+        }
+        .post-body p { margin-bottom:24px; }
+        .post-body strong { color:var(--white); font-weight:600; }
+        .post-body em { color:var(--text); font-style:italic; }
+
+        .post-body code {
+            font-family:'Fira Code',monospace; font-size:.82em;
+            color:var(--acid); background:rgba(0,255,157,.07);
+            border:1px solid rgba(0,255,157,.15);
+            padding:2px 7px; border-radius:2px;
+        }
+
+        .post-body pre {
+            margin:28px 0; border-radius:4px; overflow:hidden;
+            border:1px solid var(--border);
+            box-shadow:0 4px 24px rgba(0,0,0,.5);
+        }
+        .post-body pre code {
+            font-family:'Fira Code',monospace; font-size:13px;
+            background:transparent; border:none; padding:0; color:inherit;
+        }
+
+        .code-wrap { position:relative; }
+        .code-label {
+            position:absolute; top:0; right:0;
+            font-family:'Fira Code',monospace; font-size:10px;
+            color:var(--text-dim); background:var(--surface2);
+            padding:6px 14px; letter-spacing:.1em; z-index:1;
+            border-left:1px solid var(--border); border-bottom:1px solid var(--border);
+        }
+        .code-copy {
+            position:absolute; top:0; left:0;
+            font-family:'Fira Code',monospace; font-size:10px;
+            color:var(--text-dim); background:transparent;
+            padding:6px 14px; letter-spacing:.06em; z-index:1;
+            border:none; cursor:pointer; transition:color .2s;
+        }
+        .code-copy:hover { color:var(--acid); }
+
+        .post-body blockquote {
+            border-left:3px solid var(--acid);
+            background:rgba(0,255,157,.04);
+            padding:20px 24px; margin:28px 0;
+            font-style:italic; color:var(--text-dim);
+        }
+        .post-body blockquote strong { color:var(--acid); font-style:normal; }
+
+        .post-body ul,.post-body ol { padding-left:28px; margin-bottom:24px; }
+        .post-body li { margin-bottom:8px; }
+        .post-body ul li::marker { color:var(--acid); }
+        .post-body ol li::marker { color:var(--acid); font-family:'Fira Code',monospace; font-size:.85em; }
+
+        .post-body hr { border:none; border-top:1px solid var(--border); margin:48px 0; }
+
+        .post-body a {
+            color:var(--acid); text-decoration:underline;
+            text-decoration-color:rgba(0,255,157,.3);
+            text-underline-offset:3px; transition:text-decoration-color .2s;
+        }
+        .post-body a:hover { text-decoration-color:var(--acid); }
+
+        .post-body table {
+            width:100%; border-collapse:collapse;
+            margin:28px 0; font-size:14px;
+            font-family:'Fira Code',monospace;
+        }
+        .post-body th {
+            background:var(--surface); color:var(--acid);
+            padding:12px 16px; text-align:left;
+            border:1px solid var(--border); font-size:11px; letter-spacing:.1em;
+        }
+        .post-body td { padding:12px 16px; border:1px solid var(--border); color:var(--text); }
+        .post-body tr:hover td { background:var(--surface); }
+
+        .callout {
+            padding:20px 24px; margin:28px 0;
+            border-left:3px solid;
+            font-family:'Fira Code',monospace; font-size:13px; line-height:1.7;
+        }
+        .callout-title { font-weight:700; letter-spacing:.1em; margin-bottom:8px; font-size:11px; }
+        .callout-info    { border-color:var(--acid2); background:rgba(0,229,255,.06); }
+        .callout-info .callout-title { color:var(--acid2); }
+        .callout-warn    { border-color:#f59e0b; background:rgba(245,158,11,.06); }
+        .callout-warn .callout-title { color:#f59e0b; }
+        .callout-danger  { border-color:var(--red); background:rgba(255,45,85,.06); }
+        .callout-danger .callout-title { color:var(--red); }
+        .callout-tip     { border-color:var(--acid); background:rgba(0,255,157,.06); }
+        .callout-tip .callout-title { color:var(--acid); }
+
+        .post-footer {
+            margin-top:72px; padding-top:40px;
+            border-top:1px solid var(--border);
+        }
+        .pf-label {
+            font-family:'Fira Code',monospace; font-size:10px;
+            color:var(--text-dim); letter-spacing:.2em; margin-bottom:20px;
+        }
+        .pf-tags { display:flex; flex-wrap:wrap; gap:10px; margin-bottom:40px; }
+        .pf-tag {
+            font-family:'Fira Code',monospace; font-size:11px;
+            padding:6px 14px; border:1px solid; text-decoration:none;
+            transition:all .2s; border-radius:1px;
+        }
+        .pf-back {
+            display:inline-flex; align-items:center; gap:10px;
+            font-family:'Fira Code',monospace; font-size:12px;
+            color:var(--text-dim); text-decoration:none;
+            border:1px solid var(--border); padding:12px 24px;
+            letter-spacing:.1em; transition:all .3s;
+        }
+        .pf-back:hover { border-color:var(--border-bright); color:var(--acid); background:rgba(0,255,157,.04); }
+        .pf-back::before { content:'←'; color:var(--acid); opacity:.7; }
+
+        #particles-canvas { position:fixed; inset:0; pointer-events:none; z-index:1; opacity:.25; }
+
+        @media(max-width:600px) {
+            nav { padding:14px 20px; }
+            .post-wrap { padding:100px 20px 80px; }
+            .post-title { font-size:clamp(30px,10vw,48px); }
+            .post-body { font-size:16px; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="reading-progress"></div>
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+<canvas id="particles-canvas"></canvas>
+<div class="grid-bg"></div>
+<div class="scanline"></div>
+
+<nav>
+    <a href="../../" class="nav-logo">[<span>0x3xp</span>] <span style="color:var(--text-dim)">~</span></a>
+    <div class="nav-right">
+        <a href="../" class="nav-link">blog</a>
+        <a href="../../#projects" class="nav-link">projects</a>
+        <a href="../../" class="nav-link">home</a>
+    </div>
+</nav>
+
+<article class="post-wrap">
+
+    <header class="post-header">
+        <div class="post-tags-top" id="post-tags-top"></div>
+        <h1 class="post-title" id="post-title">Windows Hardening: From Default Install to Fortress</h1>
+        <div class="post-meta-bar">
+            <span class="pm-item pm-author">Piyusha Akash</span>
+            <span class="pm-divider">·</span>
+            <span class="pm-item" id="pm-date">DATE</span>
+            <span class="pm-divider">·</span>
+            <span class="pm-item" id="pm-read">READ TIME</span>
+            <span class="pm-divider">·</span>
+            <span class="pm-item">
+                <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                &nbsp;reading
+            </span>
+        </div>
+    </header>
+
+    <nav class="toc">
+        <div class="toc-title">// TABLE OF CONTENTS</div>
+        <ol>
+            <li><a href="#intro">Introduction</a></li>
+            <li><a href="#storage">Storage Security — BitLocker & DMA</a></li>
+            <li><a href="#identity">Identity & Access Management</a></li>
+            <li><a href="#firewall">Firewall Hardening</a></li>
+            <li><a href="#applications">Application Control — WDAC & ASR</a></li>
+            <li><a href="#computer-mgmt">Computer Management</a></li>
+            <li><a href="#powershell">PowerShell Hardening</a></li>
+            <li><a href="#conclusion">Conclusion</a></li>
+        </ol>
+    </nav>
+
+    <div class="post-body">
+
+        <h2 id="intro">Introduction</h2>
+
+        <p>
+            A default Windows installation is not a secure baseline — it's a starting point. Out of the box, Windows ships with legacy protocols enabled, weak default policies, and services running that most endpoints will never need. For a red teamer, this is opportunity. For a defender, it's debt.
+        </p>
+
+        <p>
+            Windows hardening is the disciplined process of <strong>reducing attack surface</strong> before an adversary finds it. The goal isn't perfection — it's raising the cost of exploitation high enough that attackers move on or make noise that detection picks up. This guide covers the layers that matter most: storage, identity, network, application control, and PowerShell — the attacker's favorite tool turned against them.
+        </p>
+
+        <div class="callout callout-info">
+            <div class="callout-title">// SCOPE</div>
+            This guide targets Windows 10 22H2+ and Windows 11. Some features (hardware-accelerated BitLocker, Kernel DMA Protection) require Windows 11 24H2 or compatible hardware. Test all changes in a non-production environment first.
+        </div>
+
+        <blockquote>
+            <strong>Red team perspective:</strong> Every item in this guide is something I look for being <em>absent</em> during an engagement. If you skip even one section, assume a competent attacker will find it.
+        </blockquote>
+
+        <h2 id="storage">Storage Security — BitLocker & DMA</h2>
+
+        <p>
+            Physical access is game over — unless your data at rest is encrypted. BitLocker is the built-in answer, but default settings are not the hardened settings.
+        </p>
+
+        <h3>BitLocker with XTS-AES 256</h3>
+
+        <p>
+            The default BitLocker cipher in many environments is still <code>AES-CBC 128-bit</code>. You want <strong>XTS-AES 256-bit</strong>. XTS mode is resistant to ciphertext manipulation attacks that CBC is vulnerable to, and 256-bit keys provide the headroom you need against future threats. Windows 11 24H2+ supports hardware-accelerated encryption via the SoC, so performance is no longer a reason to downgrade.
+        </p>
+
+        <p>
+            Enforce this before encrypting. If a drive is already encrypted with weaker settings, decrypt and re-encrypt.
+        </p>
+
+        <div class="code-wrap">
+            <span class="code-label">PowerShell</span>
+            <button class="code-copy" onclick="copyCode(this)">copy</button>
+            <pre><code class="language-powershell"># Check current BitLocker status and cipher strength
 manage-bde -status
-Look for "XTS-AES 256" and "Hardware accelerated" in the output.
 
-Identity and Access Management
-Identity is the new perimeter. Hardening access ensures that even if a system is breached, the attacker cannot easily escalate privileges.
+# Output to look for:
+# Encryption Method: XTS-AES 256
+# Protection Status: Protection On
+# Key Protectors: TPM, Numerical Password</code></pre>
+        </div>
 
-Principle of Least Privilege (PoLP): Users should never operate as local administrators for daily tasks.
+        <p>
+            Set the encryption method via Group Policy before enabling BitLocker:
+        </p>
 
-Windows LAPS: Implement the native Local Administrator Password Solution to manage unique, rotating passwords for the built-in local admin account.
+        <div class="code-wrap">
+            <span class="code-label">GPO Path</span>
+            <button class="code-copy" onclick="copyCode(this)">copy</button>
+            <pre><code class="language-plaintext">Computer Configuration
+  > Administrative Templates
+    > Windows Components
+      > BitLocker Drive Encryption
+        > Operating System Drives
+          → "Configure use of hardware-based encryption" → Enabled
+          → "Choose drive encryption method and cipher strength" → XTS-AES 256-bit</code></pre>
+        </div>
 
-User Account Control (UAC): Set UAC to Always Notify. This ensures that any change requiring administrative privileges is explicitly approved.
+        <h3>TPM 2.0 — Hardware Root of Trust</h3>
 
-Account Lockout Policy: Prevent brute-force attacks by locking accounts after a set number of failed attempts.
+        <p>
+            TPM 2.0 seals the BitLocker key against platform state. Without it, the encrypted drive can be decrypted by anyone who knows the recovery key — which attackers extract via memory attacks or Active Directory. Verify TPM is enabled and version 2.0:
+        </p>
 
-Recommended GPO Path:
-Computer Configuration > Windows Settings > Security Settings > Account Policies > Account Lockout Policy
+        <div class="code-wrap">
+            <span class="code-label">PowerShell</span>
+            <button class="code-copy" onclick="copyCode(this)">copy</button>
+            <pre><code class="language-powershell">Get-Tpm | Select-Object TpmPresent, TpmReady, TpmEnabled, ManufacturerVersion</code></pre>
+        </div>
 
-Firewall
-The Windows Defender Firewall should be configured to a Default Deny posture for both inbound and outbound traffic where possible.
+        <h3>Kernel DMA Protection</h3>
 
-Inbound Rules: Block all unsolicited inbound traffic across Domain, Private, and Public profiles.
+        <p>
+            Thunderbolt and PCIe ports can be used to perform <strong>Direct Memory Access (DMA) attacks</strong> — an attacker plugs in a malicious device and reads arbitrary physical memory, bypassing the OS entirely and extracting BitLocker keys in seconds. Kernel DMA Protection prevents this by restricting DMA operations from external peripherals until they are explicitly authorized.
+        </p>
 
-Outbound Rules: In high-security environments, restrict outbound traffic to known-good services to prevent data exfiltration.
+        <div class="callout callout-warn">
+            <div class="callout-title">// WARNING</div>
+            Enabling Kernel DMA Protection may break some older Thunderbolt docks and PCIe devices. Audit your hardware peripherals before enforcing this in production.
+        </div>
 
-Stealth Mode: Ensure the firewall does not respond to ICMP (ping) requests to make the machine less visible during network scans.
+        <div class="code-wrap">
+            <span class="code-label">PowerShell</span>
+            <button class="code-copy" onclick="copyCode(this)">copy</button>
+            <pre><code class="language-powershell"># Check if Kernel DMA Protection is enabled
+(Get-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Control\DeviceGuard").EnableVirtualizationBasedSecurity
 
-Command to enable Firewall for all profiles:
+# Also check in System Information (msinfo32):
+# Kernel DMA Protection → On</code></pre>
+        </div>
 
-PowerShell
+        <h2 id="identity">Identity & Access Management</h2>
+
+        <p>
+            Identity is the new perimeter. Once an attacker has valid credentials — even a low-privilege account — they're no longer an outsider. The question becomes: how much can they do with what they have?
+        </p>
+
+        <h3>Principle of Least Privilege (PoLP)</h3>
+
+        <p>
+            No user should run as a local administrator for daily tasks. This is the single most impactful thing you can do. Standard user accounts cannot install software, modify system settings, or write to protected directories — which stops the majority of malware cold at the privilege level it lands with.
+        </p>
+
+        <div class="callout callout-danger">
+            <div class="callout-title">// RED TEAM NOTE</div>
+            During engagements, the first thing I check after initial access is <code>whoami /priv</code> and <code>whoami /groups</code>. If the compromised user is a local admin, lateral movement and persistence become trivially easy. PoLP is your single highest-ROI hardening control.
+        </div>
+
+        <h3>Windows LAPS — Rotating Local Admin Passwords</h3>
+
+        <p>
+            If every machine in your fleet shares the same local administrator password, one compromised credential = full domain lateral movement. <strong>Windows LAPS</strong> (built into Windows since the April 2023 update) generates unique, rotating passwords for the built-in local admin account and stores them in Active Directory or Azure AD — readable only by authorized accounts.
+        </p>
+
+        <div class="code-wrap">
+            <span class="code-label">PowerShell</span>
+            <button class="code-copy" onclick="copyCode(this)">copy</button>
+            <pre><code class="language-powershell"># Enable Windows LAPS (requires April 2023+ cumulative update)
+# First, update the AD schema to support LAPS attributes
+Update-LapsADSchema
+
+# Configure via GPO:
+# Computer Configuration > Administrative Templates
+#   > System > LAPS
+#     → "Configure password backup directory" → Active Directory
+#     → "Password Settings" → Complexity: Large letters + small + numbers + specials
+#     → "Password age (days)" → 30</code></pre>
+        </div>
+
+        <h3>UAC — Always Notify</h3>
+
+        <p>
+            UAC is not a security boundary — it's a friction layer. But friction matters. Set it to <strong>Always Notify</strong>, which prompts on both software installs and any system setting changes, even for administrators. The default "Notify me only when apps try to make changes" can be bypassed via COM object abuse without triggering a UAC prompt.
+        </p>
+
+        <div class="code-wrap">
+            <span class="code-label">Registry</span>
+            <button class="code-copy" onclick="copyCode(this)">copy</button>
+            <pre><code class="language-powershell"># Set UAC to Always Notify (value 2 = always notify)
+Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" `
+    -Name "ConsentPromptBehaviorAdmin" -Value 2</code></pre>
+        </div>
+
+        <h3>Account Lockout Policy</h3>
+
+        <p>
+            Brute-force and password spray attacks are stopped dead by a properly configured lockout policy. The recommended baseline per CIS Benchmark is: lock after <strong>5 invalid attempts</strong>, lockout duration of <strong>15 minutes</strong>, reset counter after <strong>15 minutes</strong>.
+        </p>
+
+        <div class="code-wrap">
+            <span class="code-label">GPO Path</span>
+            <button class="code-copy" onclick="copyCode(this)">copy</button>
+            <pre><code class="language-plaintext">Computer Configuration
+  > Windows Settings
+    > Security Settings
+      > Account Policies
+        > Account Lockout Policy
+          → Account lockout threshold: 5 invalid logon attempts
+          → Account lockout duration: 15 minutes
+          → Reset account lockout counter after: 15 minutes</code></pre>
+        </div>
+
+        <h2 id="firewall">Firewall Hardening</h2>
+
+        <p>
+            Windows Defender Firewall is underutilized in most environments. The hardened posture is <strong>Default Deny</strong> — block everything, then explicitly allow what's needed.
+        </p>
+
+        <div class="code-wrap">
+            <span class="code-label">PowerShell</span>
+            <button class="code-copy" onclick="copyCode(this)">copy</button>
+            <pre><code class="language-powershell"># Enforce firewall on ALL profiles — non-negotiable
 Set-NetFirewallProfile -Profile Domain,Public,Private -Enabled True
-Applications
-Malware typically enters a system through unhardened applications or unauthorized software execution.
 
-Windows Defender Application Control (WDAC): This is the successor to AppLocker. Use WDAC to create a "whitelist" of trusted publishers and folders. Anything not on the list is blocked.
+# Set default inbound action to Block
+Set-NetFirewallProfile -Profile Domain,Public,Private -DefaultInboundAction Block
 
-Attack Surface Reduction (ASR) Rules: Enable Microsoft Defender ASR rules to block common malware techniques, such as office apps creating child processes.
+# Disable ICMP responses (stealth mode — machine won't respond to pings)
+New-NetFirewallRule -DisplayName "Block ICMP Echo Request" `
+    -Protocol ICMPv4 -IcmpType 8 -Direction Inbound -Action Block
 
-Remove Bloatware: Uninstall unnecessary pre-installed applications to reduce the potential for software vulnerabilities.
+New-NetFirewallRule -DisplayName "Block ICMPv6 Echo Request" `
+    -Protocol ICMPv6 -IcmpType 128 -Direction Inbound -Action Block</code></pre>
+        </div>
 
-Example ASR Rule (Block executable content from email client):
+        <p>
+            In high-security environments, apply outbound rules too. Restricting outbound traffic to known-good destinations forces malware C2 communication through channels you can monitor and block.
+        </p>
 
-PowerShell
-Add-MpPreference -AttackSurfaceReductionRules_Ids BE9BA2D9-53ED-4437-B4F0-E0888FAF706D -AttackSurfaceReductionRules_Actions Enabled
-Computer Management
-General system settings often contain legacy protocols that are highly exploitable.
+        <blockquote>
+            <strong>Attacker's view:</strong> A machine that doesn't respond to ICMP is invisible in basic network scans. It won't appear in <code>nmap -sn</code> host discovery. This is a small but effective way to reduce your exposure during early reconnaissance phases.
+        </blockquote>
 
-Disable LLMNR and NetBIOS: These protocols are frequently used in "Man-in-the-Middle" attacks (e.g., Responder) to capture hashes.
+        <h2 id="applications">Application Control — WDAC & ASR</h2>
 
-Disable Guest and Built-in Admin: Rename or disable the built-in Administrator and Guest accounts.
+        <p>
+            Malware almost always executes code. Application control means you decide what code is allowed to run — anything else is blocked at the kernel level before it ever executes.
+        </p>
 
-RDP Hardening: If Remote Desktop is required, enforce Network Level Authentication (NLA) and change the default port (3389).
+        <h3>Windows Defender Application Control (WDAC)</h3>
 
-Secure Boot: Verify that Secure Boot is active. Note that in June 2026, many original Secure Boot certificates will expire; ensure your system is updated to the latest 2023+ certificate versions.
+        <p>
+            WDAC is the successor to AppLocker, enforced at the kernel level rather than in user-space. This matters because user-space controls (including AppLocker) can be bypassed by processes with the right privileges. WDAC is enforced by the hypervisor and is significantly harder to bypass.
+        </p>
 
-PowerShell
-PowerShell is a powerful management tool that is also the preferred tool for post-exploitation. Hardening it is mandatory.
+        <p>
+            A practical starting policy: <strong>allow trusted publishers + Microsoft + specific folders</strong> (e.g., <code>C:\Program Files</code>). Anything unsigned or from an untrusted publisher is blocked.
+        </p>
 
-Constrained Language Mode (CLM): Limits PowerShell to a subset of commands, preventing the use of Win32 APIs and COM objects used in exploits.
+        <div class="code-wrap">
+            <span class="code-label">PowerShell</span>
+            <button class="code-copy" onclick="copyCode(this)">copy</button>
+            <pre><code class="language-powershell"># Generate a starter WDAC policy based on your current system's running apps
+# (Audit mode first — never enforce before auditing)
+New-CIPolicy -Level Publisher -FilePath "C:\Policies\WDACPolicy.xml" `
+    -UserPEs -ScanPath "C:\Program Files" -Audit
 
-Script Block Logging: Enable logging for Event ID 4104. This records the actual code executed in PowerShell, even if it was obfuscated.
+# Convert XML policy to binary
+ConvertFrom-CIPolicy -XmlFilePath "C:\Policies\WDACPolicy.xml" `
+    -BinaryFilePath "C:\Policies\WDACPolicy.bin"
 
-Module Logging: Record the execution of specific modules to the Windows Event Log.
+# Deploy the policy (test in audit mode first)
+Copy-Item "C:\Policies\WDACPolicy.bin" `
+    -Destination "C:\Windows\System32\CodeIntegrity\SIPolicy.p7b"</code></pre>
+        </div>
 
-Remove PowerShell v2: Legacy versions of PowerShell do not support modern logging and are often used by attackers to bypass security controls.
+        <div class="callout callout-warn">
+            <div class="callout-title">// WARNING</div>
+            Always deploy WDAC in Audit mode first. Enforced mode without proper auditing will block legitimate software and can render systems unusable. Review Event ID 3076 (audit block) in Event Viewer before switching to Enforce mode.
+        </div>
 
-Command to check Language Mode:
+        <h3>Attack Surface Reduction (ASR) Rules</h3>
 
-PowerShell
+        <p>
+            ASR rules are targeted mitigations for specific attacker techniques — blocking Office macros from spawning child processes, preventing credential theft from LSASS, blocking executable content from email. Each rule has a GUID and targets a specific technique from the MITRE ATT&CK framework.
+        </p>
+
+        <div class="code-wrap">
+            <span class="code-label">PowerShell</span>
+            <button class="code-copy" onclick="copyCode(this)">copy</button>
+            <pre><code class="language-powershell"># Block executable content from email client and webmail
+Add-MpPreference -AttackSurfaceReductionRules_Ids BE9BA2D9-53ED-4437-B4F0-E0888FAF706D `
+    -AttackSurfaceReductionRules_Actions Enabled
+
+# Block Office applications from creating child processes
+Add-MpPreference -AttackSurfaceReductionRules_Ids D4F940AB-401B-4EFC-AADC-AD5F3C50688A `
+    -AttackSurfaceReductionRules_Actions Enabled
+
+# Block credential stealing from LSASS
+Add-MpPreference -AttackSurfaceReductionRules_Ids 9E6C4E1F-7D60-472F-BA1A-A39EF669E4B2 `
+    -AttackSurfaceReductionRules_Actions Enabled
+
+# Block untrusted and unsigned processes that run from USB
+Add-MpPreference -AttackSurfaceReductionRules_Ids B2B3F03D-6A65-4F7B-A9C7-1C7EF74A9BA4 `
+    -AttackSurfaceReductionRules_Actions Enabled</code></pre>
+        </div>
+
+        <h2 id="computer-mgmt">Computer Management</h2>
+
+        <p>
+            Legacy protocols and default system settings are a goldmine for attackers. These are the controls that get overlooked because they don't have a flashy UI — but they're exactly what Responder, Impacket, and BloodHound rely on.
+        </p>
+
+        <h3>Disable LLMNR and NetBIOS</h3>
+
+        <p>
+            LLMNR (Link-Local Multicast Name Resolution) and NBT-NS (NetBIOS Name Service) are legacy name resolution protocols that broadcast queries on the local network. When a machine asks "who is <code>FILESERVER</code>?" and no DNS answer exists, LLMNR broadcasts the question. An attacker running Responder answers that query, captures the NTLMv2 hash, and cracks or relays it.
+        </p>
+
+        <p>
+            There is no legitimate reason to have these enabled in a modern Active Directory environment with functioning DNS.
+        </p>
+
+        <div class="code-wrap">
+            <span class="code-label">PowerShell</span>
+            <button class="code-copy" onclick="copyCode(this)">copy</button>
+            <pre><code class="language-powershell"># Disable LLMNR via Registry
+New-Item "HKLM:\SOFTWARE\Policies\Microsoft\Windows NT\DNSClient" -Force
+Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows NT\DNSClient" `
+    -Name "EnableMulticast" -Value 0
+
+# Disable NetBIOS over TCP/IP on all adapters
+$adapters = Get-WmiObject Win32_NetworkAdapterConfiguration | Where-Object { $_.IPEnabled }
+foreach ($adapter in $adapters) {
+    $adapter.SetTcpipNetbios(2)  # 2 = Disable NetBIOS over TCP/IP
+}
+
+Write-Host "[+] LLMNR and NetBIOS disabled."</code></pre>
+        </div>
+
+        <h3>Disable Built-in Administrator & Guest</h3>
+
+        <p>
+            The built-in <code>Administrator</code> (RID 500) account is a well-known target. It cannot be locked out by Account Lockout Policy, making it ideal for brute-force attacks. Rename it to something non-obvious and disable it if LAPS is managing local admin credentials.
+        </p>
+
+        <div class="code-wrap">
+            <span class="code-label">PowerShell</span>
+            <button class="code-copy" onclick="copyCode(this)">copy</button>
+            <pre><code class="language-powershell"># Disable the built-in Administrator account
+Disable-LocalUser -Name "Administrator"
+
+# Disable the Guest account
+Disable-LocalUser -Name "Guest"
+
+# Optionally rename Administrator to something non-obvious
+Rename-LocalUser -Name "Administrator" -NewName "svcmgr"</code></pre>
+        </div>
+
+        <h3>RDP Hardening</h3>
+
+        <p>
+            If RDP must be enabled, harden it. Default port 3389 is scanned constantly. Network Level Authentication (NLA) forces authentication before a session is established, preventing unauthenticated pre-auth exploits.
+        </p>
+
+        <div class="code-wrap">
+            <span class="code-label">PowerShell</span>
+            <button class="code-copy" onclick="copyCode(this)">copy</button>
+            <pre><code class="language-powershell"># Enforce Network Level Authentication
+Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp" `
+    -Name "UserAuthentication" -Value 1
+
+# Change RDP port from default 3389 (security by obscurity — not a replacement for NLA)
+Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp" `
+    -Name "PortNumber" -Value 53389  # use any non-default port
+
+# Restart Remote Desktop Services to apply
+Restart-Service -Name "TermService" -Force</code></pre>
+        </div>
+
+        <h3>Secure Boot Certificate Update (June 2026)</h3>
+
+        <p>
+            This is one most people miss. In <strong>June 2026</strong>, many original Secure Boot signing certificates expire. If your system hasn't received the 2023+ certificate updates, Secure Boot may fail after that date. Verify you're on the updated certificates now.
+        </p>
+
+        <div class="code-wrap">
+            <span class="code-label">PowerShell</span>
+            <button class="code-copy" onclick="copyCode(this)">copy</button>
+            <pre><code class="language-powershell"># Check Secure Boot status
+Confirm-SecureBootUEFI
+
+# Check UEFI certificate database for updated 2023 certs
+# Should return entries dated 2023 or later
+Get-SecureBootPolicy</code></pre>
+        </div>
+
+        <h2 id="powershell">PowerShell Hardening</h2>
+
+        <p>
+            PowerShell is a double-edged sword. It's the most powerful management tool on Windows — and consequently, the most abused post-exploitation tool. It enables fileless malware, in-memory execution, AMSI bypasses, and living-off-the-land techniques that bypass most AV. Hardening it is non-negotiable.
+        </p>
+
+        <h3>Constrained Language Mode (CLM)</h3>
+
+        <p>
+            CLM restricts PowerShell to a limited subset of commands, blocking access to .NET types, COM objects, and Win32 API calls — exactly the things used in offensive scripts. It doesn't prevent all attacks, but it significantly raises the bar.
+        </p>
+
+        <div class="code-wrap">
+            <span class="code-label">PowerShell</span>
+            <button class="code-copy" onclick="copyCode(this)">copy</button>
+            <pre><code class="language-powershell"># Check current language mode
 $ExecutionContext.SessionState.LanguageMode
-Command to remove PowerShell v2:
+# Should return: ConstrainedLanguage (when enforced via WDAC)
 
-PowerShell
-Disable-WindowsOptionalFeature -Online -FeatureName MicrosoftWindowsPowerShellV2Root
-Would you like me to generate a specific Group Policy (GPO) export script or a custom WDAC policy file for your environment?
+# CLM is enforced by WDAC policy — if WDAC is active, CLM activates automatically
+# To test: try to use a .NET type in a session with CLM enforced
+[System.Net.WebClient]  # This should fail in CLM with "type not available" error</code></pre>
+        </div>
 
-Hardening Windows with PowerShell
-This video provides a deep dive into implementing Windows Defender Application Control (WDAC) and application whitelisting, which are critical components of the applications and PowerShell hardening sections discussed above.
+        <div class="callout callout-info">
+            <div class="callout-title">// NOTE</div>
+            CLM is most effective when enforced via WDAC. Setting it via AppLocker or registry alone can be bypassed by an admin. The combination of WDAC + CLM is substantially harder to escape.
+        </div>
+
+        <h3>Script Block Logging — Event ID 4104</h3>
+
+        <p>
+            Script Block Logging records the actual PowerShell code that executes — including code that was obfuscated, downloaded from the internet, or dynamically generated at runtime. This is your primary forensic artifact for PowerShell-based attacks.
+        </p>
+
+        <div class="code-wrap">
+            <span class="code-label">GPO Path</span>
+            <button class="code-copy" onclick="copyCode(this)">copy</button>
+            <pre><code class="language-plaintext">Computer Configuration
+  > Administrative Templates
+    > Windows Components
+      > Windows PowerShell
+        → "Turn on PowerShell Script Block Logging" → Enabled
+        → "Log script block invocation start / stop events" → Enabled (optional, verbose)
+        → "Turn on Module Logging" → Enabled → Module Names: *</code></pre>
+        </div>
+
+        <p>
+            After enabling, monitor <strong>Event ID 4104</strong> in the <code>Microsoft-Windows-PowerShell/Operational</code> log. Any script that looks obfuscated, base64-heavy, or invokes suspicious methods is worth investigating.
+        </p>
+
+        <h3>Remove PowerShell Version 2</h3>
+
+        <p>
+            PowerShell v2 does not support Script Block Logging, AMSI, or Constrained Language Mode. Attackers explicitly downgrade to v2 (<code>powershell -version 2</code>) to bypass all modern logging and security controls. Remove it.
+        </p>
+
+        <div class="code-wrap">
+            <span class="code-label">PowerShell</span>
+            <button class="code-copy" onclick="copyCode(this)">copy</button>
+            <pre><code class="language-powershell"># Remove PowerShell v2 engine (requires reboot)
+Disable-WindowsOptionalFeature -Online -FeatureName MicrosoftWindowsPowerShellV2Root -NoRestart
+
+# Verify it's gone — this should fail after removal
+powershell -version 2 -command "Write-Host 'v2 still present'"</code></pre>
+        </div>
+
+        <h2 id="conclusion">Conclusion</h2>
+
+        <p>
+            None of these controls in isolation makes a system secure. What they do — applied together — is force an attacker to work harder, make more noise, and burn more time. That's the goal. Security is about raising cost, not achieving invulnerability.
+        </p>
+
+        <p>
+            From a red team perspective: every one of these controls has a bypass. But a system with all of them configured correctly? That system is no longer the low-hanging fruit. It forces advanced tradecraft, which generates detectable artifacts, which is exactly what your blue team needs.
+        </p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Control</th>
+                    <th>Category</th>
+                    <th>What It Stops</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td>BitLocker XTS-AES 256</td><td>Storage</td><td>Physical access, cold boot, offline attacks</td></tr>
+                <tr><td>Kernel DMA Protection</td><td>Storage</td><td>PCIe/Thunderbolt DMA key extraction</td></tr>
+                <tr><td>Windows LAPS</td><td>Identity</td><td>Lateral movement via shared local admin password</td></tr>
+                <tr><td>UAC Always Notify</td><td>Identity</td><td>Silent privilege escalation via COM abuse</td></tr>
+                <tr><td>Account Lockout</td><td>Identity</td><td>Password spray and brute-force</td></tr>
+                <tr><td>Default-Deny Firewall</td><td>Network</td><td>Unsolicited inbound connections, C2 exfil</td></tr>
+                <tr><td>WDAC</td><td>Applications</td><td>Unsigned / untrusted code execution</td></tr>
+                <tr><td>ASR Rules</td><td>Applications</td><td>LSASS dumping, macro abuse, email payloads</td></tr>
+                <tr><td>Disable LLMNR/NetBIOS</td><td>Computer Mgmt</td><td>Responder hash capture, NTLM relay</td></tr>
+                <tr><td>PowerShell CLM</td><td>PowerShell</td><td>Win32 API abuse, .NET exploitation</td></tr>
+                <tr><td>Script Block Logging</td><td>PowerShell</td><td>Obfuscated/fileless malware (detection)</td></tr>
+                <tr><td>Remove PSv2</td><td>PowerShell</td><td>Logging and CLM downgrade bypass</td></tr>
+            </tbody>
+        </table>
+
+        <div class="callout callout-tip">
+            <div class="callout-title">// TAKEAWAY</div>
+            Start with PoLP + LAPS + Disable LLMNR + Remove PSv2. These four are the highest ROI, lowest disruption controls that stop the most common attacker techniques seen in real-world engagements. Then layer in WDAC and ASR rules once you've audited your environment.
+        </div>
+
+        <hr>
+
+        <p style="font-family:'Fira Code',monospace;font-size:12px;color:var(--text-dim);">
+            // All configurations documented for educational and defensive purposes. Test in isolated environments before production deployment.
+        </p>
+
+    </div>
+
+    <footer class="post-footer">
+        <div class="pf-label">// FILED UNDER</div>
+        <div class="pf-tags" id="pf-tags"></div>
+        <a href="../" class="pf-back">back to blog</a>
+    </footer>
+
+</article>
+
+<script src="../posts.js"></script>
+<script>
+const POST_META = {
+    slug:     "windows-hardening",
+    title:    "Windows Hardening: From Default Install to Fortress",
+    date:     "2025-12-01",
+    readTime: "12 min read",
+    tags:     ["windows", "hardening", "blue-team", "internals"],
+};
+</script>
+
+<script>
+(function() {
+    function formatDate(iso) {
+        return new Date(iso+'T00:00:00').toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
+    }
+    function tagStyle(tag) {
+        const col=(typeof TAG_COLORS!=='undefined'&&TAG_COLORS[tag])||'#555870';
+        return `color:${col};border-color:${col}33;background:${col}0d`;
+    }
+
+    document.getElementById('post-title').textContent = POST_META.title;
+    document.title = POST_META.title + ' — Piyusha Akash';
+    document.getElementById('pm-date').textContent = formatDate(POST_META.date);
+    document.getElementById('pm-read').textContent = POST_META.readTime;
+
+    const topTags = document.getElementById('post-tags-top');
+    POST_META.tags.forEach(t => {
+        const span = document.createElement('span');
+        span.className = 'post-tag-top';
+        span.style.cssText = tagStyle(t);
+        span.textContent = t;
+        topTags.appendChild(span);
+    });
+
+    const pfTags = document.getElementById('pf-tags');
+    POST_META.tags.forEach(t => {
+        const a = document.createElement('a');
+        a.className = 'pf-tag';
+        a.href = '../?tag=' + encodeURIComponent(t);
+        a.style.cssText = tagStyle(t);
+        a.textContent = '#' + t;
+        pfTags.appendChild(a);
+    });
+})();
+
+window.addEventListener('scroll', () => {
+    const doc = document.documentElement;
+    const pct = doc.scrollTop / (doc.scrollHeight - doc.clientHeight) * 100;
+    document.getElementById('reading-progress').style.width = pct + '%';
+});
+
+function copyCode(btn) {
+    const code = btn.closest('.code-wrap').querySelector('code');
+    navigator.clipboard.writeText(code.innerText).then(() => {
+        btn.textContent = 'copied!';
+        btn.style.color = 'var(--acid)';
+        setTimeout(() => { btn.textContent = 'copy'; btn.style.color = ''; }, 2000);
+    });
+}
+
+document.addEventListener('DOMContentLoaded', () => { hljs.highlightAll(); });
+
+const cursor = document.getElementById('cursor');
+const ring   = document.getElementById('cursorRing');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY; cursor.style.left=mx+'px'; cursor.style.top=my+'px'; });
+(function animRing(){ rx+=(mx-rx)*.12; ry+=(my-ry)*.12; ring.style.left=rx+'px'; ring.style.top=ry+'px'; requestAnimationFrame(animRing); })();
+document.querySelectorAll('a,button,code').forEach(el => {
+    el.addEventListener('mouseenter', () => { cursor.style.transform='translate(-50%,-50%) scale(2)'; ring.style.transform='translate(-50%,-50%) scale(1.4)'; ring.style.borderColor='rgba(0,255,157,.8)'; });
+    el.addEventListener('mouseleave', () => { cursor.style.transform='translate(-50%,-50%) scale(1)'; ring.style.transform='translate(-50%,-50%) scale(1)'; ring.style.borderColor='rgba(0,255,157,.5)'; });
+});
+
+(function(){
+    const canvas = document.getElementById('particles-canvas');
+    const ctx = canvas.getContext('2d');
+    let W,H,particles=[];
+    function resize(){ W=canvas.width=window.innerWidth; H=canvas.height=window.innerHeight; }
+    resize(); window.addEventListener('resize',resize);
+    for(let i=0;i<30;i++) particles.push({x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.2+.3,dx:(Math.random()-.5)*.25,dy:-(Math.random()*.3+.07),alpha:Math.random()*.4+.1,pulse:Math.random()*Math.PI*2});
+    function draw(){
+        ctx.clearRect(0,0,W,H);
+        particles.forEach(p => {
+            p.pulse+=.018;
+            const a=p.alpha*(.6+.4*Math.sin(p.pulse));
+            ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+            ctx.fillStyle=`rgba(0,255,157,${a})`; ctx.fill();
+            p.x+=p.dx; p.y+=p.dy;
+            if(p.y<-5){p.y=H+5;p.x=Math.random()*W;}
+            if(p.x<-5)p.x=W+5; if(p.x>W+5)p.x=-5;
+        });
+        requestAnimationFrame(draw);
+    }
+    draw();
+})();
+</script>
+</body>
+</html>
