@@ -27,45 +27,9 @@ const POSTS = [
         title:    "Windows Hardening: From Default Install to Fortress",
         date:     "2025-12-01",
         readTime: "12 min read",
-        excerpt:  "A systematic walkthrough of hardening a Windows 11 endpoint — disabling attack surface, locking down LSASS, and implementing WDAC policies that actually hold.",
+        excerpt:  "A systematic walkthrough of hardening a Windows 11 endpoint — BitLocker XTS-AES 256, LAPS, WDAC, killing LLMNR/NetBIOS, and PowerShell CLM configurations that actually hold against modern threats.",
         tags:     ["windows", "hardening", "blue-team", "internals"],
         featured: true
-    },
-    {
-        slug:     "edr-evasion-syscalls",
-        title:    "EDR Evasion via Direct Syscalls & Unhooking",
-        date:     "2025-11-18",
-        readTime: "16 min read",
-        excerpt:  "Deep dive into bypassing user-land EDR hooks using direct syscalls, Hell's Gate, and Tartarus Gate — with working C code and detection notes.",
-        tags:     ["malware-dev", "evasion", "windows", "red-team"],
-        featured: true
-    },
-    {
-        slug:     "process-injection-primer",
-        title:    "Process Injection: A Practical Primer",
-        date:     "2025-11-05",
-        readTime: "10 min read",
-        excerpt:  "Classic and modern process injection techniques from CreateRemoteThread to APC injection — what each does, how EDRs catch them, and how attackers adapt.",
-        tags:     ["malware-dev", "windows", "internals", "red-team"],
-        featured: false
-    },
-    {
-        slug:     "ghidra-binary-analysis",
-        title:    "Ghidra Workflow for Malware Analysts",
-        date:     "2025-10-22",
-        readTime: "9 min read",
-        excerpt:  "My personal Ghidra setup, scripts, and analysis workflow for tearing apart unknown binaries — from initial triage to function labeling and control flow recovery.",
-        tags:     ["reverse-engineering", "malware-dev", "tools"],
-        featured: false
-    },
-    {
-        slug:     "osint-recon-methodology",
-        title:    "OSINT Reconnaissance Methodology for Red Teams",
-        date:     "2025-10-10",
-        readTime: "7 min read",
-        excerpt:  "Structured OSINT workflow for pre-engagement reconnaissance — passive footprinting, infrastructure mapping, and building a target dossier without leaving traces.",
-        tags:     ["osint", "red-team", "recon"],
-        featured: false
     },
 
 ];
