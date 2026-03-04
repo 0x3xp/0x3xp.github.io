@@ -1,0 +1,94 @@
+Gemini said
+Windows Hardening
+Introduction
+Windows hardening is the process of securing a system by reducing its attack surface and eliminating potential vectors for exploitation. In a modern threat landscape, a default Windows installation is not sufficiently protected against advanced persistent threats or automated malware. Hardening involves a multi-layered approach that includes encrypting data at rest, enforcing strict identity controls, and restricting the execution of unauthorized code. By applying the following configurations, you transition from a reactive security posture to a proactive, defense-in-depth strategy.
+
+Storage Security
+Protecting data at rest is the first line of defense against physical theft or unauthorized access to the filesystem.
+
+BitLocker Drive Encryption: Use BitLocker with XTS-AES 256-bit encryption. Modern Windows 11 systems (version 24H2 and later) support hardware-accelerated BitLocker, which offloads cryptographic operations to the SoC to improve performance.
+
+TPM 2.0: Ensure the Trusted Platform Module is enabled in the BIOS/UEFI to provide hardware-based root of trust.
+
+DMA Protection: Enable Kernel DMA Protection to prevent Drive-by DMA attacks via Thunderbolt or PCIe ports.
+
+Command to check BitLocker status:
+
+PowerShell
+manage-bde -status
+Look for "XTS-AES 256" and "Hardware accelerated" in the output.
+
+Identity and Access Management
+Identity is the new perimeter. Hardening access ensures that even if a system is breached, the attacker cannot easily escalate privileges.
+
+Principle of Least Privilege (PoLP): Users should never operate as local administrators for daily tasks.
+
+Windows LAPS: Implement the native Local Administrator Password Solution to manage unique, rotating passwords for the built-in local admin account.
+
+User Account Control (UAC): Set UAC to Always Notify. This ensures that any change requiring administrative privileges is explicitly approved.
+
+Account Lockout Policy: Prevent brute-force attacks by locking accounts after a set number of failed attempts.
+
+Recommended GPO Path:
+Computer Configuration > Windows Settings > Security Settings > Account Policies > Account Lockout Policy
+
+Firewall
+The Windows Defender Firewall should be configured to a Default Deny posture for both inbound and outbound traffic where possible.
+
+Inbound Rules: Block all unsolicited inbound traffic across Domain, Private, and Public profiles.
+
+Outbound Rules: In high-security environments, restrict outbound traffic to known-good services to prevent data exfiltration.
+
+Stealth Mode: Ensure the firewall does not respond to ICMP (ping) requests to make the machine less visible during network scans.
+
+Command to enable Firewall for all profiles:
+
+PowerShell
+Set-NetFirewallProfile -Profile Domain,Public,Private -Enabled True
+Applications
+Malware typically enters a system through unhardened applications or unauthorized software execution.
+
+Windows Defender Application Control (WDAC): This is the successor to AppLocker. Use WDAC to create a "whitelist" of trusted publishers and folders. Anything not on the list is blocked.
+
+Attack Surface Reduction (ASR) Rules: Enable Microsoft Defender ASR rules to block common malware techniques, such as office apps creating child processes.
+
+Remove Bloatware: Uninstall unnecessary pre-installed applications to reduce the potential for software vulnerabilities.
+
+Example ASR Rule (Block executable content from email client):
+
+PowerShell
+Add-MpPreference -AttackSurfaceReductionRules_Ids BE9BA2D9-53ED-4437-B4F0-E0888FAF706D -AttackSurfaceReductionRules_Actions Enabled
+Computer Management
+General system settings often contain legacy protocols that are highly exploitable.
+
+Disable LLMNR and NetBIOS: These protocols are frequently used in "Man-in-the-Middle" attacks (e.g., Responder) to capture hashes.
+
+Disable Guest and Built-in Admin: Rename or disable the built-in Administrator and Guest accounts.
+
+RDP Hardening: If Remote Desktop is required, enforce Network Level Authentication (NLA) and change the default port (3389).
+
+Secure Boot: Verify that Secure Boot is active. Note that in June 2026, many original Secure Boot certificates will expire; ensure your system is updated to the latest 2023+ certificate versions.
+
+PowerShell
+PowerShell is a powerful management tool that is also the preferred tool for post-exploitation. Hardening it is mandatory.
+
+Constrained Language Mode (CLM): Limits PowerShell to a subset of commands, preventing the use of Win32 APIs and COM objects used in exploits.
+
+Script Block Logging: Enable logging for Event ID 4104. This records the actual code executed in PowerShell, even if it was obfuscated.
+
+Module Logging: Record the execution of specific modules to the Windows Event Log.
+
+Remove PowerShell v2: Legacy versions of PowerShell do not support modern logging and are often used by attackers to bypass security controls.
+
+Command to check Language Mode:
+
+PowerShell
+$ExecutionContext.SessionState.LanguageMode
+Command to remove PowerShell v2:
+
+PowerShell
+Disable-WindowsOptionalFeature -Online -FeatureName MicrosoftWindowsPowerShellV2Root
+Would you like me to generate a specific Group Policy (GPO) export script or a custom WDAC policy file for your environment?
+
+Hardening Windows with PowerShell
+This video provides a deep dive into implementing Windows Defender Application Control (WDAC) and application whitelisting, which are critical components of the applications and PowerShell hardening sections discussed above.
