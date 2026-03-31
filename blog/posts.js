@@ -21,7 +21,16 @@
 
 const POSTS = [
 
-    // ── EXAMPLE POSTS — replace / delete these ──────────────
+    // ── newest first ───────────────────────────────────────────
+    {
+        slug:     "dcomp-kernel-attack-surface",
+        title:    "Windows DirectComposition — Kernel-Mode Attack Surface Analysis",
+        date:     "2026-03-31",
+        readTime: "18 min read",
+        excerpt:  "SSN extraction for NtDCompositionCommitChannel & NtDCompositionCreateChannel, full Ghidra trace of the dcomp.dll commit pipeline, and kernel-side analysis of win32kbase.sys batch dispatch logic. No CVE — full analysis.",
+        tags:     ["windows", "internals", "reverse-engineering", "exploit-dev", "red-team"],
+        featured: true
+    },
     {
         slug:     "windows-hardening",
         title:    "Windows Hardening: From Default Install to Fortress",
@@ -29,28 +38,40 @@ const POSTS = [
         readTime: "12 min read",
         excerpt:  "A systematic walkthrough of hardening a Windows 11 endpoint — BitLocker XTS-AES 256, LAPS, WDAC, killing LLMNR/NetBIOS, and PowerShell CLM configurations that actually hold against modern threats.",
         tags:     ["windows", "hardening", "blue-team", "internals"],
-        featured: true
+        featured: false
     },
 
 ];
 
 // ── TAG COLORS — add new tags here with a hex color ─────────
 const TAG_COLORS = {
-    "windows":            "#00b4ff",
-    "hardening":          "#00ff9d",
-    "blue-team":          "#0af",
-    "internals":          "#a78bfa",
-    "malware-dev":        "#ff2d55",
-    "evasion":            "#ff6b35",
-    "red-team":           "#ff2d55",
-    "reverse-engineering":"#f59e0b",
-    "tools":              "#10b981",
-    "osint":              "#8b5cf6",
-    "recon":              "#ec4899",
-    "exploit-dev":        "#ef4444",
-    "ctf":                "#00e5ff",
-    "linux":              "#84cc16",
-    "networking":         "#06b6d4",
+    // Windows & Internals
+    "windows":              "#00b4ff",
+    "internals":            "#a78bfa",
+    "hardening":            "#00ff9d",
+    "blue-team":            "#00aaff",
+
+    // Offensive
+    "red-team":             "#ff2d55",
+    "malware-dev":          "#ff2d55",
+    "evasion":              "#ff6b35",
+    "exploit-dev":          "#ef4444",
+    "shellcode":            "#f97316",
+
+    // Analysis
+    "reverse-engineering":  "#f59e0b",
+    "tools":                "#10b981",
+
+    // Recon & Intel
+    "osint":                "#8b5cf6",
+    "recon":                "#ec4899",
+
+    // Other
+    "ctf":                  "#00e5ff",
+    "linux":                "#84cc16",
+    "networking":           "#06b6d4",
+    "kernel":               "#c084fc",
+    "win32k":               "#fb923c",
 };
 
 // Default color for unknown tags
