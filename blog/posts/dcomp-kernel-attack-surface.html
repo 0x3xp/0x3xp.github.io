@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Windows DirectComposition — Kernel Attack Surface Analysis — Piyusha Akash</title>
+    <meta name="description" content="Full syscall enumeration, static reverse-engineering of dcomp.dll via Ghidra, and kernel-side analysis of NtDCompositionCommitChannel in win32kbase.sys on Windows 10 Build 19045.6466.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;600;700;800&family=Fira+Code:wght@300;400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;1,6..72,300;1,6..72,400&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/base16/tomorrow-night.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+    <style>
+        :root {
+            --acid:   #00ff9d;
+            --acid2:  #00e5ff;
+            --red:    #ff2d55;
+            --gold:   #f59e0b;
+            --bg:     #060608;
+            --bg2:    #0a0a0f;
+            --surface:  #0e0e16;
+            --surface2: #14141f;
+            --border:        rgba(0,255,157,0.10);
+            --border-bright: rgba(0,255,157,0.38);
+            --text:     #c8ccd8;
+            --text-dim: #555870;
+            --white:    #f0f2ff;
+            --prose-width: 760px;
+        }
+
+        *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+        html { scroll-behavior:smooth; }
+        body {
+            background:var(--bg); color:var(--text);
+            font-family:'Newsreader',Georgia,serif;
+            overflow-x:hidden; cursor:none;
+        }
+
+        .cursor { position:fixed; width:8px; height:8px; background:var(--acid); border-radius:50%; pointer-events:none; z-index:9999; transform:translate(-50%,-50%); box-shadow:0 0 12px var(--acid),0 0 30px rgba(0,255,157,.3); transition:transform .1s; }
+        .cursor-ring { position:fixed; width:32px; height:32px; border:1px solid rgba(0,255,157,.5); border-radius:50%; pointer-events:none; z-index:9998; transform:translate(-50%,-50%); transition:all .15s ease; }
+
+        body::before { content:''; position:fixed; inset:0; background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E"); opacity:.022; pointer-events:none; z-index:1000; }
+
+        .grid-bg { position:fixed; inset:0; background-image: linear-gradient(rgba(0,255,157,.02) 1px,transparent 1px), linear-gradient(90deg,rgba(0,255,157,.02) 1px,transparent 1px); background-size:60px 60px; pointer-events:none; }
+
+        .scanline { position:fixed; width:100%; height:1px; background:linear-gradient(90deg,transparent,rgba(0,255,157,.18) 50%,transparent); animation:scan 9s linear infinite; pointer-events:none; z-index:2; }
+        @keyframes scan { 0%{top:-1px} 100%{top:100%} }
+
+        /* NAV */
+        nav { position:fixed; top:0; left:0; right:0; z-index:900; padding:16px 48px; display:flex; justify-content:space-between; align-items:center; background:rgba(6,6,8,.9); backdrop-filter:blur(24px); border-bottom:1px solid var(--border); }
+        .nav-logo { font-family:'Space Mono',monospace; font-size:14px; color:var(--acid); letter-spacing:.1em; text-decoration:none; }
+        .nav-logo span { color:var(--text-dim); }
+        .nav-right { display:flex; align-items:center; gap:24px; }
+        .nav-link { font-family:'Fira Code',monospace; font-size:11px; color:var(--text-dim); text-decoration:none; letter-spacing:.08em; transition:color .2s; }
+        .nav-link::before { content:'./'; color:var(--acid); opacity:.5; }
+        .nav-link:hover { color:var(--acid); }
+
+        /* READING PROGRESS */
+        #reading-progress { position:fixed; top:0; left:0; z-index:950; height:2px; width:0%; background:linear-gradient(90deg,var(--acid),var(--acid2)); transition:width .1s linear; box-shadow:0 0 8px rgba(0,255,157,.5); }
+
+        /* REPORT METADATA BANNER */
+        .report-banner {
+            background:var(--surface);
+            border:1px solid var(--border);
+            border-left:3px solid var(--red);
+            margin-bottom:40px;
+            overflow:hidden;
+        }
+        .report-banner-header {
+            background:rgba(255,45,85,.06);
+            padding:10px 20px;
+            font-family:'Fira Code',monospace;
+            font-size:10px;
+            color:var(--red);
+            letter-spacing:.2em;
+            border-bottom:1px solid rgba(255,45,85,.15);
+            display:flex;
+            align-items:center;
+            gap:10px;
+        }
+        .report-banner-header .rb-dot { width:6px; height:6px; border-radius:50%; background:var(--red); box-shadow:0 0 6px var(--red); animation:pulse-dot 2s infinite; }
+        @keyframes pulse-dot { 0%,100%{opacity:1} 50%{opacity:.3} }
+        .report-banner-grid {
+            display:grid;
+            grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+            gap:0;
+        }
+        .report-banner-cell {
+            padding:12px 20px;
+            border-right:1px solid var(--border);
+            border-bottom:1px solid var(--border);
+        }
+        .report-banner-cell:last-child { border-right:none; }
+        .rbc-label { font-family:'Fira Code',monospace; font-size:9px; color:var(--text-dim); letter-spacing:.15em; margin-bottom:4px; }
+        .rbc-value { font-family:'Fira Code',monospace; font-size:12px; color:var(--white); }
+        .rbc-value.v-red { color:var(--red); }
+        .rbc-value.v-green { color:var(--acid); }
+        .rbc-value.v-blue { color:var(--acid2); }
+        .rbc-value.v-gold { color:var(--gold); }
+
+        /* POST WRAP */
+        .post-wrap { max-width:var(--prose-width); margin:0 auto; padding:120px 24px 100px; position:relative; z-index:5; }
+
+        /* POST HEADER */
+        .post-header { margin-bottom:48px; }
+        .post-tags-top { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:24px; }
+        .post-tag-top { font-family:'Fira Code',monospace; font-size:10px; padding:3px 12px; letter-spacing:.08em; border:1px solid; }
+        .post-title { font-family:'Syne',sans-serif; font-size:clamp(32px,4.5vw,56px); font-weight:800; line-height:1.0; letter-spacing:-.03em; color:var(--white); margin-bottom:20px; }
+        .post-meta-bar { display:flex; flex-wrap:wrap; align-items:center; gap:20px; font-family:'Fira Code',monospace; font-size:11px; color:var(--text-dim); padding:16px 0; border-top:1px solid var(--border); border-bottom:1px solid var(--border); margin-top:24px; }
+        .pm-item { display:flex; align-items:center; gap:7px; }
+        .pm-divider { color:var(--border-bright); }
+        .pm-author { color:var(--acid); }
+
+        /* TOC */
+        .toc { background:var(--surface); border:1px solid var(--border); border-left:3px solid var(--acid); padding:24px 28px; margin:36px 0; }
+        .toc-title { font-family:'Fira Code',monospace; font-size:11px; color:var(--acid); letter-spacing:.15em; margin-bottom:16px; }
+        .toc ol { list-style:none; counter-reset:toc-counter; }
+        .toc li { counter-increment:toc-counter; font-family:'Fira Code',monospace; font-size:12px; color:var(--text-dim); margin-bottom:10px; display:flex; align-items:flex-start; gap:10px; }
+        .toc li::before { content:counter(toc-counter,decimal-leading-zero) '.'; color:var(--acid); opacity:.6; flex-shrink:0; }
+        .toc a { color:var(--text-dim); text-decoration:none; transition:color .2s; line-height:1.5; }
+        .toc a:hover { color:var(--acid); }
+        /* nested TOC items */
+        .toc .toc-sub { list-style:none; padding-left:28px; margin-top:8px; counter-reset:toc-sub; }
+        .toc .toc-sub li { font-size:11px; margin-bottom:6px; counter-increment:toc-sub; }
+        .toc .toc-sub li::before { content:counter(toc-counter,decimal-leading-zero) '.' counter(toc-sub) '.'; font-size:10px; opacity:.4; }
+
+        /* PROSE */
+        .post-body { line-height:1.85; font-size:17px; font-weight:300; color:var(--text); }
+
+        .post-body h2 { font-family:'Syne',sans-serif; font-size:clamp(20px,2.8vw,28px); font-weight:800; color:var(--white); letter-spacing:-.02em; margin:60px 0 20px; padding-bottom:12px; border-bottom:1px solid var(--border); scroll-margin-top:90px; }
+        .post-body h2::before { content:'// '; color:var(--acid); opacity:.7; font-family:'Fira Code',monospace; font-size:.68em; }
+
+        .post-body h3 { font-family:'Syne',sans-serif; font-size:17px; font-weight:700; color:var(--white); margin:36px 0 14px; scroll-margin-top:90px; }
+        .post-body h3::before { content:'> '; color:var(--acid2); opacity:.6; font-family:'Fira Code',monospace; }
+
+        .post-body p { margin-bottom:22px; }
+        .post-body strong { color:var(--white); font-weight:600; }
+        .post-body em { font-style:italic; }
+
+        .post-body code { font-family:'Fira Code',monospace; font-size:.82em; color:var(--acid); background:rgba(0,255,157,.07); border:1px solid rgba(0,255,157,.15); padding:2px 7px; border-radius:2px; }
+
+        .post-body pre { margin:24px 0; border-radius:4px; overflow:hidden; border:1px solid var(--border); box-shadow:0 4px 24px rgba(0,0,0,.5); }
+        .post-body pre code { font-family:'Fira Code',monospace; font-size:12.5px; background:transparent; border:none; padding:0; color:inherit; line-height:1.65; }
+
+        .code-wrap { position:relative; }
+        .code-label { position:absolute; top:0; right:0; font-family:'Fira Code',monospace; font-size:10px; color:var(--text-dim); background:var(--surface2); padding:6px 14px; letter-spacing:.1em; z-index:1; border-left:1px solid var(--border); border-bottom:1px solid var(--border); }
+        .code-copy { position:absolute; top:0; left:0; font-family:'Fira Code',monospace; font-size:10px; color:var(--text-dim); background:transparent; padding:6px 14px; letter-spacing:.06em; z-index:1; border:none; cursor:pointer; transition:color .2s; }
+        .code-copy:hover { color:var(--acid); }
+
+        /* SSN chip — inline display for extracted syscall numbers */
+        .ssn-chip {
+            display:inline-flex; align-items:center; gap:8px;
+            font-family:'Fira Code',monospace; font-size:12px;
+            background:rgba(255,45,85,.08); border:1px solid rgba(255,45,85,.3);
+            color:var(--red); padding:6px 16px; margin:4px 4px 4px 0;
+            letter-spacing:.06em;
+        }
+        .ssn-chip .sc-label { color:var(--text-dim); font-size:10px; }
+
+        /* pipeline diagram */
+        .pipeline {
+            background:var(--surface); border:1px solid var(--border);
+            padding:24px 28px; margin:28px 0;
+            font-family:'Fira Code',monospace; font-size:13px;
+        }
+        .pipeline-title { font-size:10px; color:var(--text-dim); letter-spacing:.18em; margin-bottom:16px; }
+        .pipeline-step {
+            display:flex; align-items:flex-start; gap:12px;
+            margin-bottom:10px; color:var(--text);
+        }
+        .pipeline-step:last-child { margin-bottom:0; }
+        .ps-num { color:var(--acid); flex-shrink:0; opacity:.6; min-width:24px; }
+        .ps-arrow { color:var(--text-dim); flex-shrink:0; }
+        .ps-name { color:var(--white); font-weight:500; }
+        .ps-desc { color:var(--text-dim); font-size:11px; margin-top:2px; }
+        .ps-connector { padding-left:36px; color:var(--text-dim); font-size:11px; margin-bottom:10px; }
+        .ps-connector::before { content:'└──'; margin-right:8px; color:var(--border-bright); }
+
+        .post-body blockquote { border-left:3px solid var(--acid); background:rgba(0,255,157,.04); padding:18px 24px; margin:24px 0; font-style:italic; color:var(--text-dim); }
+        .post-body blockquote strong { color:var(--acid); font-style:normal; }
+
+        .post-body ul,.post-body ol { padding-left:28px; margin-bottom:22px; }
+        .post-body li { margin-bottom:8px; }
+        .post-body ul li::marker { color:var(--acid); }
+        .post-body ol li::marker { color:var(--acid); font-family:'Fira Code',monospace; font-size:.85em; }
+
+        .post-body hr { border:none; border-top:1px solid var(--border); margin:48px 0; }
+
+        .post-body a { color:var(--acid); text-decoration:underline; text-decoration-color:rgba(0,255,157,.3); text-underline-offset:3px; transition:text-decoration-color .2s; }
+        .post-body a:hover { text-decoration-color:var(--acid); }
+
+        /* TABLES */
+        .post-body table { width:100%; border-collapse:collapse; margin:24px 0; font-size:13px; font-family:'Fira Code',monospace; }
+        .post-body th { background:var(--surface); color:var(--acid); padding:11px 16px; text-align:left; border:1px solid var(--border); font-size:10px; letter-spacing:.12em; }
+        .post-body td { padding:10px 16px; border:1px solid var(--border); color:var(--text); }
+        .post-body tr:hover td { background:rgba(0,255,157,.02); }
+        .post-body td code { font-size:.88em; }
+        /* status cells */
+        td.s-red { color:var(--red) !important; }
+        td.s-green { color:var(--acid) !important; }
+        td.s-gold { color:var(--gold) !important; }
+        td.s-blue { color:var(--acid2) !important; }
+
+        /* CALLOUTS */
+        .callout { padding:18px 22px; margin:24px 0; border-left:3px solid; font-family:'Fira Code',monospace; font-size:12.5px; line-height:1.7; }
+        .callout-title { font-weight:700; letter-spacing:.12em; margin-bottom:8px; font-size:10px; }
+        .callout-info   { border-color:var(--acid2); background:rgba(0,229,255,.05); }
+        .callout-info   .callout-title { color:var(--acid2); }
+        .callout-warn   { border-color:#f59e0b; background:rgba(245,158,11,.05); }
+        .callout-warn   .callout-title { color:#f59e0b; }
+        .callout-danger { border-color:var(--red); background:rgba(255,45,85,.05); }
+        .callout-danger .callout-title { color:var(--red); }
+        .callout-tip    { border-color:var(--acid); background:rgba(0,255,157,.05); }
+        .callout-tip    .callout-title { color:var(--acid); }
+
+        /* OFFSET TABLE — special style for struct field docs */
+        .offset-table th:first-child, .offset-table td:first-child { color:var(--gold); font-weight:600; min-width:80px; }
+        .offset-table th:nth-child(2), .offset-table td:nth-child(2) { color:var(--acid2); min-width:180px; }
+
+        /* POST FOOTER */
+        .post-footer { margin-top:72px; padding-top:40px; border-top:1px solid var(--border); }
+        .pf-label { font-family:'Fira Code',monospace; font-size:10px; color:var(--text-dim); letter-spacing:.2em; margin-bottom:20px; }
+        .pf-tags { display:flex; flex-wrap:wrap; gap:10px; margin-bottom:40px; }
+        .pf-tag { font-family:'Fira Code',monospace; font-size:11px; padding:6px 14px; border:1px solid; text-decoration:none; transition:all .2s; border-radius:1px; }
+        .pf-back { display:inline-flex; align-items:center; gap:10px; font-family:'Fira Code',monospace; font-size:12px; color:var(--text-dim); text-decoration:none; border:1px solid var(--border); padding:12px 24px; letter-spacing:.1em; transition:all .3s; }
+        .pf-back:hover { border-color:var(--border-bright); color:var(--acid); background:rgba(0,255,157,.04); }
+        .pf-back::before { content:'←'; color:var(--acid); opacity:.7; }
+
+        #particles-canvas { position:fixed; inset:0; pointer-events:none; z-index:1; opacity:.22; }
+
+        @media(max-width:600px) {
+            nav { padding:14px 20px; }
+            .post-wrap { padding:100px 20px 80px; }
+            .post-title { font-size:clamp(28px,9vw,44px); }
+            .post-body { font-size:15.5px; }
+            .report-banner-grid { grid-template-columns:1fr 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="reading-progress"></div>
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+<canvas id="particles-canvas"></canvas>
+<div class="grid-bg"></div>
+<div class="scanline"></div>
+
+<nav>
+    <a href="../../" class="nav-logo">[<span>0x3xp</span>] <span style="color:var(--text-dim)">~</span></a>
+    <div class="nav-right">
+        <a href="../" class="nav-link">blog</a>
+        <a href="../../#projects" class="nav-link">projects</a>
+        <a href="../../" class="nav-link">home</a>
+    </div>
+</nav>
+
+<article class="post-wrap">
+
+    <header class="post-header">
+        <div class="post-tags-top" id="post-tags-top"></div>
+        <h1 class="post-title" id="post-title">Windows DirectComposition — Kernel-Mode Attack Surface Analysis</h1>
+        <div class="post-meta-bar">
+            <span class="pm-item pm-author">Piyusha Akash</span>
+            <span class="pm-divider">·</span>
+            <span class="pm-item" id="pm-date">DATE</span>
+            <span class="pm-divider">·</span>
+            <span class="pm-item" id="pm-read">READ TIME</span>
+            <span class="pm-divider">·</span>
+            <span class="pm-item">
+                <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                &nbsp;reading
+            </span>
+        </div>
+    </header>
+
+    <!-- REPORT METADATA BANNER -->
+    <div class="report-banner">
+        <div class="report-banner-header">
+            <span class="rb-dot"></span>
+            TECHNICAL RESEARCH REPORT — INTERNAL
+        </div>
+        <div class="report-banner-grid">
+            <div class="report-banner-cell">
+                <div class="rbc-label">TARGET OS</div>
+                <div class="rbc-value v-blue">Windows 10 x64</div>
+            </div>
+            <div class="report-banner-cell">
+                <div class="rbc-label">BUILD</div>
+                <div class="rbc-value v-gold">19045.6466</div>
+            </div>
+            <div class="report-banner-cell">
+                <div class="rbc-label">PROJECT</div>
+                <div class="rbc-value">Win32k Graphics Attack Surface</div>
+            </div>
+            <div class="report-banner-cell">
+                <div class="rbc-label">RESEARCH STATUS</div>
+                <div class="rbc-value v-gold">Analysis Complete — No CVE</div>
+            </div>
+            <div class="report-banner-cell">
+                <div class="rbc-label">TOOLS USED</div>
+                <div class="rbc-value">WinDbg · Ghidra · IDA Pro</div>
+            </div>
+            <div class="report-banner-cell">
+                <div class="rbc-label">CLASSIFICATION</div>
+                <div class="rbc-value v-red">Kernel Fuzzing Preparation</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TABLE OF CONTENTS -->
+    <div class="toc">
+        <div class="toc-title">// TABLE OF CONTENTS</div>
+        <ol>
+            <li><a href="#abstract">Abstract</a></li>
+            <li><a href="#methodology">Methodology</a></li>
+            <li>
+                <a href="#syscall-enum">Syscall Enumeration — NtDComposition*</a>
+                <ol class="toc-sub">
+                    <li><a href="#ssn-commit">NtDCompositionCommitChannel — SSN 0x111F</a></li>
+                    <li><a href="#ssn-create">NtDCompositionCreateChannel — SSN 0x1124</a></li>
+                    <li><a href="#ssn-summary">SSN Summary & Technical Observations</a></li>
+                </ol>
+            </li>
+            <li>
+                <a href="#static-analysis">Static Analysis — dcomp.dll Execution Flow</a>
+                <ol class="toc-sub">
+                    <li><a href="#phase1">Phase 1 — CDevice::Commit</a></li>
+                    <li><a href="#phase2">Phase 2 — CDevice::CommitToKernel</a></li>
+                    <li><a href="#phase3">Phase 3 — KernelChannel::CommitChannel</a></li>
+                </ol>
+            </li>
+            <li>
+                <a href="#kernel-analysis">Kernel-Side Analysis — win32kbase.sys</a>
+                <ol class="toc-sub">
+                    <li><a href="#k-probe">User-Mode Pointer Validation</a></li>
+                    <li><a href="#k-lookup">Process & Channel Object Lookup</a></li>
+                    <li><a href="#k-dispatch">Batch Deserialization Loop</a></li>
+                    <li><a href="#k-dispatcher">FUN_1c005ee20 — Batch Dispatcher</a></li>
+                </ol>
+            </li>
+            <li><a href="#conclusions">Conclusions & Next Steps</a></li>
+        </ol>
+    </div>
+
+    <div class="post-body">
+
+        <!-- ══════════════════════════════════════════════════════════ -->
+        <h2 id="abstract">Abstract</h2>
+
+        <p>
+            This post documents the reconnaissance and static analysis phase of an attack surface investigation into the <strong>Windows DirectComposition (DComp)</strong> subsystem. The work was performed against a live Windows 10 x64 host (Build 19045.6466) as preparation for kernel-mode fuzzing of <code>win32kbase.sys</code>.
+        </p>
+
+        <p>
+            The goal was clear: extract System Service Numbers (SSNs) for the DComp channel syscalls, trace the full user-mode commit pipeline from application to kernel boundary, and understand how the kernel deserializes and dispatches command batches on the other side of that boundary. <strong>No exploitable vulnerability was found during this engagement</strong> — but the structural knowledge gained is a direct prerequisite for any meaningful fuzzing campaign against this subsystem.
+        </p>
+
+        <div class="callout callout-warn">
+            <div class="callout-title">// RESEARCH STATUS</div>
+            Analysis is complete. No CVE was identified in this phase. The next steps section outlines the fuzzing harness work required to proceed toward vulnerability discovery. All research conducted on an isolated local machine with no network access.
+        </div>
+
+        <p>
+            Three primary activities are covered:
+        </p>
+
+        <ul>
+            <li>Enumeration of <code>NtDComposition*</code> symbols from <code>win32u.dll</code> using WinDbg and extraction of exact SSN values from disassembled syscall stubs</li>
+            <li>Static reverse-engineering of <code>dcomp.dll</code> via Ghidra tracing the full user-mode commit pipeline through three distinct phases</li>
+            <li>Kernel-side analysis of <code>NtDCompositionCommitChannel</code> in <code>win32kbase.sys</code> — pointer probing, handle resolution, and batch dispatch logic</li>
+        </ul>
+
+        <!-- ══════════════════════════════════════════════════════════ -->
+        <h2 id="methodology">Methodology</h2>
+
+        <p>
+            The investigation was conducted in two parallel tracks. The first was <strong>dynamic analysis</strong> — attaching WinDbg to a live user-mode process and querying the <code>win32u.dll</code> export table. Since <code>win32u.dll</code> is the thin user-mode wrapper for all Win32k syscalls, its stubs contain the literal SSN values loaded into <code>EAX</code> immediately before the <code>syscall</code> instruction fires. Disassembling those stubs gives us the exact numbers needed to invoke the kernel directly.
+        </p>
+
+        <p>
+            The second track was <strong>static analysis</strong> via Ghidra. <code>dcomp.dll</code> was loaded with its PDB and the decompiler was used to trace the commit pipeline from the high-level <code>CDevice::Commit</code> entry point — the function called by every DirectComposition application to flush pending visual changes — all the way down to the <code>NtDCompositionCommitChannel</code> syscall stub. The kernel binary <code>win32kbase.sys</code> was then loaded separately to reverse the Ring 0 handler.
+        </p>
+
+        <div class="callout callout-info">
+            <div class="callout-title">// ENVIRONMENT</div>
+            All analysis performed on a single non-networked Windows 10 22H2 VM. WinDbg Preview 1.2406.x, Ghidra 11.x with MSVC decompiler. Symbol server configured locally via cached PDB files.
+        </div>
+
+        <!-- ══════════════════════════════════════════════════════════ -->
+        <h2 id="syscall-enum">Syscall Enumeration — NtDComposition*</h2>
+
+        <p>
+            The <code>x</code> (Examine) command in WinDbg queries exported symbols by wildcard. Pointing it at <code>win32u!NtDComposition*</code> reveals every DComp syscall stub in the module — and there are a lot of them, confirming that the DComp attack surface is wide:
+        </p>
+
+        <div class="code-wrap">
+            <span class="code-label">WinDbg</span>
+            <button class="code-copy" onclick="copyCode(this)">copy</button>
+            <pre><code class="language-plaintext">0:000> x win32u!NtDComposition*</code></pre>
+        </div>
+
+        <p>
+            From the full list, two functions were selected as primary targets based on their role in the commit pipeline — the function that initializes a channel and the function that sends data through it.
+        </p>
+
+        <h3 id="ssn-commit">3.1 — NtDCompositionCommitChannel · SSN <code>0x111F</code></h3>
+
+        <p>
+            The syscall stub follows the standard x64 Windows convention. <code>R10</code> preserves <code>RCX</code> because the <code>syscall</code> instruction will clobber it. The value loaded into <code>EAX</code> is the System Service Number — this is what we extract:
+        </p>
+
+        <div class="code-wrap">
+            <span class="code-label">x64 ASM — win32u.dll</span>
+            <button class="code-copy" onclick="copyCode(this)">copy</button>
+            <pre><code class="language-x86asm">win32u!NtDCompositionCommitChannel:
+00007ffa`71ff3410  4c8bd1           mov     r10,rcx
+00007ffa`71ff3413  b81f110000       mov     eax,111Fh       ; ← SSN extracted here
+00007ffa`71ff3418  f604250803fe7f01 test    byte ptr [SharedUserData+0x308],1
+00007ffa`71ff3422  0f05             syscall
+00007ffa`71ff3424  c3               ret</code></pre>
+        </div>
+
+        <div style="margin:16px 0;">
+            <span class="ssn-chip"><span class="sc-label">FUNCTION</span> NtDCompositionCommitChannel</span>
+            <span class="ssn-chip"><span class="sc-label">SSN</span> 0x111F</span>
+            <span class="ssn-chip"><span class="sc-label">SUBSYSTEM</span> Win32k</span>
+        </div>
+
+        <h3 id="ssn-create">3.2 — NtDCompositionCreateChannel · SSN <code>0x1124</code></h3>
+
+        <div class="code-wrap">
+            <span class="code-label">x64 ASM — win32u.dll</span>
+            <button class="code-copy" onclick="copyCode(this)">copy</button>
+            <pre><code class="language-x86asm">win32u!NtDCompositionCreateChannel:
+00007ffa`71ff34b0  4c8bd1           mov     r10,rcx
+00007ffa`71ff34b3  b824110000       mov     eax,1124h       ; ← SSN extracted here
+00007ffa`71ff34b8  f604250803fe7f01 test    byte ptr [SharedUserData+0x308],1
+00007ffa`71ff34c2  0f05             syscall
+00007ffa`71ff34c4  c3               ret</code></pre>
+        </div>
+
+        <div style="margin:16px 0;">
+            <span class="ssn-chip"><span class="sc-label">FUNCTION</span> NtDCompositionCreateChannel</span>
+            <span class="ssn-chip"><span class="sc-label">SSN</span> 0x1124</span>
+            <span class="ssn-chip"><span class="sc-label">SUBSYSTEM</span> Win32k</span>
+        </div>
+
+        <h3 id="ssn-summary">3.3 — SSN Summary & Technical Observations</h3>
+
+        <table>
+            <thead>
+                <tr><th>Function</th><th>SSN (Hex)</th><th>Subsystem</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><code>NtDCompositionCommitChannel</code></td><td class="s-red">0x111F</td><td>Win32k</td></tr>
+                <tr><td><code>NtDCompositionCreateChannel</code></td><td class="s-red">0x1124</td><td>Win32k</td></tr>
+            </tbody>
+        </table>
+
+        <p>
+            <strong><code>mov r10, rcx</code> — Mandatory x64 Syscall Convention.</strong> This is an architectural requirement, not a DComp quirk. The <code>syscall</code> instruction overwrites <code>RCX</code> with the return address (for <code>sysret</code>), so the first argument — which the calling convention places in <code>RCX</code> — must be saved to <code>R10</code> first. Every Win32k syscall stub begins this way.
+        </p>
+
+        <p>
+            <strong>Win32k SSN Range.</strong> Standard NT Executive syscalls occupy the <code>0x0000</code>–<code>0x01FF</code> range. These IDs are in the <code>0x11xx</code> block, confirming they route through the <strong>Win32k graphical subsystem</strong> dispatcher rather than the core NT executive. This is a different dispatch table, different filtering mechanisms, and a historically more vulnerable attack surface.
+        </p>
+
+        <blockquote>
+            <strong>Practical note:</strong> The <code>0x11xx</code> Win32k range is significant for EDR bypass research. Many kernel callback filters are registered for NT syscalls but have weaker coverage of Win32k-specific syscalls. Direct invocation at these SSNs can bypass some user-mode hook chains entirely.
+        </blockquote>
+
+        <!-- ══════════════════════════════════════════════════════════ -->
+        <h2 id="static-analysis">Static Analysis — dcomp.dll Execution Flow</h2>
+
+        <p>
+            With the syscall targets identified, the next step was understanding the full call chain inside <code>dcomp.dll</code>. Every DirectComposition application calls <code>IDCompositionDevice::Commit()</code> to apply pending visual changes — but COM interfaces are thin wrappers. The real work happens in three phases inside the implementation:
+        </p>
+
+        <div class="pipeline">
+            <div class="pipeline-title">// COMMIT PIPELINE — dcomp.dll</div>
+            <div class="pipeline-step">
+                <span class="ps-num">01</span>
+                <div>
+                    <div class="ps-name">CDevice::Commit()</div>
+                    <div class="ps-desc">Entry point — synchronization, dirty-object rebuild, back-pressure, telemetry</div>
+                </div>
+            </div>
+            <div class="ps-connector">delegates to CommitToKernel()</div>
+            <div class="pipeline-step">
+                <span class="ps-num">02</span>
+                <div>
+                    <div class="ps-name">CDevice::CommitToKernel()</div>
+                    <div class="ps-desc">Batch validation — size integrity check, FailFast on mismatch, cleanup</div>
+                </div>
+            </div>
+            <div class="ps-connector">calls vtable +0x18 on KernelChannel</div>
+            <div class="pipeline-step">
+                <span class="ps-num">03</span>
+                <div>
+                    <div class="ps-name">KernelChannel::CommitChannel()</div>
+                    <div class="ps-desc">Kernel bridge — issues syscall, translates NTSTATUS → HRESULT</div>
+                </div>
+            </div>
+            <div class="ps-connector">syscall NtDCompositionCommitChannel (SSN 0x111F)</div>
+            <div class="pipeline-step">
+                <span class="ps-num">04</span>
+                <div>
+                    <div class="ps-name">win32kbase.sys — Ring 0</div>
+                    <div class="ps-desc">Pointer probing, handle lookup, batch dequeue & dispatch</div>
+                </div>
+            </div>
+        </div>
+
+        <h3 id="phase1">Phase 1 — Entry Point: <code>CDevice::Commit</code></h3>
+
+        <p>
+            <code>CDevice::Commit</code> is the transactional flush entry point. Before any kernel work happens, it performs several housekeeping operations:
+        </p>
+
+        <ul>
+            <li><strong>Synchronization</strong> — Acquires either a <code>CRITICAL_SECTION</code> via <code>EnterCriticalSection</code> or a vtable-dispatched lock at <code>this+0x08</code>, depending on whether a custom lock object exists at <code>this+0x48</code>.</li>
+            <li><strong>Dirty-object rebuild</strong> — Iterates a singly-linked list at <code>this+0x1c8</code>, calling <code>CRebuildableObject::Rebuild</code> on each pending visual update before committing.</li>
+            <li><strong>Virtual surface optimization</strong> — If <code>g_VSAllowOptimizer</code> is set, invokes <code>CVirtualSurfaceOptimizer::OptimizeVirtualSurface</code> to prune surfaces idle longer than 999ms and reclaim memory.</li>
+            <li><strong>Back-pressure handling</strong> — If the kernel batch queue is saturated, spins on <code>CommitToKernel</code> + <code>WaitForCommitCompletionInternal</code> until the queue drains.</li>
+            <li><strong>Telemetry</strong> — Under an SRW lock, invokes <code>CTelemetryHelper::LogTelemetryLocked</code> if 600 seconds have elapsed since the last telemetry flush.</li>
+        </ul>
+
+        <div class="code-wrap">
+            <span class="code-label">C++ — Ghidra Decompilation (annotated)</span>
+            <button class="code-copy" onclick="copyCode(this)">copy</button>
+            <pre><code class="language-cpp">long __thiscall DirectComposition::CDevice::Commit(CDevice *this, bool param_1, void *param_2)
+{
+    // Synchronization: custom lock at this+0x48, fallback to CRITICAL_SECTION at this+0x50
+    if (*(longlong **)(this + 0x48) == (longlong *)0x0) {
+        EnterCriticalSection((LPCRITICAL_SECTION)(this + 0x50));
+    } else {
+        cVar13 = (**(code **)(**(longlong **)(this + 0x48) + 8))();  // vtable acquire
+        if (cVar13 != '\0') this[0x7c] = (CDevice)0x1;
+        *(int *)(this + 0x78) = *(int *)(this + 0x78) + 1;
+    }
+
+    // Dirty-object rebuild loop — flushes pending visual changes
+    this_02 = *(CRebuildableObject **)(this + 0x1c8);
+    while (this_02 != (CRebuildableObject *)0x0) {
+        uVar45 = CRebuildableObject::Rebuild(this_02);
+        this_02 = *(CRebuildableObject **)(*(longlong *)(this + 0x1c8) + 8);
+        if (-1 < (int)uVar45) {
+            *(undefined8 *)(*(longlong *)(this + 0x1c8) + 8) = 0;
+        }
+    }
+
+    // Virtual surface optimizer (idle > 999ms → candidate for removal)
+    if (g_VSAllowOptimizer != false) {
+        UVar19 = GetTickCount64();
+        // CVirtualSurfaceOptimizer::OptimizeVirtualSurface(...)
+    }
+
+    // Back-pressure: spin until kernel batch queue drains
+    if (cVar13 != '\0') {
+        do {
+            iVar18 = CommitToKernel(this, (longlong *)p_Var29, 0, in_R9);
+            if (iVar18 < 0) break;
+            lVar16 = WaitForCommitCompletionInternal(this, false);
+            if (lVar16 < 0) break;
+            bVar47 = ShouldBlockForExcessivePending(this);
+        } while (bVar47);
+    }
+
+    // Telemetry (SRW lock, 600 000ms throttle)
+    AcquireSRWLockExclusive((PSRWLOCK)(this + 0x2b0));
+    if (*(GetTickCount64()) > *(ulonglong *)this_00) {
+        CTelemetryHelper::LogTelemetryLocked(this_00);
+        *(ULONGLONG *)this_00 = UVar19 + 600000;
+    }
+    ReleaseSRWLockExclusive((PSRWLOCK)(this + 0x2b0));
+
+    // Release synchronization
+    if (*(longlong **)(this + 0x48) != (longlong *)0x0) {
+        (**(code **)(**(longlong **)(this + 0x48) + 0x18))();  // vtable release
+    } else {
+        LeaveCriticalSection((LPCRITICAL_SECTION)(this + 0x50));
+    }
+}</code></pre>
+        </div>
+
+        <h3 id="phase2">Phase 2 — Batch Preparation: <code>CDevice::CommitToKernel</code></h3>
+
+        <p>
+            <code>CommitToKernel</code> validates the batch before it crosses the privilege boundary. The most interesting part for fuzzing purposes is the <strong>integrity check</strong> — if the committed batch size doesn't match the expected counter, the process calls <code>FailFastForKernelBatchFailure</code> rather than propagating the mismatch. This is a deliberate hardening decision to prevent corrupted batches from reaching the kernel.
+        </p>
+
+        <p>
+            Key field offsets documented from the Ghidra analysis:
+        </p>
+
+        <table class="offset-table">
+            <thead>
+                <tr><th>Offset</th><th>Field</th><th>Description</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><code>this+0x48</code></td><td>Resource manager ptr</td><td>If non-null, vtable slot +0x18 is flushed before batch prep</td></tr>
+                <tr><td><code>this+0x88</code></td><td>KernelChannel object</td><td>Target of the final CommitChannel vtable call</td></tr>
+                <tr><td><code>this+0x98</code></td><td>Batch write offset</td><td>Current write position in the batch buffer</td></tr>
+                <tr><td><code>this+0x9c</code></td><td>Batch base offset</td><td>Base of the committed range; diff = payload size</td></tr>
+                <tr><td><code>this+0xa0</code></td><td>Expected batch size</td><td>Must match (<code>0x98</code> - <code>0x9c</code>) or FailFast fires</td></tr>
+                <tr><td><code>this+0xa8</code></td><td>Temp heap buffer</td><td>Freed after batch validation</td></tr>
+            </tbody>
+        </table>
+
+        <div class="code-wrap">
+            <span class="code-label">C++ — Ghidra Decompilation (annotated)</span>
+            <button class="code-copy" onclick="copyCode(this)">copy</button>
+            <pre><code class="language-cpp">int __thiscall DirectComposition::CDevice::CommitToKernel(
+    CDevice *this, longlong *param_1, undefined1 param_2, undefined8 param_3)
+{
+    // Pre-flush resource manager if present
+    if (*(longlong **)(this + 0x48) != (longlong *)0x0)
+        (**(code **)(**(longlong **)(this + 0x48) + 0x18))();
+
+    if (*(int *)(this + 0xa0) != 0) {
+        // Batch validation: compare committed range to expected size
+        iVar1 = (**(code **)(**(longlong **)(this + 0x88) + 0x10))(
+                    *(longlong **)(this + 0x88),
+                    *(int *)(this + 0x98) - *(int *)(this + 0x9c),  // actual size
+                    &local_24, local_res20);
+
+        // INTEGRITY CHECK — mismatch → FailFast (non-recoverable)
+        if (local_24 != *(uint *)(this + 0xa0))
+            FailFastForKernelBatchFailure(this, local_24);
+
+        // Post-validate cleanup
+        if (*(void **)(this + 0xa8) != (void *)0x0) {
+            DefaultHeap::Free(*(void **)(this + 0xa8));
+            *(undefined8 *)(this + 0xa8) = 0;
+        }
+        *(undefined4 *)(this + 0xa0) = 0;
+        *(undefined4 *)(this + 0x9c) = *(undefined4 *)(this + 0x98);
+
+        if (local_res20[0] != '\0')
+            CheckForDelayedDestructionObjects(this);
+    }
+
+    // Commit to kernel channel — vtable +0x18 on KernelChannel at this+0x88
+    iVar1 = (**(code **)(**(longlong **)(this + 0x88) + 0x18))(
+                *(longlong **)(this + 0x88), &local_20, local_28, ...);
+
+    if (-1 < iVar1) {
+        *(int *)(this + 0x188) = local_20 + 1;  // increment commit sequence
+        *(undefined8 *)(this + 0x268) = 0;
+    }
+    return iVar1;
+}</code></pre>
+        </div>
+
+        <div class="callout callout-tip">
+            <div class="callout-title">// FUZZING RELEVANCE</div>
+            The batch size integrity check at <code>this+0xa0</code> is the gate. A fuzzing harness that bypasses <code>dcomp.dll</code> entirely via direct syscall avoids this check. The kernel's own validation at the Ring 0 boundary becomes the target. That is the objective of the next phase of this research.
+        </div>
+
+        <h3 id="phase3">Phase 3 — Kernel Bridge: <code>KernelChannel::CommitChannel</code></h3>
+
+        <p>
+            This is the last user-mode function. It retrieves the channel handle from <code>this+0x8</code> (assigned during <code>NtDCompositionCreateChannel</code>), calls the syscall, and translates the kernel's <code>NTSTATUS</code> response into a COM <code>HRESULT</code>.
+        </p>
+
+        <div class="code-wrap">
+            <span class="code-label">C++ — Ghidra Decompilation</span>
+            <button class="code-copy" onclick="copyCode(this)">copy</button>
+            <pre><code class="language-cpp">ulonglong __thiscall DirectComposition::KernelChannel::CommitChannel(
+    KernelChannel *this, longlong param_1)
+{
+    // Cross the privilege boundary — this+8 is the channel handle
+    uVar2 = NtDCompositionCommitChannel(*(undefined4 *)(this + 8));
+    uVar1 = (uint)uVar2;
+
+    if (uVar1 == 0) return uVar2;  // S_OK fast-path
+
+    // NTSTATUS → HRESULT translation table
+    if ((int)uVar1 < -0x3fffffe8) {
+        if (uVar1 == 0xc0000017) return 0x8007000e;  // STATUS_NO_MEMORY → E_OUTOFMEMORY
+        if (uVar1 == 0x803e0006) return 0x88980800;  // DXGI-specific
+        if (uVar1 == 0xc0000001) return 0x80004005;  // STATUS_UNSUCCESSFUL → E_FAIL
+        if (uVar1 == 0xc0000002) return 0x80004001;  // STATUS_NOT_IMPLEMENTED → E_NOTIMPL
+        if (uVar1 == 0xc0000008) return 0x80070006;  // STATUS_INVALID_HANDLE → E_HANDLE
+        if (uVar1 != 0xc000000d) goto LAB_fallback;
+    } else {
+        if (uVar1 == 0xc0000022) return 0x80070005;  // STATUS_ACCESS_DENIED → E_ACCESSDENIED
+        if (uVar1 == 0xc0000024) return 0x80070006;  // STATUS_OBJECT_TYPE_MISMATCH → E_HANDLE
+        if (uVar1 != 0xc00000bb) goto LAB_fallback;
+    }
+    return 0x80070057;  // E_INVALIDARG
+
+LAB_fallback:
+    return (ulonglong)(uVar1 | 0x10000000);  // generic facility-code remapping
+}</code></pre>
+        </div>
+
+        <p>
+            The NTSTATUS-to-HRESULT mapping table is worth studying carefully. The <code>0x10000000 OR</code> fallback on the last line is particularly notable — it silently remaps any unrecognized <code>NTSTATUS</code> to a generic facility code, potentially swallowing unexpected error conditions from the kernel.
+        </p>
+
+        <table>
+            <thead>
+                <tr><th>NTSTATUS</th><th>HRESULT</th><th>Semantic</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><code>0xC0000017</code></td><td class="s-red"><code>0x8007000E</code></td><td>STATUS_NO_MEMORY → E_OUTOFMEMORY</td></tr>
+                <tr><td><code>0x803E0006</code></td><td class="s-gold"><code>0x88980800</code></td><td>DXGI / graphics-specific mapping</td></tr>
+                <tr><td><code>0xC0000001</code></td><td class="s-red"><code>0x80004005</code></td><td>STATUS_UNSUCCESSFUL → E_FAIL</td></tr>
+                <tr><td><code>0xC0000002</code></td><td class="s-red"><code>0x80004001</code></td><td>STATUS_NOT_IMPLEMENTED → E_NOTIMPL</td></tr>
+                <tr><td><code>0xC0000008</code></td><td class="s-red"><code>0x80070006</code></td><td>STATUS_INVALID_HANDLE → E_HANDLE</td></tr>
+                <tr><td><code>0xC000000D</code></td><td class="s-red"><code>0x80070057</code></td><td>STATUS_INVALID_PARAMETER → E_INVALIDARG</td></tr>
+                <tr><td><code>0xC0000022</code></td><td class="s-red"><code>0x80070005</code></td><td>STATUS_ACCESS_DENIED → E_ACCESSDENIED</td></tr>
+                <tr><td><code>0xC0000024</code></td><td class="s-red"><code>0x80070006</code></td><td>STATUS_OBJECT_TYPE_MISMATCH → E_HANDLE</td></tr>
+                <tr><td><code>0xC00000BB</code></td><td class="s-red"><code>0x80070057</code></td><td>STATUS_NOT_SUPPORTED → E_INVALIDARG</td></tr>
+                <tr><td><em>(any other)</em></td><td class="s-gold"><code>NTSTATUS | 0x10000000</code></td><td>Generic facility remapping — swallows unknown errors</td></tr>
+            </tbody>
+        </table>
+
+        <!-- ══════════════════════════════════════════════════════════ -->
+        <h2 id="kernel-analysis">Kernel-Side Analysis — NtDCompositionCommitChannel</h2>
+
+        <p>
+            The kernel handler for this syscall is located at offset <code>0x5eb90</code> in <code>win32kbase.sys</code>, export index <strong>1367</strong>. This is where Ring 0 takes control.
+        </p>
+
+        <h3 id="k-probe">5.1 — User-Mode Pointer Validation</h3>
+
+        <p>
+            The first thing the kernel does is probe every user-supplied pointer against <code>MmUserProbeAddress</code>. This is mandatory defensive coding for any kernel function that accepts user-mode memory references — attempting to dereference a pointer above <code>MmUserProbeAddress</code> without probing first would be a kernel vulnerability itself.
+        </p>
+
+        <p>
+            The probe pattern works by substituting the pointer with <code>MmUserProbeAddress</code> if it falls outside user space, then performing a read — the structured exception handler fires on an invalid user address, cleanly returning <code>STATUS_ACCESS_VIOLATION</code> rather than crashing the kernel.
+        </p>
+
+        <div class="code-wrap">
+            <span class="code-label">C — Ghidra Decompilation (win32kbase.sys)</span>
+            <button class="code-copy" onclick="copyCode(this)">copy</button>
+            <pre><code class="language-c">// Probe optional output pointer param_2
+if (param_2 != (undefined4 *)0x0) {
+    puVar6 = param_2;
+    if (*(undefined4 **)MmUserProbeAddress_exref <= param_2)
+        puVar6 = *(undefined4 **)MmUserProbeAddress_exref;
+    *puVar6 = *puVar6;  // SEH fires here on invalid user address
+}
+
+// Probe mandatory output pointer param_3
+puVar7 = param_3;
+if (*(undefined1 **)MmUserProbeAddress_exref <= param_3)
+    puVar7 = *(undefined1 **)MmUserProbeAddress_exref;
+*puVar7 = *puVar7;</code></pre>
+        </div>
+
+        <h3 id="k-lookup">5.2 — Process and Channel Object Lookup</h3>
+
+        <p>
+            After pointer validation, the kernel resolves the calling process's Win32k state via <code>PsGetCurrentProcessWin32Process()</code>, then looks up the channel object in a generic table keyed by the handle passed from user space.
+        </p>
+
+        <p>
+            This lookup is lock-protected: <code>KeEnterCriticalRegion</code> disables normal APC delivery, and <code>ExAcquireResourceExclusiveLite</code> takes exclusive ownership of the channel table lock. A missing handle returns <code>STATUS_ACCESS_DENIED</code> (<code>0xC0000022</code>) rather than a NULL dereference.
+        </p>
+
+        <div class="code-wrap">
+            <span class="code-label">C — Ghidra Decompilation</span>
+            <button class="code-copy" onclick="copyCode(this)">copy</button>
+            <pre><code class="language-c">lVar4 = PsGetCurrentProcessWin32Process();
+plVar9 = *(longlong **)(lVar4 + 0x100);  // Win32 process state
+
+if (plVar9 == (longlong *)0x0) {
+    uVar3 = 0xc0000001;  // STATUS_UNSUCCESSFUL — no Win32 state initialised
+} else {
+    // Acquire exclusive lock on channel table
+    KeEnterCriticalRegion();
+    ExAcquireResourceExclusiveLite(plVar9[1], 1);
+
+    // Look up channel handle in generic table
+    local_48 = param_1;
+    lVar4 = RtlLookupElementGenericTable(*plVar9, &local_48);
+    if (lVar4 != 0) plVar10 = *(longlong **)(lVar4 + 8);
+
+    if (plVar10 == (longlong *)0x0) {
+        uVar3 = 0xc0000022;  // STATUS_ACCESS_DENIED — handle not found
+    } else {
+        LOCK();
+        *(int *)(plVar10 + 1) = (int)plVar10[1] + 1;  // AddRef channel object
+        UNLOCK();
+    }
+
+    ExReleaseResourceLite(plVar9[1]);
+    KeLeaveCriticalRegion();
+}</code></pre>
+        </div>
+
+        <h3 id="k-dispatch">5.3 — Batch Deserialization Loop</h3>
+
+        <p>
+            The core of the handler. Once the channel object is resolved and ref-counted, the kernel enters a loop that dequeues and dispatches command batches until the channel's ring buffer is empty. Each iteration calls <code>FUN_1c005ee20</code> (the batch dispatcher, documented in 5.4) and passes the dequeued batch to <code>FUN_1c005f594</code> for compositor dispatch.
+        </p>
+
+        <div class="code-wrap">
+            <span class="code-label">C — Ghidra Decompilation</span>
+            <button class="code-copy" onclick="copyCode(this)">copy</button>
+            <pre><code class="language-c">do {
+    local_60 = 0;
+    local_58 = 0;
+    // Dequeue one batch from channel ring buffer
+    cVar1 = FUN_1c005ee20(plVar9, &local_60, &local_58, param_4 != 0);
+    if (local_60 != 0) {
+        // Dispatch batch record to compositor
+        FUN_1c005f594(plVar9, local_60, local_58,
+                      *(byte *)(plVar9 + 6) & 1, lVar4);
+    }
+} while (cVar1 == '\0');  // '\0' means "more batches pending"
+
+// Write output parameters back to user-mode pointers
+local_78 = *(int *)((longlong)plVar9 + 0x204) != 0;  // has_pending_work flag
+local_74 = (undefined4)plVar9[0x2f];                  // commit sequence number
+uVar3 = 0;  // STATUS_SUCCESS</code></pre>
+        </div>
+
+        <h3 id="k-dispatcher">5.4 — Batch Command Dispatcher: <code>FUN_1c005ee20</code></h3>
+
+        <p>
+            This is the most complex function in the kernel-side analysis. It contains the fast path / full path branch logic, the command serializer chain, and ETW telemetry hooks.
+        </p>
+
+        <p><strong>Fast Path vs Full Path.</strong> The fast path is taken when all dirty-state flags at offsets <code>0x30</code>, <code>0xf0</code>, and the linked lists at <code>0x1a8</code>–<code>0x250</code> are clear. If clean and <code>param_4 == 0</code>, the function simply wakes the compositor event at <code>this+0x168</code> and returns — no batch record is constructed.</p>
+
+        <p><strong>Command Serializer Chain.</strong> The full path chains through a sequence of specialized serializers, each responsible for a specific resource type:</p>
+
+        <table>
+            <thead>
+                <tr><th>Serializer</th><th>Resource Type</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><code>FUN_1c00600c4</code></td><td>Visual transforms</td></tr>
+                <tr><td><code>FUN_1c00657fc</code> / <code>1c0065744</code> / <code>1c0065684</code> / <code>1c00655f4</code></td><td>Surface bindings & hit-test regions</td></tr>
+                <tr><td><code>FUN_1c005f34c</code></td><td>Composition targets</td></tr>
+                <tr><td><code>FUN_1c005f2ac</code></td><td>Cross-adapter resources</td></tr>
+                <tr><td><code>FUN_1c0060000</code> / <code>1c005ff8c</code> / <code>1c005fef0</code></td><td>Synchronization objects</td></tr>
+            </tbody>
+        </table>
+
+        <p><strong>Special Command Records.</strong> Two fixed-format records are emitted at the end of the serializer chain under specific conditions:</p>
+
+        <ul>
+            <li><strong>TYPE_0x34</strong> — Control block record, emitted if <code>this+0x2e8</code> is non-null. Serializes 9 DWORD fields from offsets <code>0x2f0</code>–<code>0x310</code>.</li>
+            <li><strong>TYPE_0x0C</strong> — Visibility change record, emitted if <code>this+0x250</code> is 1 or 2. Signals window show/hide state to the compositor.</li>
+        </ul>
+
+        <div class="callout callout-danger">
+            <div class="callout-title">// FUZZING SURFACE — HIGH INTEREST</div>
+            The command type IDs (0x34, 0x0C) and the serializer chain are the primary targets for malformed batch fuzzing. A harness that constructs raw batch buffers with mismatched type IDs, invalid sizes, or overlapping cross-adapter surface entries — and submits them via direct syscall to bypass the user-mode size check in CommitToKernel — has the highest probability of hitting unvalidated code paths in the kernel.
+        </div>
+
+        <!-- ══════════════════════════════════════════════════════════ -->
+        <h2 id="conclusions">Conclusions & Next Steps</h2>
+
+        <p>
+            The reconnaissance phase is complete. No exploitable vulnerability was identified — but that is not the conclusion of the research, it is the baseline. The structural understanding built here is the prerequisite for any meaningful fuzzing. You cannot fuzz what you don't understand.
+        </p>
+
+        <p>
+            What was established:
+        </p>
+
+        <ul>
+            <li>SSNs for <code>NtDCompositionCommitChannel</code> (<code>0x111F</code>) and <code>NtDCompositionCreateChannel</code> (<code>0x1124</code>) extracted and verified on Build 19045.6466</li>
+            <li>Full user-mode commit pipeline traced through all three phases with critical vtable offsets and field offsets documented</li>
+            <li>Kernel handler <code>NtDCompositionCommitChannel</code> partially reversed — pointer probing, handle lookup, and batch dispatch logic fully understood</li>
+            <li>Batch dispatcher <code>FUN_1c005ee20</code> annotated with fast path, full path, command serializer chain, and ETW hooks identified</li>
+        </ul>
+
+        <table>
+            <thead>
+                <tr><th>Finding</th><th>Status</th><th>Next Action</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>SSN extraction</td><td class="s-green">Complete</td><td>Use in direct syscall harness</td></tr>
+                <tr><td>User-mode pipeline</td><td class="s-green">Complete</td><td>Document vtable offsets in harness</td></tr>
+                <tr><td>Kernel pointer validation</td><td class="s-green">Complete</td><td>Probe boundary conditions in fuzzer</td></tr>
+                <tr><td>Batch dispatcher logic</td><td class="s-gold">Partial</td><td>FUN_1c005f594 not yet reversed</td></tr>
+                <tr><td>Batch record allocator</td><td class="s-gold">Partial</td><td>FUN_1c005f78c not yet reversed</td></tr>
+                <tr><td>Vulnerability found</td><td class="s-red">None yet</td><td>Begin malformed batch fuzzing</td></tr>
+            </tbody>
+        </table>
+
+        <p>Planned next steps, in order:</p>
+
+        <ol>
+            <li><strong>Direct Syscall Harness</strong> — Build a harness invoking <code>NtDCompositionCreateChannel</code> then <code>NtDCompositionCommitChannel</code> directly, bypassing <code>dcomp.dll</code> entirely and with it, the user-mode batch size integrity check.</li>
+            <li><strong>Malformed Batch Fuzzing</strong> — Target edge cases in <code>FUN_1c005ee20</code>: mismatched batch size counters, invalid command type IDs (especially <code>0x34</code> and <code>0x0C</code>), and overlapping cross-adapter surface entries.</li>
+            <li><strong>Full PDB Reverse of win32kbase.sys</strong> — Load with symbols into Ghidra to fully reverse <code>FUN_1c005f594</code> (batch compositor dispatch) and <code>FUN_1c005f78c</code> (batch record allocator).</li>
+            <li><strong>Live Kernel Instrumentation</strong> — WinDbg hardware breakpoint on <code>FUN_1c005ee20</code> to capture live batch structure layouts during normal DWM operation.</li>
+            <li><strong>Error Path Audit</strong> — Specifically audit the <code>NTSTATUS | 0x10000000</code> fallback mapping. Error codes suppressed here may indicate kernel code paths that were not expected to be reachable from user mode.</li>
+        </ol>
+
+        <div class="callout callout-tip">
+            <div class="callout-title">// TAKEAWAY</div>
+            The Win32k graphics syscall range (0x11xx) is a historically fertile attack surface. DComp specifically adds a stateful channel abstraction on top — a serialized batch protocol that the kernel must deserialize. Protocols that deserialize untrusted input in Ring 0 are where kernel bugs live. The work here establishes the map. The fuzzer finds the gaps in it.
+        </div>
+
+        <hr>
+
+        <p style="font-family:'Fira Code',monospace;font-size:12px;color:var(--text-dim);">
+            // Research conducted on isolated hardware. No production systems involved. For educational and defensive security research purposes only.
+        </p>
+
+    </div>
+
+    <footer class="post-footer">
+        <div class="pf-label">// FILED UNDER</div>
+        <div class="pf-tags" id="pf-tags"></div>
+        <a href="../" class="pf-back">back to blog</a>
+    </footer>
+
+</article>
+
+<script src="../posts.js"></script>
+<script>
+const POST_META = {
+    slug:     "dcomp-kernel-attack-surface",
+    title:    "Windows DirectComposition — Kernel-Mode Attack Surface Analysis",
+    date:     "2026-03-31",
+    readTime: "18 min read",
+    tags:     ["windows", "internals", "reverse-engineering", "exploit-dev", "red-team"],
+};
+</script>
+
+<script>
+(function() {
+    function formatDate(iso) {
+        return new Date(iso + 'T00:00:00').toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' });
+    }
+    function tagStyle(tag) {
+        const col = (typeof TAG_COLORS !== 'undefined' && TAG_COLORS[tag]) || '#555870';
+        return `color:${col};border-color:${col}33;background:${col}0d`;
+    }
+
+    document.getElementById('post-title').textContent = POST_META.title;
+    document.title = POST_META.title + ' — Piyusha Akash';
+    document.getElementById('pm-date').textContent = formatDate(POST_META.date);
+    document.getElementById('pm-read').textContent = POST_META.readTime;
+
+    const topTags = document.getElementById('post-tags-top');
+    POST_META.tags.forEach(t => {
+        const span = document.createElement('span');
+        span.className = 'post-tag-top';
+        span.style.cssText = tagStyle(t);
+        span.textContent = t;
+        topTags.appendChild(span);
+    });
+
+    const pfTags = document.getElementById('pf-tags');
+    POST_META.tags.forEach(t => {
+        const a = document.createElement('a');
+        a.className = 'pf-tag';
+        a.href = '../?tag=' + encodeURIComponent(t);
+        a.style.cssText = tagStyle(t);
+        a.textContent = '#' + t;
+        pfTags.appendChild(a);
+    });
+})();
+
+window.addEventListener('scroll', () => {
+    const doc = document.documentElement;
+    document.getElementById('reading-progress').style.width =
+        (doc.scrollTop / (doc.scrollHeight - doc.clientHeight) * 100) + '%';
+});
+
+function copyCode(btn) {
+    const code = btn.closest('.code-wrap').querySelector('code');
+    navigator.clipboard.writeText(code.innerText).then(() => {
+        btn.textContent = 'copied!';
+        btn.style.color = 'var(--acid)';
+        setTimeout(() => { btn.textContent = 'copy'; btn.style.color = ''; }, 2000);
+    });
+}
+
+document.addEventListener('DOMContentLoaded', () => { hljs.highlightAll(); });
+
+// cursor
+const cursor = document.getElementById('cursor');
+const ring = document.getElementById('cursorRing');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY; cursor.style.left=mx+'px'; cursor.style.top=my+'px'; });
+(function anim(){ rx+=(mx-rx)*.12; ry+=(my-ry)*.12; ring.style.left=rx+'px'; ring.style.top=ry+'px'; requestAnimationFrame(anim); })();
+document.querySelectorAll('a,button,code').forEach(el => {
+    el.addEventListener('mouseenter', () => { cursor.style.transform='translate(-50%,-50%) scale(2)'; ring.style.transform='translate(-50%,-50%) scale(1.4)'; ring.style.borderColor='rgba(0,255,157,.8)'; });
+    el.addEventListener('mouseleave', () => { cursor.style.transform='translate(-50%,-50%) scale(1)'; ring.style.transform='translate(-50%,-50%) scale(1)'; ring.style.borderColor='rgba(0,255,157,.5)'; });
+});
+
+// particles
+(function(){
+    const canvas = document.getElementById('particles-canvas');
+    const ctx = canvas.getContext('2d');
+    let W,H,P=[];
+    function resize(){ W=canvas.width=window.innerWidth; H=canvas.height=window.innerHeight; }
+    resize(); window.addEventListener('resize',resize);
+    for(let i=0;i<28;i++) P.push({x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.2+.3,dx:(Math.random()-.5)*.22,dy:-(Math.random()*.28+.06),a:Math.random()*.4+.1,p:Math.random()*Math.PI*2});
+    function draw(){
+        ctx.clearRect(0,0,W,H);
+        P.forEach(p=>{ p.p+=.016; const a=p.a*(.6+.4*Math.sin(p.p)); ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.fillStyle=`rgba(0,255,157,${a})`; ctx.fill(); p.x+=p.dx; p.y+=p.dy; if(p.y<-5){p.y=H+5;p.x=Math.random()*W;} if(p.x<-5)p.x=W+5; if(p.x>W+5)p.x=-5; });
+        requestAnimationFrame(draw);
+    }
+    draw();
+})();
+</script>
+</body>
+</html>
