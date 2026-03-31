@@ -4,369 +4,115 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Blog — Piyusha Akash · Red Team Research</title>
-    <meta name="description" content="Threat research, malware analysis, Windows internals, and red team writeups by Piyusha Akash.">
+    <meta name="description" content="Threat research, kernel analysis, malware dev, reverse engineering and red team writeups by Piyusha Akash.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;600;700;800&family=Fira+Code:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --acid:   #00ff9d;
-            --acid2:  #00e5ff;
-            --red:    #ff2d55;
-            --bg:     #060608;
-            --bg2:    #0a0a0f;
-            --surface:  #0e0e16;
-            --surface2: #14141f;
-            --border:        rgba(0,255,157,0.10);
-            --border-bright: rgba(0,255,157,0.38);
-            --text:     #c8ccd8;
-            --text-dim: #555870;
-            --white:    #f0f2ff;
-        }
-
-        *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
-        html { scroll-behavior:smooth; }
-
-        body {
-            background: var(--bg);
-            color: var(--text);
-            font-family: 'Syne', sans-serif;
-            overflow-x: hidden;
-            cursor: none;
-        }
-
-        /* ── CURSOR ── */
-        .cursor {
-            position:fixed; width:8px; height:8px;
-            background:var(--acid); border-radius:50%;
-            pointer-events:none; z-index:9999;
-            transform:translate(-50%,-50%);
-            box-shadow:0 0 12px var(--acid),0 0 30px rgba(0,255,157,.3);
-            transition:transform .1s;
-        }
-        .cursor-ring {
-            position:fixed; width:32px; height:32px;
-            border:1px solid rgba(0,255,157,.5); border-radius:50%;
-            pointer-events:none; z-index:9998;
-            transform:translate(-50%,-50%);
-            transition:all .15s ease;
-        }
-
-        /* ── NOISE ── */
-        body::before {
-            content:''; position:fixed; inset:0;
-            background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
-            opacity:.025; pointer-events:none; z-index:1000;
-        }
-
-        /* ── GRID BG ── */
-        .grid-bg {
-            position:fixed; inset:0;
-            background-image:
-                linear-gradient(rgba(0,255,157,.025) 1px,transparent 1px),
-                linear-gradient(90deg,rgba(0,255,157,.025) 1px,transparent 1px);
-            background-size:60px 60px;
-            pointer-events:none;
-        }
-
-        /* ── ORBS ── */
-        .orb { position:fixed; border-radius:50%; filter:blur(100px); pointer-events:none; }
-        .orb1 { width:600px;height:600px; background:radial-gradient(circle,rgba(0,255,157,.065),transparent 70%); top:-200px;right:-150px; animation:orb-drift 9s ease-in-out infinite; }
-        .orb2 { width:400px;height:400px; background:radial-gradient(circle,rgba(0,229,255,.045),transparent 70%); bottom:-100px;left:0; animation:orb-drift 12s ease-in-out infinite reverse; }
-        @keyframes orb-drift { 0%,100%{transform:translate(0,0)} 50%{transform:translate(24px,-24px)} }
-
-        /* ── SCANLINE ── */
-        .scanline { position:fixed; width:100%; height:1px; background:linear-gradient(90deg,transparent,rgba(0,255,157,.25) 50%,transparent); animation:scan 7s linear infinite; pointer-events:none; z-index:2; }
-        @keyframes scan { 0%{top:-1px} 100%{top:100%} }
-
-        /* ── NAV ── */
-        nav {
-            position:fixed; top:0; left:0; right:0; z-index:900;
-            padding:18px 48px;
-            display:flex; justify-content:space-between; align-items:center;
-            background:rgba(6,6,8,.88); backdrop-filter:blur(24px);
-            border-bottom:1px solid var(--border);
-        }
-        .nav-logo {
-            font-family:'Space Mono',monospace; font-size:14px;
-            color:var(--acid); letter-spacing:.1em; text-decoration:none;
-        }
-        .nav-logo span { color:var(--text-dim); }
-        .nav-right { display:flex; align-items:center; gap:28px; }
-        .nav-link {
-            font-family:'Fira Code',monospace; font-size:12px; color:var(--text-dim);
-            text-decoration:none; letter-spacing:.08em; transition:color .2s; position:relative;
-        }
-        .nav-link::before { content:'./'; color:var(--acid); opacity:.5; }
-        .nav-link::after { content:''; position:absolute; bottom:-3px; left:0; width:0; height:1px; background:var(--acid); transition:width .25s ease; }
-        .nav-link:hover { color:var(--acid); }
-        .nav-link:hover::after { width:100%; }
-        .nav-link.active { color:var(--acid); }
-        .nav-link.active::after { width:100%; }
-
-        /* ── HEADER HERO ── */
-        .blog-header {
-            position:relative; padding:130px 48px 60px;
-            overflow:hidden;
-        }
-        .blog-header-inner { max-width:1100px; margin:0 auto; }
-        .bh-pre {
-            font-family:'Fira Code',monospace; font-size:11px; color:var(--acid);
-            letter-spacing:.22em; margin-bottom:20px;
-            display:flex; align-items:center; gap:14px;
-            opacity:0; animation:fadeUp .6s .1s forwards;
-        }
-        .bh-pre::before { content:''; display:block; width:36px; height:1px; background:var(--acid); }
-        h1.blog-title {
-            font-family:'Syne',sans-serif;
-            font-size:clamp(52px,7vw,96px); font-weight:800;
-            line-height:.88; letter-spacing:-.03em;
-            color:var(--white); margin-bottom:20px;
-            opacity:0; animation:fadeUp .7s .2s forwards;
-        }
-        h1.blog-title .a { color:var(--acid); }
-        .bh-sub {
-            font-family:'Fira Code',monospace; font-size:14px; color:var(--text-dim);
-            max-width:560px; line-height:1.7;
-            opacity:0; animation:fadeUp .7s .35s forwards;
-        }
-
-        /* ── STATS ROW ── */
-        .stats-row {
-            display:flex; gap:32px; align-items:center;
-            margin-top:36px; flex-wrap:wrap;
-            opacity:0; animation:fadeUp .7s .5s forwards;
-        }
-        .stat-item {
-            font-family:'Fira Code',monospace; font-size:11px; color:var(--text-dim);
-            display:flex; align-items:center; gap:8px;
-        }
-        .stat-item strong { color:var(--acid); font-size:20px; font-family:'Syne',sans-serif; font-weight:800; }
-
-        /* ── MAIN LAYOUT ── */
-        .blog-main { max-width:1100px; margin:0 auto; padding:0 48px 100px; position:relative; z-index:5; }
-
-        /* ── TAG FILTER BAR ── */
-        .filter-bar {
-            padding:32px 0 40px;
-            border-bottom:1px solid var(--border);
-            margin-bottom:48px;
-            opacity:0; animation:fadeUp .6s .6s forwards;
-        }
-        .filter-label {
-            font-family:'Fira Code',monospace; font-size:10px; color:var(--text-dim);
-            letter-spacing:.2em; margin-bottom:16px;
-        }
-        .tag-filter-wrap {
-            display:flex; flex-wrap:wrap; gap:10px; align-items:center;
-        }
-        .tag-btn {
-            font-family:'Fira Code',monospace; font-size:11px;
-            letter-spacing:.07em; padding:7px 16px;
-            border-radius:2px; border:1px solid var(--border);
-            background:var(--surface); color:var(--text-dim);
-            cursor:none; transition:all .25s ease;
-            white-space:nowrap; position:relative; overflow:hidden;
-            display:flex; align-items:center; gap:7px;
-        }
-        .tag-btn .tag-count {
-            font-size:9px; background:rgba(255,255,255,.06);
-            padding:1px 6px; border-radius:99px;
-        }
-        .tag-btn:hover { color:var(--white); border-color:rgba(255,255,255,.2); }
-        .tag-btn.active {
-            color:#060608; font-weight:700;
-        }
-        .tag-btn-all { border-color:var(--border-bright); color:var(--acid); }
-        .tag-btn-all.active { background:var(--acid); border-color:var(--acid); color:#060608; }
-
-        /* ── SEARCH ── */
-        .search-wrap {
-            position:relative; margin-top:20px;
-        }
-        .search-icon {
-            position:absolute; left:16px; top:50%; transform:translateY(-50%);
-            color:var(--text-dim); pointer-events:none;
-            font-family:'Fira Code',monospace; font-size:12px;
-        }
-        #search-input {
-            width:100%; max-width:380px;
-            background:var(--surface); border:1px solid var(--border);
-            color:var(--white); font-family:'Fira Code',monospace; font-size:12px;
-            padding:11px 16px 11px 40px; outline:none; cursor:none;
-            letter-spacing:.06em; transition:border-color .2s;
-        }
-        #search-input::placeholder { color:var(--text-dim); }
-        #search-input:focus { border-color:var(--border-bright); }
-
-        /* ── POSTS GRID ── */
-        .posts-section { }
-
-        .section-label {
-            font-family:'Fira Code',monospace; font-size:10px; color:var(--text-dim);
-            letter-spacing:.2em; margin-bottom:24px;
-            display:flex; align-items:center; gap:12px;
-        }
-        .section-label::after { content:''; flex:1; height:1px; background:var(--border); }
-
-        /* FEATURED — full width card */
-        .featured-grid {
-            display:grid; grid-template-columns:repeat(auto-fill,minmax(480px,1fr));
-            gap:20px; margin-bottom:48px;
-        }
-        .post-card-featured {
-            background:var(--surface); border:1px solid var(--border);
-            padding:36px 36px 30px; text-decoration:none;
-            display:block; position:relative; overflow:hidden;
-            transition:all .35s cubic-bezier(.2,0,0,1); cursor:none;
-        }
-        .post-card-featured::before {
-            content:''; position:absolute; top:0; left:0; right:0; height:2px;
-            background:linear-gradient(90deg,var(--acid),var(--acid2));
-        }
-        .post-card-featured::after {
-            content:''; position:absolute; inset:0;
-            background:linear-gradient(135deg,rgba(0,255,157,.04),transparent);
-            opacity:0; transition:opacity .3s;
-        }
-        .post-card-featured:hover {
-            border-color:var(--border-bright);
-            transform:translateY(-5px);
-            box-shadow:0 20px 60px rgba(0,0,0,.6),0 0 0 1px rgba(0,255,157,.08);
-        }
-        .post-card-featured:hover::after { opacity:1; }
-
-        /* REGULAR GRID */
-        .posts-grid {
-            display:grid;
-            grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
-            gap:16px;
-        }
-        .post-card {
-            background:var(--surface); border:1px solid var(--border);
-            padding:28px 28px 24px; text-decoration:none;
-            display:block; position:relative; overflow:hidden;
-            transition:all .3s cubic-bezier(.2,0,0,1); cursor:none;
-        }
-        .post-card::after {
-            content:''; position:absolute; bottom:0; left:0; width:100%; height:2px;
-            background:linear-gradient(90deg,var(--acid),var(--acid2));
-            transform:scaleX(0); transform-origin:left; transition:transform .4s ease;
-        }
-        .post-card:hover::after { transform:scaleX(1); }
-        .post-card:hover {
-            border-color:rgba(0,255,157,.22);
-            transform:translateY(-4px);
-            box-shadow:0 12px 40px rgba(0,0,0,.5);
-        }
-
-        /* shared card internals */
-        .card-meta {
-            display:flex; align-items:center; gap:14px; margin-bottom:16px;
-            flex-wrap:wrap;
-        }
-        .card-date {
-            font-family:'Fira Code',monospace; font-size:10px;
-            color:var(--text-dim); letter-spacing:.1em;
-        }
-        .card-read {
-            font-family:'Fira Code',monospace; font-size:10px;
-            color:var(--text-dim); letter-spacing:.08em;
-        }
-        .card-read::before { content:'·'; margin-right:14px; color:var(--border-bright); }
-        .featured-label {
-            font-family:'Fira Code',monospace; font-size:9px; font-weight:700;
-            color:var(--acid); background:rgba(0,255,157,.1);
-            border:1px solid rgba(0,255,157,.25); padding:2px 8px;
-            letter-spacing:.12em;
-        }
-        .card-title {
-            font-family:'Syne',sans-serif; font-weight:800; color:var(--white);
-            line-height:1.15; letter-spacing:-.02em; margin-bottom:12px;
-            transition:color .2s;
-        }
-        .post-card-featured .card-title { font-size:clamp(20px,2.5vw,28px); }
-        .post-card .card-title { font-size:18px; }
-        .post-card:hover .card-title { color:var(--acid); }
-        .post-card-featured:hover .card-title { color:var(--acid); }
-        .card-excerpt {
-            font-size:14px; color:var(--text-dim);
-            line-height:1.7; margin-bottom:20px;
-        }
-        .card-tags { display:flex; flex-wrap:wrap; gap:8px; }
-        .card-tag {
-            font-family:'Fira Code',monospace; font-size:10px;
-            padding:3px 10px; letter-spacing:.06em;
-            border-radius:1px; border:1px solid;
-            transition:all .2s;
-        }
-        .card-arrow {
-            position:absolute; top:28px; right:28px;
-            font-size:18px; color:var(--text-dim);
-            transition:all .3s;
-        }
-        .post-card:hover .card-arrow,
-        .post-card-featured:hover .card-arrow { color:var(--acid); transform:translate(3px,-3px); }
-
-        /* ── EMPTY STATE ── */
-        .empty-state {
-            text-align:center; padding:80px 20px;
-            display:none;
-        }
-        .empty-state.visible { display:block; }
-        .empty-icon { font-size:48px; margin-bottom:20px; opacity:.4; }
-        .empty-title { font-family:'Syne',sans-serif; font-size:20px; font-weight:700; color:var(--white); margin-bottom:8px; }
-        .empty-sub { font-family:'Fira Code',monospace; font-size:12px; color:var(--text-dim); }
-
-        /* ── RESULT COUNT ── */
-        .result-count {
-            font-family:'Fira Code',monospace; font-size:11px; color:var(--text-dim);
-            margin-bottom:32px; display:none;
-        }
-        .result-count.visible { display:block; }
-        .result-count span { color:var(--acid); }
-
-        /* ── FOOTER ── */
-        .blog-footer {
-            border-top:1px solid var(--border); padding:32px 48px;
-            max-width:1100px; margin:0 auto;
-            display:flex; justify-content:space-between; align-items:center;
-            flex-wrap:wrap; gap:16px;
-            font-family:'Fira Code',monospace; font-size:11px; color:var(--text-dim);
-        }
-        .footer-link { color:var(--text-dim); text-decoration:none; transition:color .2s; }
-        .footer-link:hover { color:var(--acid); }
-
-        /* ── REVEAL ── */
-        .reveal { opacity:0; transform:translateY(24px); transition:opacity .7s ease,transform .7s ease; }
-        .reveal.visible { opacity:1; transform:translateY(0); }
-
-        /* ── PARTICLES ── */
-        #particles-canvas { position:fixed; inset:0; pointer-events:none; z-index:1; opacity:.3; }
-
-        @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
-
-        /* ── RESPONSIVE ── */
-        @media(max-width:900px) {
-            nav { padding:16px 24px; }
-            .blog-header { padding:110px 24px 48px; }
-            .blog-main { padding:0 24px 80px; }
-            .featured-grid { grid-template-columns:1fr; }
-            .posts-grid { grid-template-columns:1fr 1fr; }
-        }
-        @media(max-width:600px) {
-            nav { padding:14px 20px; }
-            .blog-header { padding:100px 20px 40px; }
-            .blog-main { padding:0 20px 60px; }
-            .posts-grid { grid-template-columns:1fr; }
-            h1.blog-title { font-size:clamp(40px,13vw,64px); }
-            .nav-right { gap:16px; }
-            .blog-footer { padding:24px 20px; flex-direction:column; text-align:center; }
-        }
+        :root{--acid:#00ff9d;--acid2:#00e5ff;--red:#ff2d55;--gold:#f59e0b;--bg:#060608;--bg2:#0a0a0f;--surface:#0e0e16;--surface2:#14141f;--border:rgba(0,255,157,0.10);--border-bright:rgba(0,255,157,0.38);--text:#c8ccd8;--text-dim:#555870;--white:#f0f2ff}
+        *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}
+        body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;overflow-x:hidden;cursor:none}
+        .cursor{position:fixed;width:8px;height:8px;background:var(--acid);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);box-shadow:0 0 12px var(--acid),0 0 30px rgba(0,255,157,.3);transition:transform .1s}
+        .cursor-ring{position:fixed;width:32px;height:32px;border:1px solid rgba(0,255,157,.5);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:all .15s ease}
+        body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");opacity:.025;pointer-events:none;z-index:1000}
+        .grid-bg{position:fixed;inset:0;background-image:linear-gradient(rgba(0,255,157,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,157,.025) 1px,transparent 1px);background-size:60px 60px;pointer-events:none}
+        .orb{position:fixed;border-radius:50%;filter:blur(100px);pointer-events:none}
+        .orb1{width:600px;height:600px;background:radial-gradient(circle,rgba(0,255,157,.065),transparent 70%);top:-200px;right:-150px;animation:orb-drift 9s ease-in-out infinite}
+        .orb2{width:400px;height:400px;background:radial-gradient(circle,rgba(0,229,255,.045),transparent 70%);bottom:-100px;left:0;animation:orb-drift 12s ease-in-out infinite reverse}
+        @keyframes orb-drift{0%,100%{transform:translate(0,0)}50%{transform:translate(24px,-24px)}}
+        .scanline{position:fixed;width:100%;height:1px;background:linear-gradient(90deg,transparent,rgba(0,255,157,.25) 50%,transparent);animation:scan 7s linear infinite;pointer-events:none;z-index:2}
+        @keyframes scan{0%{top:-1px}100%{top:100%}}
+        nav{position:fixed;top:0;left:0;right:0;z-index:900;padding:18px 48px;display:flex;justify-content:space-between;align-items:center;background:rgba(6,6,8,.88);backdrop-filter:blur(24px);border-bottom:1px solid var(--border)}
+        .nav-logo{font-family:'Space Mono',monospace;font-size:14px;color:var(--acid);letter-spacing:.1em;text-decoration:none}
+        .nav-logo span{color:var(--text-dim)}
+        .nav-right{display:flex;align-items:center;gap:28px}
+        .nav-link{font-family:'Fira Code',monospace;font-size:12px;color:var(--text-dim);text-decoration:none;letter-spacing:.08em;transition:color .2s;position:relative}
+        .nav-link::before{content:'./';color:var(--acid);opacity:.5}
+        .nav-link::after{content:'';position:absolute;bottom:-3px;left:0;width:0;height:1px;background:var(--acid);transition:width .25s ease}
+        .nav-link:hover{color:var(--acid)}
+        .nav-link:hover::after{width:100%}
+        .blog-header{position:relative;padding:130px 48px 64px;overflow:hidden}
+        .blog-header-inner{max-width:1100px;margin:0 auto}
+        .bh-pre{font-family:'Fira Code',monospace;font-size:11px;color:var(--acid);letter-spacing:.22em;margin-bottom:20px;display:flex;align-items:center;gap:14px;opacity:0;animation:fadeUp .6s .1s forwards}
+        .bh-pre::before{content:'';display:block;width:36px;height:1px;background:var(--acid)}
+        h1.blog-title{font-family:'Syne',sans-serif;font-size:clamp(52px,7vw,96px);font-weight:800;line-height:.88;letter-spacing:-.03em;color:var(--white);margin-bottom:20px;opacity:0;animation:fadeUp .7s .2s forwards}
+        h1.blog-title .a{color:var(--acid)}
+        .bh-sub{font-family:'Fira Code',monospace;font-size:14px;color:var(--text-dim);max-width:560px;line-height:1.7;opacity:0;animation:fadeUp .7s .35s forwards}
+        .stats-row{display:flex;gap:32px;align-items:center;margin-top:36px;flex-wrap:wrap;opacity:0;animation:fadeUp .7s .5s forwards}
+        .stat-item{font-family:'Fira Code',monospace;font-size:11px;color:var(--text-dim);display:flex;align-items:center;gap:8px}
+        .stat-item strong{color:var(--acid);font-size:22px;font-family:'Syne',sans-serif;font-weight:800}
+        .stat-divider{color:var(--border-bright);font-size:18px}
+        .blog-main{max-width:1100px;margin:0 auto;padding:0 48px 100px;position:relative;z-index:5}
+        .filter-bar{padding:28px 0 36px;border-bottom:1px solid var(--border);margin-bottom:48px;opacity:0;animation:fadeUp .6s .6s forwards}
+        .filter-top{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap;margin-bottom:16px}
+        .filter-label{font-family:'Fira Code',monospace;font-size:10px;color:var(--text-dim);letter-spacing:.2em}
+        .search-wrap{position:relative}
+        .search-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--text-dim);pointer-events:none;font-family:'Fira Code',monospace;font-size:13px}
+        #search-input{background:var(--surface);border:1px solid var(--border);color:var(--white);font-family:'Fira Code',monospace;font-size:12px;padding:10px 16px 10px 38px;outline:none;cursor:none;letter-spacing:.06em;transition:border-color .2s;width:280px}
+        #search-input::placeholder{color:var(--text-dim)}
+        #search-input:focus{border-color:var(--border-bright)}
+        .tag-filter-wrap{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+        .tag-btn{font-family:'Fira Code',monospace;font-size:11px;letter-spacing:.07em;padding:6px 14px;border-radius:2px;border:1px solid var(--border);background:var(--surface);color:var(--text-dim);cursor:none;transition:all .22s ease;white-space:nowrap;display:inline-flex;align-items:center;gap:7px;position:relative;overflow:hidden}
+        .tag-btn .tag-count{font-size:9px;background:rgba(255,255,255,.06);padding:1px 6px;border-radius:99px;transition:all .22s}
+        .tag-btn::after{content:'';position:absolute;bottom:0;left:0;width:0;height:2px;transition:width .3s cubic-bezier(.2,0,.2,1);background:var(--tag-color,var(--acid))}
+        .tag-btn.active::after{width:100%}
+        .tag-btn:hover{color:var(--white);border-color:rgba(255,255,255,.18)}
+        .tag-btn-all{border-color:var(--border-bright);color:var(--acid)}
+        .tag-btn-all.active{background:var(--acid);border-color:var(--acid);color:#060608}
+        .tag-btn-all.active .tag-count{background:rgba(0,0,0,.15);color:#060608}
+        .result-count{font-family:'Fira Code',monospace;font-size:11px;color:var(--text-dim);margin-bottom:32px;display:none;padding:12px 16px;background:var(--surface);border-left:2px solid var(--acid)}
+        .result-count.visible{display:block}
+        .result-count span{color:var(--acid)}
+        .section-label{font-family:'Fira Code',monospace;font-size:10px;color:var(--text-dim);letter-spacing:.2em;margin-bottom:20px;display:flex;align-items:center;gap:12px}
+        .section-label::after{content:'';flex:1;height:1px;background:var(--border)}
+        .featured-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(480px,1fr));gap:20px;margin-bottom:52px}
+        .post-card-featured{background:var(--surface);border:1px solid var(--border);padding:36px 36px 30px;text-decoration:none;display:block;position:relative;overflow:hidden;transition:all .35s cubic-bezier(.2,0,0,1);cursor:none}
+        .post-card-featured::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--acid),var(--acid2))}
+        .post-card-featured::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(0,255,157,.04),transparent);opacity:0;transition:opacity .3s;pointer-events:none}
+        .post-card-featured:hover{border-color:var(--border-bright);transform:translateY(-5px);box-shadow:0 20px 60px rgba(0,0,0,.6),0 0 0 1px rgba(0,255,157,.08)}
+        .post-card-featured:hover::after{opacity:1}
+        .card-scan{position:absolute;top:-100%;left:0;width:100%;height:50%;background:linear-gradient(180deg,transparent,rgba(0,255,157,.025),transparent);pointer-events:none}
+        .post-card-featured:hover .card-scan{animation:card-scan .7s linear forwards}
+        @keyframes card-scan{from{top:-50%}to{top:120%}}
+        .posts-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px}
+        .post-card{background:var(--surface);border:1px solid var(--border);padding:28px 28px 24px;text-decoration:none;display:block;position:relative;overflow:hidden;transition:all .3s cubic-bezier(.2,0,0,1);cursor:none}
+        .post-card::after{content:'';position:absolute;bottom:0;left:0;width:100%;height:2px;background:linear-gradient(90deg,var(--acid),var(--acid2));transform:scaleX(0);transform-origin:left;transition:transform .4s ease}
+        .post-card:hover::after{transform:scaleX(1)}
+        .post-card:hover{border-color:rgba(0,255,157,.22);transform:translateY(-4px);box-shadow:0 12px 40px rgba(0,0,0,.5)}
+        .post-card .card-corner{position:absolute;top:-1px;right:-1px;width:0;height:0;border-style:solid;border-width:0 20px 20px 0;border-color:transparent var(--acid) transparent transparent;opacity:0;transition:opacity .25s}
+        .post-card:hover .card-corner{opacity:1}
+        .card-meta{display:flex;align-items:center;gap:12px;margin-bottom:14px;flex-wrap:wrap}
+        .card-date{font-family:'Fira Code',monospace;font-size:10px;color:var(--text-dim);letter-spacing:.1em}
+        .card-read{font-family:'Fira Code',monospace;font-size:10px;color:var(--text-dim)}
+        .card-read::before{content:'·';margin-right:12px;color:var(--border-bright)}
+        .card-type{font-family:'Fira Code',monospace;font-size:9px;font-weight:700;letter-spacing:.12em;padding:2px 9px}
+        .ct-featured{color:var(--acid);background:rgba(0,255,157,.1);border:1px solid rgba(0,255,157,.25)}
+        .ct-research{color:var(--gold);background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.25)}
+        .ct-post{color:var(--acid2);background:rgba(0,229,255,.08);border:1px solid rgba(0,229,255,.2)}
+        .card-title{font-family:'Syne',sans-serif;font-weight:800;color:var(--white);line-height:1.15;letter-spacing:-.02em;margin-bottom:12px;transition:color .2s}
+        .post-card-featured .card-title{font-size:clamp(20px,2.5vw,26px)}
+        .post-card .card-title{font-size:17px}
+        .post-card:hover .card-title,.post-card-featured:hover .card-title{color:var(--acid)}
+        .card-excerpt{font-size:13.5px;color:var(--text-dim);line-height:1.7;margin-bottom:20px;font-family:'Syne',sans-serif;font-weight:400}
+        .card-tags{display:flex;flex-wrap:wrap;gap:7px}
+        .card-tag{font-family:'Fira Code',monospace;font-size:10px;padding:3px 10px;border:1px solid;border-radius:1px;transition:all .2s}
+        .card-arrow{position:absolute;top:28px;right:28px;font-size:17px;color:var(--text-dim);transition:all .3s}
+        .post-card:hover .card-arrow,.post-card-featured:hover .card-arrow{color:var(--acid);transform:translate(3px,-3px)}
+        .empty-state{text-align:center;padding:80px 20px;display:none}
+        .empty-state.visible{display:block}
+        .empty-icon{font-size:44px;margin-bottom:18px;opacity:.35}
+        .empty-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:var(--white);margin-bottom:8px}
+        .empty-sub{font-family:'Fira Code',monospace;font-size:12px;color:var(--text-dim)}
+        .blog-footer{border-top:1px solid var(--border);padding:32px 48px;max-width:1100px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;font-family:'Fira Code',monospace;font-size:11px;color:var(--text-dim)}
+        .footer-link{color:var(--text-dim);text-decoration:none;transition:color .2s}
+        .footer-link:hover{color:var(--acid)}
+        #particles-canvas{position:fixed;inset:0;pointer-events:none;z-index:1;opacity:.3}
+        @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+        @media(max-width:900px){nav{padding:16px 24px}.blog-header{padding:110px 24px 48px}.blog-main{padding:0 24px 80px}.blog-footer{padding:24px}.featured-grid{grid-template-columns:1fr}.posts-grid{grid-template-columns:1fr 1fr}#search-input{width:220px}}
+        @media(max-width:600px){nav{padding:14px 20px}.blog-header{padding:100px 20px 40px}.blog-main{padding:0 20px 60px}.posts-grid{grid-template-columns:1fr}h1.blog-title{font-size:clamp(40px,13vw,64px)}.filter-top{flex-direction:column;align-items:flex-start}#search-input{width:100%}.blog-footer{padding:20px;flex-direction:column;text-align:center}}
     </style>
 </head>
 <body>
-
 <div class="cursor" id="cursor"></div>
 <div class="cursor-ring" id="cursorRing"></div>
 <canvas id="particles-canvas"></canvas>
@@ -374,8 +120,6 @@
 <div class="orb orb1"></div>
 <div class="orb orb2"></div>
 <div class="scanline"></div>
-
-<!-- NAV -->
 <nav id="navbar">
     <a href="../" class="nav-logo">[<span>0x3xp</span>] <span style="color:var(--text-dim)">~</span></a>
     <div class="nav-right">
@@ -384,354 +128,109 @@
         <a href="../" class="nav-link">home</a>
     </div>
 </nav>
-
-<!-- HEADER -->
 <header class="blog-header">
     <div class="blog-header-inner">
         <div class="bh-pre">// RESEARCH LOG</div>
         <h1 class="blog-title">Red Team<br><span class="a">Blog.</span></h1>
-        <p class="bh-sub">
-            Threat research · Malware analysis · Windows internals ·<br>
-            Writeups from the offensive side of the wire.
-        </p>
+        <p class="bh-sub">Kernel analysis · Malware research · Windows internals ·<br>Writeups from the offensive side of the wire.</p>
         <div class="stats-row">
             <div class="stat-item"><strong id="stat-posts">0</strong>&nbsp;Posts</div>
-            <div class="stat-item" style="color:var(--border)">|</div>
+            <span class="stat-divider">|</span>
             <div class="stat-item"><strong id="stat-tags">0</strong>&nbsp;Tags</div>
-            <div class="stat-item" style="color:var(--border)">|</div>
-            <div class="stat-item"><strong>∞</strong>&nbsp;Hours of research</div>
+            <span class="stat-divider">|</span>
+            <div class="stat-item"><strong id="stat-read">0</strong>&nbsp;Min total reading</div>
         </div>
     </div>
 </header>
-
-<!-- MAIN -->
 <main class="blog-main">
-
-    <!-- FILTER BAR -->
     <div class="filter-bar">
-        <div class="filter-label">// FILTER BY TAG</div>
-        <div class="tag-filter-wrap" id="tag-filter-wrap">
-            <!-- injected by JS -->
-        </div>
-        <div class="search-wrap">
-            <span class="search-icon">⌕</span>
-            <input type="text" id="search-input" placeholder="search posts..." spellcheck="false" autocomplete="off">
+        <div class="filter-top">
+            <div>
+                <div class="filter-label" style="margin-bottom:12px;">// FILTER BY TAG</div>
+                <div class="tag-filter-wrap" id="tag-filter-wrap"></div>
+            </div>
+            <div class="search-wrap">
+                <span class="search-icon">⌕</span>
+                <input type="text" id="search-input" placeholder="search posts..." spellcheck="false" autocomplete="off">
+            </div>
         </div>
     </div>
-
-    <!-- RESULT COUNT (shown when filtered) -->
     <div class="result-count" id="result-count">
-        Showing <span id="rc-num">0</span> post(s) matching <span id="rc-filter">""</span>
+        <span id="rc-num">0</span> post(s) matching <span id="rc-filter">""</span>
+        &nbsp;·&nbsp; <span style="cursor:pointer;" onclick="clearFilter()">clear ×</span>
     </div>
-
-    <!-- FEATURED POSTS -->
     <div id="featured-section">
         <div class="section-label">// FEATURED</div>
         <div class="featured-grid" id="featured-grid"></div>
     </div>
-
-    <!-- ALL POSTS -->
     <div id="posts-section">
         <div class="section-label" id="posts-section-label">// ALL POSTS</div>
         <div class="posts-grid" id="posts-grid"></div>
     </div>
-
-    <!-- EMPTY STATE -->
     <div class="empty-state" id="empty-state">
         <div class="empty-icon">◎</div>
         <div class="empty-title">No posts found</div>
         <div class="empty-sub">// try a different tag or search term</div>
     </div>
-
 </main>
-
 <footer>
     <div class="blog-footer">
-        <span>© 2025 Piyusha Akash — All research for educational purposes.</span>
+        <span>© 2026 Piyusha Akash — All research for educational purposes.</span>
         <span style="color:var(--acid)">// authorized security research only</span>
         <a href="../" class="footer-link">← back to portfolio</a>
     </div>
 </footer>
-
-<!-- Load posts registry FIRST, then run the app -->
 <script src="posts.js"></script>
 <script>
-/* ============================================================
-   BLOG ENGINE — reads POSTS & TAG_COLORS from posts.js
-   ============================================================ */
-
-// ── UTILITIES ─────────────────────────────────────────────
-function formatDate(iso) {
-    const d = new Date(iso + 'T00:00:00');
-    return d.toLocaleDateString('en-US', { year:'numeric', month:'short', day:'numeric' });
+function formatDate(iso){return new Date(iso+'T00:00:00').toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'})}
+function tagStyle(tag){const c=(TAG_COLORS&&TAG_COLORS[tag])||TAG_DEFAULT_COLOR||'#555870';return`color:${c};border-color:${c}33;background:${c}0d`}
+function tagBtnStyle(tag,active){const c=(TAG_COLORS&&TAG_COLORS[tag])||TAG_DEFAULT_COLOR||'#555870';return active?`background:${c};border-color:${c};color:#060608;`:`border-color:${c}44;color:${c};background:${c}0a;`}
+function tagColor(tag){return(TAG_COLORS&&TAG_COLORS[tag])||'#555870'}
+function allTags(){const m={};POSTS.forEach(p=>p.tags.forEach(t=>{m[t]=(m[t]||0)+1}));return Object.entries(m).sort((a,b)=>b[1]-a[1])}
+function postType(p){const re=['reverse-engineering','exploit-dev','kernel','internals','malware-dev','evasion'];const isR=p.tags.some(t=>re.includes(t));if(p.featured)return{cls:'ct-featured',label:'★ FEATURED'};if(isR)return{cls:'ct-research',label:'⬡ RESEARCH'};return{cls:'ct-post',label:'✦ POST'}}
+let activeTag='all',searchQuery='';
+function buildTagBar(){
+    const wrap=document.getElementById('tag-filter-wrap');wrap.innerHTML='';
+    const allBtn=document.createElement('button');allBtn.className='tag-btn tag-btn-all'+(activeTag==='all'?' active':'');allBtn.innerHTML=`all <span class="tag-count">${POSTS.length}</span>`;allBtn.addEventListener('click',()=>setTag('all'));wrap.appendChild(allBtn);
+    allTags().forEach(([tag,count])=>{const btn=document.createElement('button');btn.className='tag-btn'+(activeTag===tag?' active':'');btn.style.cssText=tagBtnStyle(tag,activeTag===tag);btn.style.setProperty('--tag-color',tagColor(tag));btn.dataset.tag=tag;btn.innerHTML=`${tag} <span class="tag-count">${count}</span>`;btn.addEventListener('click',()=>setTag(tag));wrap.appendChild(btn)})
 }
-
-function tagStyle(tag) {
-    const col = (TAG_COLORS && TAG_COLORS[tag]) || TAG_DEFAULT_COLOR || '#555870';
-    return `color:${col};border-color:${col}33;background:${col}0d`;
+function setTag(tag){
+    activeTag=tag;
+    document.querySelectorAll('.tag-btn').forEach(btn=>{const t=btn.dataset.tag;if(!t){btn.classList.toggle('active',tag==='all')}else{const a=tag===t;btn.classList.toggle('active',a);btn.style.cssText=tagBtnStyle(t,a);btn.style.setProperty('--tag-color',tagColor(t))}});
+    renderPosts()
 }
-
-function tagBtnStyle(tag, active) {
-    const col = (TAG_COLORS && TAG_COLORS[tag]) || TAG_DEFAULT_COLOR || '#555870';
-    if (active) return `background:${col};border-color:${col};color:#060608`;
-    return `border-color:${col}44;color:${col};background:${col}0a`;
+function clearFilter(){activeTag='all';searchQuery='';document.getElementById('search-input').value='';buildTagBar();renderPosts()}
+function filteredPosts(){return POSTS.filter(p=>{const tok=activeTag==='all'||p.tags.includes(activeTag);const q=searchQuery.toLowerCase().trim();const sok=!q||p.title.toLowerCase().includes(q)||p.excerpt.toLowerCase().includes(q)||p.tags.some(t=>t.includes(q));return tok&&sok})}
+function cardTagsHTML(tags){return tags.map(t=>`<span class="card-tag" style="${tagStyle(t)}">${t}</span>`).join('')}
+function featuredCardHTML(p){const{cls,label}=postType(p);return`<a href="posts/${p.slug}.html" class="post-card-featured"><div class="card-scan"></div><span class="card-arrow">↗</span><div class="card-meta"><span class="card-type ${cls}">${label}</span><span class="card-date">${formatDate(p.date)}</span><span class="card-read">${p.readTime}</span></div><div class="card-title">${p.title}</div><div class="card-excerpt">${p.excerpt}</div><div class="card-tags">${cardTagsHTML(p.tags)}</div></a>`}
+function regularCardHTML(p){const{cls,label}=postType(p);return`<a href="posts/${p.slug}.html" class="post-card"><div class="card-corner"></div><span class="card-arrow">↗</span><div class="card-meta"><span class="card-type ${cls}">${label}</span><span class="card-date">${formatDate(p.date)}</span><span class="card-read">${p.readTime}</span></div><div class="card-title">${p.title}</div><div class="card-excerpt">${p.excerpt}</div><div class="card-tags">${cardTagsHTML(p.tags)}</div></a>`}
+function renderPosts(){
+    const posts=filteredPosts(),isF=activeTag!=='all'||searchQuery.trim();
+    const fs=document.getElementById('featured-section'),ps=document.getElementById('posts-section'),fg=document.getElementById('featured-grid'),pg=document.getElementById('posts-grid'),em=document.getElementById('empty-state'),rc=document.getElementById('result-count'),lbl=document.getElementById('posts-section-label');
+    if(!posts.length){fs.style.display='none';ps.style.display='none';em.classList.add('visible');rc.classList.remove('visible');return}
+    em.classList.remove('visible');
+    if(isF){fs.style.display='none';ps.style.display='block';lbl.textContent='// RESULTS';pg.innerHTML=posts.map(regularCardHTML).join('');rc.classList.add('visible');document.getElementById('rc-num').textContent=posts.length;document.getElementById('rc-filter').textContent=activeTag!=='all'?`#${activeTag}`:`"${searchQuery}"`}
+    else{rc.classList.remove('visible');const feat=posts.filter(p=>p.featured),reg=posts.filter(p=>!p.featured);feat.length?(fs.style.display='block',fg.innerHTML=feat.map(featuredCardHTML).join('')):(fs.style.display='none');reg.length?(ps.style.display='block',lbl.textContent='// ALL POSTS',pg.innerHTML=reg.map(regularCardHTML).join('')):(ps.style.display='none')}
+    attachHover()
 }
-
-// ── COLLECT ALL UNIQUE TAGS ────────────────────────────────
-function allTags() {
-    const map = {};
-    POSTS.forEach(p => p.tags.forEach(t => { map[t] = (map[t] || 0) + 1; }));
-    return Object.entries(map).sort((a,b) => b[1]-a[1]); // sorted by frequency
+function renderStats(){
+    document.getElementById('stat-posts').textContent=POSTS.length;
+    document.getElementById('stat-tags').textContent=allTags().length;
+    document.getElementById('stat-read').textContent=POSTS.reduce((a,p)=>a+(parseInt(p.readTime)||0),0)
 }
-
-// ── BUILD TAG FILTER BAR ───────────────────────────────────
-let activeTag = 'all';
-let searchQuery = '';
-
-function buildTagBar() {
-    const wrap = document.getElementById('tag-filter-wrap');
-    const tags = allTags();
-
-    const allBtn = document.createElement('button');
-    allBtn.className = 'tag-btn tag-btn-all' + (activeTag === 'all' ? ' active' : '');
-    allBtn.innerHTML = `all <span class="tag-count">${POSTS.length}</span>`;
-    allBtn.onclick = () => setTag('all');
-    wrap.appendChild(allBtn);
-
-    tags.forEach(([tag, count]) => {
-        const btn = document.createElement('button');
-        btn.className = 'tag-btn' + (activeTag === tag ? ' active' : '');
-        btn.style.cssText = tagBtnStyle(tag, activeTag === tag);
-        btn.dataset.tag = tag;
-        btn.innerHTML = `${tag} <span class="tag-count">${count}</span>`;
-        btn.onclick = () => setTag(tag);
-        wrap.appendChild(btn);
-    });
-}
-
-function setTag(tag) {
-    activeTag = tag;
-    // Update button styles
-    document.querySelectorAll('.tag-btn').forEach(btn => {
-        const t = btn.dataset.tag;
-        if (!t) { // "all" button
-            btn.classList.toggle('active', tag === 'all');
-        } else {
-            btn.classList.toggle('active', tag === t);
-            btn.style.cssText = tagBtnStyle(t, tag === t);
-        }
-    });
-    renderPosts();
-}
-
-// ── FILTER LOGIC ───────────────────────────────────────────
-function filteredPosts() {
-    return POSTS.filter(p => {
-        const tagMatch = activeTag === 'all' || p.tags.includes(activeTag);
-        const q = searchQuery.toLowerCase().trim();
-        const searchMatch = !q ||
-            p.title.toLowerCase().includes(q) ||
-            p.excerpt.toLowerCase().includes(q) ||
-            p.tags.some(t => t.includes(q));
-        return tagMatch && searchMatch;
-    });
-}
-
-// ── RENDER CARD HTML ───────────────────────────────────────
-function cardTagsHTML(tags) {
-    return tags.map(t => `<span class="card-tag" style="${tagStyle(t)}">${t}</span>`).join('');
-}
-
-function featuredCardHTML(p) {
-    return `
-    <a href="posts/${p.slug}.html" class="post-card-featured" data-tags="${p.tags.join(',')}">
-        <span class="card-arrow">↗</span>
-        <div class="card-meta">
-            <span class="featured-label">★ FEATURED</span>
-            <span class="card-date">${formatDate(p.date)}</span>
-            <span class="card-read">${p.readTime}</span>
-        </div>
-        <div class="card-title">${p.title}</div>
-        <div class="card-excerpt">${p.excerpt}</div>
-        <div class="card-tags">${cardTagsHTML(p.tags)}</div>
-    </a>`;
-}
-
-function regularCardHTML(p) {
-    return `
-    <a href="posts/${p.slug}.html" class="post-card" data-tags="${p.tags.join(',')}">
-        <span class="card-arrow">↗</span>
-        <div class="card-meta">
-            <span class="card-date">${formatDate(p.date)}</span>
-            <span class="card-read">${p.readTime}</span>
-        </div>
-        <div class="card-title">${p.title}</div>
-        <div class="card-excerpt">${p.excerpt}</div>
-        <div class="card-tags">${cardTagsHTML(p.tags)}</div>
-    </a>`;
-}
-
-// ── MAIN RENDER ────────────────────────────────────────────
-function renderPosts() {
-    const posts = filteredPosts();
-    const isFiltering = activeTag !== 'all' || searchQuery.trim();
-
-    const featuredSection = document.getElementById('featured-section');
-    const postsSection = document.getElementById('posts-section');
-    const featuredGrid = document.getElementById('featured-grid');
-    const postsGrid = document.getElementById('posts-grid');
-    const emptyState = document.getElementById('empty-state');
-    const resultCount = document.getElementById('result-count');
-    const postsSectionLabel = document.getElementById('posts-section-label');
-
-    if (posts.length === 0) {
-        featuredSection.style.display = 'none';
-        postsSection.style.display = 'none';
-        emptyState.classList.add('visible');
-        resultCount.classList.remove('visible');
-        return;
-    }
-
-    emptyState.classList.remove('visible');
-
-    // When filtering — show all results in one flat grid, no featured separation
-    if (isFiltering) {
-        featuredSection.style.display = 'none';
-        postsSection.style.display = 'block';
-        postsSectionLabel.textContent = `// RESULTS`;
-        postsGrid.innerHTML = posts.map(p => regularCardHTML(p)).join('');
-
-        resultCount.classList.add('visible');
-        document.getElementById('rc-num').textContent = posts.length;
-        const filterDesc = activeTag !== 'all'
-            ? `#${activeTag}${searchQuery ? ' + "' + searchQuery + '"' : ''}`
-            : `"${searchQuery}"`;
-        document.getElementById('rc-filter').textContent = filterDesc;
-    } else {
-        // Default view — featured + regular
-        resultCount.classList.remove('visible');
-        const featured = posts.filter(p => p.featured);
-        const regular  = posts.filter(p => !p.featured);
-
-        if (featured.length > 0) {
-            featuredSection.style.display = 'block';
-            featuredGrid.innerHTML = featured.map(featuredCardHTML).join('');
-        } else {
-            featuredSection.style.display = 'none';
-        }
-
-        if (regular.length > 0) {
-            postsSection.style.display = 'block';
-            postsSectionLabel.textContent = `// ALL POSTS`;
-            postsGrid.innerHTML = regular.map(regularCardHTML).join('');
-        } else {
-            postsSection.style.display = 'none';
-        }
-    }
-
-    // Cursor hover for new cards
-    attachCursorHover();
-}
-
-// ── STATS ──────────────────────────────────────────────────
-function renderStats() {
-    document.getElementById('stat-posts').textContent = POSTS.length;
-    document.getElementById('stat-tags').textContent = allTags().length;
-}
-
-// ── SEARCH ─────────────────────────────────────────────────
-document.getElementById('search-input').addEventListener('input', e => {
-    searchQuery = e.target.value;
-    renderPosts();
-});
-
-// ── CURSOR ─────────────────────────────────────────────────
-const cursor = document.getElementById('cursor');
-const ring   = document.getElementById('cursorRing');
+document.getElementById('search-input').addEventListener('input',e=>{searchQuery=e.target.value;renderPosts()});
+const cursor=document.getElementById('cursor'),ring=document.getElementById('cursorRing');
 let mx=0,my=0,rx=0,ry=0;
-document.addEventListener('mousemove', e => {
-    mx=e.clientX; my=e.clientY;
-    cursor.style.left=mx+'px'; cursor.style.top=my+'px';
-});
-(function animRing() {
-    rx+=(mx-rx)*.12; ry+=(my-ry)*.12;
-    ring.style.left=rx+'px'; ring.style.top=ry+'px';
-    requestAnimationFrame(animRing);
-})();
-
-function attachCursorHover() {
-    document.querySelectorAll('a,button,input,.tag-btn').forEach(el => {
-        el.removeEventListener('mouseenter', onEnter);
-        el.removeEventListener('mouseleave', onLeave);
-        el.addEventListener('mouseenter', onEnter);
-        el.addEventListener('mouseleave', onLeave);
-    });
-}
-function onEnter() {
-    cursor.style.transform='translate(-50%,-50%) scale(2)';
-    ring.style.transform='translate(-50%,-50%) scale(1.4)';
-    ring.style.borderColor='rgba(0,255,157,.8)';
-}
-function onLeave() {
-    cursor.style.transform='translate(-50%,-50%) scale(1)';
-    ring.style.transform='translate(-50%,-50%) scale(1)';
-    ring.style.borderColor='rgba(0,255,157,.5)';
-}
-
-// ── PARTICLES ─────────────────────────────────────────────
-(function() {
-    const canvas = document.getElementById('particles-canvas');
-    const ctx = canvas.getContext('2d');
-    let W,H,particles=[];
-    function resize() { W=canvas.width=window.innerWidth; H=canvas.height=window.innerHeight; }
-    resize(); window.addEventListener('resize',resize);
-    for(let i=0;i<45;i++) particles.push({
-        x:Math.random()*W, y:Math.random()*H,
-        r:Math.random()*1.3+.3, dx:(Math.random()-.5)*.3,
-        dy:-(Math.random()*.35+.08), alpha:Math.random()*.5+.1,
-        pulse:Math.random()*Math.PI*2
-    });
-    function draw() {
-        ctx.clearRect(0,0,W,H);
-        particles.forEach(p => {
-            p.pulse+=.018;
-            const a=p.alpha*(.6+.4*Math.sin(p.pulse));
-            ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
-            ctx.fillStyle=`rgba(0,255,157,${a})`; ctx.fill();
-            p.x+=p.dx; p.y+=p.dy;
-            if(p.y<-5){p.y=H+5;p.x=Math.random()*W;}
-            if(p.x<-5)p.x=W+5; if(p.x>W+5)p.x=-5;
-        });
-        requestAnimationFrame(draw);
-    }
-    draw();
-})();
-
-// ── ORB PARALLAX ──────────────────────────────────────────
-const orb1=document.querySelector('.orb1');
-const orb2=document.querySelector('.orb2');
-window.addEventListener('mousemove',e=>{
-    const rx=(e.clientX/window.innerWidth-.5)*25;
-    const ry=(e.clientY/window.innerHeight-.5)*18;
-    if(orb1)orb1.style.transform=`translate(${rx}px,${ry}px)`;
-    if(orb2)orb2.style.transform=`translate(${-rx*.6}px,${-ry*.6}px)`;
-});
-
-// ── REVEAL ON SCROLL ──────────────────────────────────────
-const revealObs = new IntersectionObserver(entries => {
-    entries.forEach(e => { if(e.isIntersecting){e.target.classList.add('visible');revealObs.unobserve(e.target);} });
-},{threshold:.1});
-document.querySelectorAll('.reveal').forEach(r=>revealObs.observe(r));
-
-// ── INIT ──────────────────────────────────────────────────
-renderStats();
-buildTagBar();
-renderPosts();
-attachCursorHover();
-
-// URL-based tag filter (e.g. blog/index.html?tag=malware-dev)
-const urlTag = new URLSearchParams(window.location.search).get('tag');
-if (urlTag) setTag(urlTag);
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cursor.style.left=mx+'px';cursor.style.top=my+'px'});
+(function anim(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(anim)})();
+function onE(){cursor.style.transform='translate(-50%,-50%) scale(2)';ring.style.transform='translate(-50%,-50%) scale(1.4)';ring.style.borderColor='rgba(0,255,157,.8)'}
+function onL(){cursor.style.transform='translate(-50%,-50%) scale(1)';ring.style.transform='translate(-50%,-50%) scale(1)';ring.style.borderColor='rgba(0,255,157,.5)'}
+function attachHover(){document.querySelectorAll('a,button,input,.tag-btn').forEach(el=>{el.removeEventListener('mouseenter',onE);el.removeEventListener('mouseleave',onL);el.addEventListener('mouseenter',onE);el.addEventListener('mouseleave',onL)})}
+(function(){const canvas=document.getElementById('particles-canvas'),ctx=canvas.getContext('2d');let W,H,P=[];function resize(){W=canvas.width=window.innerWidth;H=canvas.height=window.innerHeight}resize();window.addEventListener('resize',resize);for(let i=0;i<45;i++)P.push({x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.3+.3,dx:(Math.random()-.5)*.3,dy:-(Math.random()*.35+.08),a:Math.random()*.5+.1,p:Math.random()*Math.PI*2});function draw(){ctx.clearRect(0,0,W,H);P.forEach(p=>{p.p+=.018;const a=p.a*(.6+.4*Math.sin(p.p));ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle=`rgba(0,255,157,${a})`;ctx.fill();p.x+=p.dx;p.y+=p.dy;if(p.y<-5){p.y=H+5;p.x=Math.random()*W}if(p.x<-5)p.x=W+5;if(p.x>W+5)p.x=-5});requestAnimationFrame(draw)}draw()})();
+const o1=document.querySelector('.orb1'),o2=document.querySelector('.orb2');
+window.addEventListener('mousemove',e=>{const rx=(e.clientX/window.innerWidth-.5)*26,ry=(e.clientY/window.innerHeight-.5)*20;if(o1)o1.style.transform=`translate(${rx}px,${ry}px)`;if(o2)o2.style.transform=`translate(${-rx*.6}px,${-ry*.6}px)`});
+renderStats();buildTagBar();renderPosts();attachHover();
+const urlTag=new URLSearchParams(window.location.search).get('tag');if(urlTag)setTag(urlTag);
 </script>
 </body>
 </html>
