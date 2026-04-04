@@ -3,13 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- ══════════════════════════════════════════════════════
+         EDITABLE: Change the title and description below.
+         This appears in the browser tab and search engines.
+         ══════════════════════════════════════════════════════ -->
     <title>Blog — Piyusha Akash · Red Team Research</title>
     <meta name="description" content="Threat research, kernel analysis, malware dev, reverse engineering and red team writeups by Piyusha Akash.">
+    <!-- ══════════════════════════════════════════════════════ -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;600;700;800&family=Fira+Code:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
-        :root{--acid:#00ff9d;--acid2:#00e5ff;--red:#ff2d55;--gold:#f59e0b;--bg:#060608;--bg2:#0a0a0f;--surface:#0e0e16;--surface2:#14141f;--border:rgba(0,255,157,0.10);--border-bright:rgba(0,255,157,0.38);--text:#c8ccd8;--text-dim:#555870;--white:#f0f2ff}
+        /* ─── DESIGN TOKENS: edit these if you ever want to change the color scheme ─── */
+        :root {
+            --acid:#00ff9d; --acid2:#00e5ff; --red:#ff2d55; --gold:#f59e0b;
+            --bg:#060608; --bg2:#0a0a0f; --surface:#0e0e16; --surface2:#14141f;
+            --border:rgba(0,255,157,0.10); --border-bright:rgba(0,255,157,0.38);
+            --text:#c8ccd8; --text-dim:#555870; --white:#f0f2ff;
+        }
+        /* ─────────────────────────────────────────────────────────────────────────── */
         *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}
         body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;overflow-x:hidden;cursor:none}
         .cursor{position:fixed;width:8px;height:8px;background:var(--acid);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);box-shadow:0 0 12px var(--acid),0 0 30px rgba(0,255,157,.3);transition:transform .1s}
@@ -29,8 +41,8 @@
         .nav-link{font-family:'Fira Code',monospace;font-size:12px;color:var(--text-dim);text-decoration:none;letter-spacing:.08em;transition:color .2s;position:relative}
         .nav-link::before{content:'./';color:var(--acid);opacity:.5}
         .nav-link::after{content:'';position:absolute;bottom:-3px;left:0;width:0;height:1px;background:var(--acid);transition:width .25s ease}
-        .nav-link:hover{color:var(--acid)}
-        .nav-link:hover::after{width:100%}
+        .nav-link:hover{color:var(--acid)}.nav-link:hover::after{width:100%}
+        /* ── HEADER — editable text is in the HTML below ── */
         .blog-header{position:relative;padding:130px 48px 64px;overflow:hidden}
         .blog-header-inner{max-width:1100px;margin:0 auto}
         .bh-pre{font-family:'Fira Code',monospace;font-size:11px;color:var(--acid);letter-spacing:.22em;margin-bottom:20px;display:flex;align-items:center;gap:14px;opacity:0;animation:fadeUp .6s .1s forwards}
@@ -85,6 +97,7 @@
         .card-date{font-family:'Fira Code',monospace;font-size:10px;color:var(--text-dim);letter-spacing:.1em}
         .card-read{font-family:'Fira Code',monospace;font-size:10px;color:var(--text-dim)}
         .card-read::before{content:'·';margin-right:12px;color:var(--border-bright)}
+        /* post type badge: auto-assigned by JS based on tags */
         .card-type{font-family:'Fira Code',monospace;font-size:9px;font-weight:700;letter-spacing:.12em;padding:2px 9px}
         .ct-featured{color:var(--acid);background:rgba(0,255,157,.1);border:1px solid rgba(0,255,157,.25)}
         .ct-research{color:var(--gold);background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.25)}
@@ -103,6 +116,7 @@
         .empty-icon{font-size:44px;margin-bottom:18px;opacity:.35}
         .empty-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:var(--white);margin-bottom:8px}
         .empty-sub{font-family:'Fira Code',monospace;font-size:12px;color:var(--text-dim)}
+        /* ── FOOTER — editable text is in the HTML below ── */
         .blog-footer{border-top:1px solid var(--border);padding:32px 48px;max-width:1100px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;font-family:'Fira Code',monospace;font-size:11px;color:var(--text-dim)}
         .footer-link{color:var(--text-dim);text-decoration:none;transition:color .2s}
         .footer-link:hover{color:var(--acid)}
@@ -120,19 +134,35 @@
 <div class="orb orb1"></div>
 <div class="orb orb2"></div>
 <div class="scanline"></div>
+
+<!-- ══════════════════════════════════════════════════════
+     EDITABLE: Navigation links
+     Change href values to match your site structure.
+     ══════════════════════════════════════════════════════ -->
 <nav id="navbar">
     <a href="../" class="nav-logo">[<span>0x3xp</span>] <span style="color:var(--text-dim)">~</span></a>
     <div class="nav-right">
-        <a href="../#about" class="nav-link">about</a>
+        <a href="../#about"    class="nav-link">about</a>
         <a href="../#projects" class="nav-link">projects</a>
-        <a href="../" class="nav-link">home</a>
+        <a href="../"          class="nav-link">home</a>
     </div>
 </nav>
+<!-- ══════════════════════════════════════════════════════ -->
+
+<!-- ══════════════════════════════════════════════════════
+     EDITABLE: Blog header text
+     Change the tagline, subtitle, and description below.
+     Stats (post count, tag count, reading time) are
+     calculated automatically from posts.js — no edit needed.
+     ══════════════════════════════════════════════════════ -->
 <header class="blog-header">
     <div class="blog-header-inner">
         <div class="bh-pre">// RESEARCH LOG</div>
         <h1 class="blog-title">Red Team<br><span class="a">Blog.</span></h1>
-        <p class="bh-sub">Kernel analysis · Malware research · Windows internals ·<br>Writeups from the offensive side of the wire.</p>
+        <p class="bh-sub">
+            Kernel analysis · Malware research · Windows internals ·<br>
+            Writeups from the offensive side of the wire.
+        </p>
         <div class="stats-row">
             <div class="stat-item"><strong id="stat-posts">0</strong>&nbsp;Posts</div>
             <span class="stat-divider">|</span>
@@ -142,37 +172,65 @@
         </div>
     </div>
 </header>
+<!-- ══════════════════════════════════════════════════════ -->
+
 <main class="blog-main">
+
+    <!-- filter bar — tag buttons + search — fully auto-generated from posts.js -->
     <div class="filter-bar">
         <div class="filter-top">
             <div>
                 <div class="filter-label" style="margin-bottom:12px;">// FILTER BY TAG</div>
-                <div class="tag-filter-wrap" id="tag-filter-wrap"></div>
+                <div class="tag-filter-wrap" id="tag-filter-wrap">
+                    <!-- tag buttons injected here by JS — do not edit manually -->
+                </div>
             </div>
             <div class="search-wrap">
                 <span class="search-icon">⌕</span>
+                <!-- EDITABLE: change placeholder text if desired -->
                 <input type="text" id="search-input" placeholder="search posts..." spellcheck="false" autocomplete="off">
             </div>
         </div>
     </div>
+
+    <!-- result count banner — only visible when a filter is active -->
     <div class="result-count" id="result-count">
         <span id="rc-num">0</span> post(s) matching <span id="rc-filter">""</span>
-        &nbsp;·&nbsp; <span style="cursor:pointer;" onclick="clearFilter()">clear ×</span>
+        &nbsp;·&nbsp;<span style="cursor:pointer;" onclick="clearFilter()">clear ×</span>
     </div>
+
+    <!-- featured posts section — only shown when NOT filtering -->
     <div id="featured-section">
+        <!-- EDITABLE: change section label text -->
         <div class="section-label">// FEATURED</div>
-        <div class="featured-grid" id="featured-grid"></div>
+        <div class="featured-grid" id="featured-grid">
+            <!-- featured post cards injected by JS -->
+        </div>
     </div>
+
+    <!-- all / regular posts section -->
     <div id="posts-section">
+        <!-- label text is updated dynamically by JS ("// ALL POSTS" vs "// RESULTS") -->
         <div class="section-label" id="posts-section-label">// ALL POSTS</div>
-        <div class="posts-grid" id="posts-grid"></div>
+        <div class="posts-grid" id="posts-grid">
+            <!-- regular post cards injected by JS -->
+        </div>
     </div>
+
+    <!-- empty state — shown when search/filter returns zero results -->
     <div class="empty-state" id="empty-state">
         <div class="empty-icon">◎</div>
+        <!-- EDITABLE: change empty state messages if desired -->
         <div class="empty-title">No posts found</div>
         <div class="empty-sub">// try a different tag or search term</div>
     </div>
+
 </main>
+
+<!-- ══════════════════════════════════════════════════════
+     EDITABLE: Footer text
+     Update copyright year and tagline as needed.
+     ══════════════════════════════════════════════════════ -->
 <footer>
     <div class="blog-footer">
         <span>© 2026 Piyusha Akash — All research for educational purposes.</span>
@@ -180,57 +238,192 @@
         <a href="../" class="footer-link">← back to portfolio</a>
     </div>
 </footer>
+<!-- ══════════════════════════════════════════════════════ -->
+
+<!-- posts.js MUST be loaded before the blog engine script below -->
 <script src="posts.js"></script>
+
 <script>
-function formatDate(iso){return new Date(iso+'T00:00:00').toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'})}
-function tagStyle(tag){const c=(TAG_COLORS&&TAG_COLORS[tag])||TAG_DEFAULT_COLOR||'#555870';return`color:${c};border-color:${c}33;background:${c}0d`}
-function tagBtnStyle(tag,active){const c=(TAG_COLORS&&TAG_COLORS[tag])||TAG_DEFAULT_COLOR||'#555870';return active?`background:${c};border-color:${c};color:#060608;`:`border-color:${c}44;color:${c};background:${c}0a;`}
-function tagColor(tag){return(TAG_COLORS&&TAG_COLORS[tag])||'#555870'}
-function allTags(){const m={};POSTS.forEach(p=>p.tags.forEach(t=>{m[t]=(m[t]||0)+1}));return Object.entries(m).sort((a,b)=>b[1]-a[1])}
-function postType(p){const re=['reverse-engineering','exploit-dev','kernel','internals','malware-dev','evasion'];const isR=p.tags.some(t=>re.includes(t));if(p.featured)return{cls:'ct-featured',label:'★ FEATURED'};if(isR)return{cls:'ct-research',label:'⬡ RESEARCH'};return{cls:'ct-post',label:'✦ POST'}}
-let activeTag='all',searchQuery='';
-function buildTagBar(){
-    const wrap=document.getElementById('tag-filter-wrap');wrap.innerHTML='';
-    const allBtn=document.createElement('button');allBtn.className='tag-btn tag-btn-all'+(activeTag==='all'?' active':'');allBtn.innerHTML=`all <span class="tag-count">${POSTS.length}</span>`;allBtn.addEventListener('click',()=>setTag('all'));wrap.appendChild(allBtn);
-    allTags().forEach(([tag,count])=>{const btn=document.createElement('button');btn.className='tag-btn'+(activeTag===tag?' active':'');btn.style.cssText=tagBtnStyle(tag,activeTag===tag);btn.style.setProperty('--tag-color',tagColor(tag));btn.dataset.tag=tag;btn.innerHTML=`${tag} <span class="tag-count">${count}</span>`;btn.addEventListener('click',()=>setTag(tag));wrap.appendChild(btn)})
+/* ════════════════════════════════════════════════════════════
+   BLOG ENGINE — do NOT edit below this line unless you know
+   what you are doing. All post data comes from posts.js.
+   ════════════════════════════════════════════════════════════ */
+
+/* ── helpers ── */
+function formatDate(iso){
+    return new Date(iso+'T00:00:00').toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'});
 }
+function tagStyle(tag){
+    const c=(TAG_COLORS&&TAG_COLORS[tag])||TAG_DEFAULT_COLOR||'#555870';
+    return `color:${c};border-color:${c}33;background:${c}0d`;
+}
+function tagBtnStyle(tag,active){
+    const c=(TAG_COLORS&&TAG_COLORS[tag])||TAG_DEFAULT_COLOR||'#555870';
+    return active?`background:${c};border-color:${c};color:#060608;`:`border-color:${c}44;color:${c};background:${c}0a;`;
+}
+function tagColor(tag){return(TAG_COLORS&&TAG_COLORS[tag])||'#555870';}
+
+/* ── collect all unique tags sorted by frequency ── */
+function allTags(){
+    const m={};
+    POSTS.forEach(p=>p.tags.forEach(t=>{m[t]=(m[t]||0)+1}));
+    return Object.entries(m).sort((a,b)=>b[1]-a[1]);
+}
+
+/* ── determine post type badge based on tags ──
+   EDITABLE: add tag names to the reTags array to make them
+   trigger the "⬡ RESEARCH" badge instead of "✦ POST" ── */
+function postType(p){
+    const reTags=['reverse-engineering','exploit-dev','kernel','internals','malware-dev','evasion','shellcode'];
+    const isResearch=p.tags.some(t=>reTags.includes(t));
+    if(p.featured) return{cls:'ct-featured',label:'★ FEATURED'};
+    if(isResearch) return{cls:'ct-research', label:'⬡ RESEARCH'};
+    return            {cls:'ct-post',     label:'✦ POST'};
+}
+
+/* ── state ── */
+let activeTag='all', searchQuery='';
+
+/* ── build tag filter buttons from all tags in posts.js ── */
+function buildTagBar(){
+    const wrap=document.getElementById('tag-filter-wrap');
+    wrap.innerHTML='';
+    const allBtn=document.createElement('button');
+    allBtn.className='tag-btn tag-btn-all'+(activeTag==='all'?' active':'');
+    allBtn.innerHTML=`all <span class="tag-count">${POSTS.length}</span>`;
+    allBtn.addEventListener('click',()=>setTag('all'));
+    wrap.appendChild(allBtn);
+    allTags().forEach(([tag,count])=>{
+        const btn=document.createElement('button');
+        btn.className='tag-btn'+(activeTag===tag?' active':'');
+        btn.style.cssText=tagBtnStyle(tag,activeTag===tag);
+        btn.style.setProperty('--tag-color',tagColor(tag));
+        btn.dataset.tag=tag;
+        btn.innerHTML=`${tag} <span class="tag-count">${count}</span>`;
+        btn.addEventListener('click',()=>setTag(tag));
+        wrap.appendChild(btn);
+    });
+}
+
 function setTag(tag){
     activeTag=tag;
-    document.querySelectorAll('.tag-btn').forEach(btn=>{const t=btn.dataset.tag;if(!t){btn.classList.toggle('active',tag==='all')}else{const a=tag===t;btn.classList.toggle('active',a);btn.style.cssText=tagBtnStyle(t,a);btn.style.setProperty('--tag-color',tagColor(t))}});
-    renderPosts()
+    document.querySelectorAll('.tag-btn').forEach(btn=>{
+        const t=btn.dataset.tag;
+        if(!t){btn.classList.toggle('active',tag==='all');}
+        else{const a=tag===t;btn.classList.toggle('active',a);btn.style.cssText=tagBtnStyle(t,a);btn.style.setProperty('--tag-color',tagColor(t));}
+    });
+    renderPosts();
 }
-function clearFilter(){activeTag='all';searchQuery='';document.getElementById('search-input').value='';buildTagBar();renderPosts()}
-function filteredPosts(){return POSTS.filter(p=>{const tok=activeTag==='all'||p.tags.includes(activeTag);const q=searchQuery.toLowerCase().trim();const sok=!q||p.title.toLowerCase().includes(q)||p.excerpt.toLowerCase().includes(q)||p.tags.some(t=>t.includes(q));return tok&&sok})}
-function cardTagsHTML(tags){return tags.map(t=>`<span class="card-tag" style="${tagStyle(t)}">${t}</span>`).join('')}
-function featuredCardHTML(p){const{cls,label}=postType(p);return`<a href="posts/${p.slug}.html" class="post-card-featured"><div class="card-scan"></div><span class="card-arrow">↗</span><div class="card-meta"><span class="card-type ${cls}">${label}</span><span class="card-date">${formatDate(p.date)}</span><span class="card-read">${p.readTime}</span></div><div class="card-title">${p.title}</div><div class="card-excerpt">${p.excerpt}</div><div class="card-tags">${cardTagsHTML(p.tags)}</div></a>`}
-function regularCardHTML(p){const{cls,label}=postType(p);return`<a href="posts/${p.slug}.html" class="post-card"><div class="card-corner"></div><span class="card-arrow">↗</span><div class="card-meta"><span class="card-type ${cls}">${label}</span><span class="card-date">${formatDate(p.date)}</span><span class="card-read">${p.readTime}</span></div><div class="card-title">${p.title}</div><div class="card-excerpt">${p.excerpt}</div><div class="card-tags">${cardTagsHTML(p.tags)}</div></a>`}
+
+function clearFilter(){
+    activeTag='all';searchQuery='';
+    document.getElementById('search-input').value='';
+    buildTagBar();renderPosts();
+}
+
+/* ── filter logic — searches title, excerpt, and tags ── */
+function filteredPosts(){
+    return POSTS.filter(p=>{
+        const tok=activeTag==='all'||p.tags.includes(activeTag);
+        const q=searchQuery.toLowerCase().trim();
+        const sok=!q||p.title.toLowerCase().includes(q)||p.excerpt.toLowerCase().includes(q)||p.tags.some(t=>t.includes(q));
+        return tok&&sok;
+    });
+}
+
+/* ── card HTML builders ── */
+function cardTagsHTML(tags){return tags.map(t=>`<span class="card-tag" style="${tagStyle(t)}">${t}</span>`).join('');}
+
+function featuredCardHTML(p){
+    const{cls,label}=postType(p);
+    return`<a href="posts/${p.slug}.html" class="post-card-featured"><div class="card-scan"></div><span class="card-arrow">↗</span><div class="card-meta"><span class="card-type ${cls}">${label}</span><span class="card-date">${formatDate(p.date)}</span><span class="card-read">${p.readTime}</span></div><div class="card-title">${p.title}</div><div class="card-excerpt">${p.excerpt}</div><div class="card-tags">${cardTagsHTML(p.tags)}</div></a>`;
+}
+
+function regularCardHTML(p){
+    const{cls,label}=postType(p);
+    return`<a href="posts/${p.slug}.html" class="post-card"><div class="card-corner"></div><span class="card-arrow">↗</span><div class="card-meta"><span class="card-type ${cls}">${label}</span><span class="card-date">${formatDate(p.date)}</span><span class="card-read">${p.readTime}</span></div><div class="card-title">${p.title}</div><div class="card-excerpt">${p.excerpt}</div><div class="card-tags">${cardTagsHTML(p.tags)}</div></a>`;
+}
+
+/* ── main render function ── */
 function renderPosts(){
-    const posts=filteredPosts(),isF=activeTag!=='all'||searchQuery.trim();
-    const fs=document.getElementById('featured-section'),ps=document.getElementById('posts-section'),fg=document.getElementById('featured-grid'),pg=document.getElementById('posts-grid'),em=document.getElementById('empty-state'),rc=document.getElementById('result-count'),lbl=document.getElementById('posts-section-label');
-    if(!posts.length){fs.style.display='none';ps.style.display='none';em.classList.add('visible');rc.classList.remove('visible');return}
+    const posts=filteredPosts();
+    const isFiltering=activeTag!=='all'||searchQuery.trim();
+    const fs=document.getElementById('featured-section'),ps=document.getElementById('posts-section');
+    const fg=document.getElementById('featured-grid'),pg=document.getElementById('posts-grid');
+    const em=document.getElementById('empty-state'),rc=document.getElementById('result-count');
+    const lbl=document.getElementById('posts-section-label');
+
+    if(!posts.length){
+        fs.style.display='none';ps.style.display='none';
+        em.classList.add('visible');rc.classList.remove('visible');
+        return;
+    }
     em.classList.remove('visible');
-    if(isF){fs.style.display='none';ps.style.display='block';lbl.textContent='// RESULTS';pg.innerHTML=posts.map(regularCardHTML).join('');rc.classList.add('visible');document.getElementById('rc-num').textContent=posts.length;document.getElementById('rc-filter').textContent=activeTag!=='all'?`#${activeTag}`:`"${searchQuery}"`}
-    else{rc.classList.remove('visible');const feat=posts.filter(p=>p.featured),reg=posts.filter(p=>!p.featured);feat.length?(fs.style.display='block',fg.innerHTML=feat.map(featuredCardHTML).join('')):(fs.style.display='none');reg.length?(ps.style.display='block',lbl.textContent='// ALL POSTS',pg.innerHTML=reg.map(regularCardHTML).join('')):(ps.style.display='none')}
-    attachHover()
+
+    if(isFiltering){
+        fs.style.display='none';ps.style.display='block';
+        lbl.textContent='// RESULTS';
+        pg.innerHTML=posts.map(regularCardHTML).join('');
+        rc.classList.add('visible');
+        document.getElementById('rc-num').textContent=posts.length;
+        document.getElementById('rc-filter').textContent=activeTag!=='all'?`#${activeTag}`:`"${searchQuery}"`;
+    } else {
+        rc.classList.remove('visible');
+        const feat=posts.filter(p=>p.featured),reg=posts.filter(p=>!p.featured);
+        feat.length?(fs.style.display='block',fg.innerHTML=feat.map(featuredCardHTML).join('')):(fs.style.display='none');
+        reg.length?(ps.style.display='block',lbl.textContent='// ALL POSTS',pg.innerHTML=reg.map(regularCardHTML).join('')):(ps.style.display='none');
+    }
+    attachHover();
 }
+
+/* ── stats bar — auto-calculated from posts.js ── */
 function renderStats(){
     document.getElementById('stat-posts').textContent=POSTS.length;
     document.getElementById('stat-tags').textContent=allTags().length;
-    document.getElementById('stat-read').textContent=POSTS.reduce((a,p)=>a+(parseInt(p.readTime)||0),0)
+    document.getElementById('stat-read').textContent=POSTS.reduce((a,p)=>a+(parseInt(p.readTime)||0),0);
 }
-document.getElementById('search-input').addEventListener('input',e=>{searchQuery=e.target.value;renderPosts()});
+
+/* ── search input handler ── */
+document.getElementById('search-input').addEventListener('input',e=>{searchQuery=e.target.value;renderPosts();});
+
+/* ── custom cursor ── */
 const cursor=document.getElementById('cursor'),ring=document.getElementById('cursorRing');
 let mx=0,my=0,rx=0,ry=0;
-document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cursor.style.left=mx+'px';cursor.style.top=my+'px'});
-(function anim(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(anim)})();
-function onE(){cursor.style.transform='translate(-50%,-50%) scale(2)';ring.style.transform='translate(-50%,-50%) scale(1.4)';ring.style.borderColor='rgba(0,255,157,.8)'}
-function onL(){cursor.style.transform='translate(-50%,-50%) scale(1)';ring.style.transform='translate(-50%,-50%) scale(1)';ring.style.borderColor='rgba(0,255,157,.5)'}
-function attachHover(){document.querySelectorAll('a,button,input,.tag-btn').forEach(el=>{el.removeEventListener('mouseenter',onE);el.removeEventListener('mouseleave',onL);el.addEventListener('mouseenter',onE);el.addEventListener('mouseleave',onL)})}
-(function(){const canvas=document.getElementById('particles-canvas'),ctx=canvas.getContext('2d');let W,H,P=[];function resize(){W=canvas.width=window.innerWidth;H=canvas.height=window.innerHeight}resize();window.addEventListener('resize',resize);for(let i=0;i<45;i++)P.push({x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.3+.3,dx:(Math.random()-.5)*.3,dy:-(Math.random()*.35+.08),a:Math.random()*.5+.1,p:Math.random()*Math.PI*2});function draw(){ctx.clearRect(0,0,W,H);P.forEach(p=>{p.p+=.018;const a=p.a*(.6+.4*Math.sin(p.p));ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle=`rgba(0,255,157,${a})`;ctx.fill();p.x+=p.dx;p.y+=p.dy;if(p.y<-5){p.y=H+5;p.x=Math.random()*W}if(p.x<-5)p.x=W+5;if(p.x>W+5)p.x=-5});requestAnimationFrame(draw)}draw()})();
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cursor.style.left=mx+'px';cursor.style.top=my+'px';});
+(function anim(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(anim);})();
+function onE(){cursor.style.transform='translate(-50%,-50%) scale(2)';ring.style.transform='translate(-50%,-50%) scale(1.4)';ring.style.borderColor='rgba(0,255,157,.8)';}
+function onL(){cursor.style.transform='translate(-50%,-50%) scale(1)';ring.style.transform='translate(-50%,-50%) scale(1)';ring.style.borderColor='rgba(0,255,157,.5)';}
+function attachHover(){document.querySelectorAll('a,button,input,.tag-btn').forEach(el=>{el.removeEventListener('mouseenter',onE);el.removeEventListener('mouseleave',onL);el.addEventListener('mouseenter',onE);el.addEventListener('mouseleave',onL);});}
+
+/* ── floating particles ── */
+(function(){
+    const canvas=document.getElementById('particles-canvas'),ctx=canvas.getContext('2d');
+    let W,H,P=[];
+    function resize(){W=canvas.width=window.innerWidth;H=canvas.height=window.innerHeight;}
+    resize();window.addEventListener('resize',resize);
+    for(let i=0;i<45;i++)P.push({x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.3+.3,dx:(Math.random()-.5)*.3,dy:-(Math.random()*.35+.08),a:Math.random()*.5+.1,p:Math.random()*Math.PI*2});
+    function draw(){ctx.clearRect(0,0,W,H);P.forEach(p=>{p.p+=.018;const a=p.a*(.6+.4*Math.sin(p.p));ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle=`rgba(0,255,157,${a})`;ctx.fill();p.x+=p.dx;p.y+=p.dy;if(p.y<-5){p.y=H+5;p.x=Math.random()*W;}if(p.x<-5)p.x=W+5;if(p.x>W+5)p.x=-5;});requestAnimationFrame(draw);}
+    draw();
+})();
+
+/* ── orb parallax ── */
 const o1=document.querySelector('.orb1'),o2=document.querySelector('.orb2');
-window.addEventListener('mousemove',e=>{const rx=(e.clientX/window.innerWidth-.5)*26,ry=(e.clientY/window.innerHeight-.5)*20;if(o1)o1.style.transform=`translate(${rx}px,${ry}px)`;if(o2)o2.style.transform=`translate(${-rx*.6}px,${-ry*.6}px)`});
-renderStats();buildTagBar();renderPosts();attachHover();
-const urlTag=new URLSearchParams(window.location.search).get('tag');if(urlTag)setTag(urlTag);
+window.addEventListener('mousemove',e=>{const rx=(e.clientX/window.innerWidth-.5)*26,ry=(e.clientY/window.innerHeight-.5)*20;if(o1)o1.style.transform=`translate(${rx}px,${ry}px)`;if(o2)o2.style.transform=`translate(${-rx*.6}px,${-ry*.6}px)`;});
+
+/* ── init on page load ── */
+renderStats();
+buildTagBar();
+renderPosts();
+attachHover();
+
+/* ── URL-based tag filter: blog/index.html?tag=malware-dev ──
+   Share this URL format to link directly to a filtered view. ── */
+const urlTag=new URLSearchParams(window.location.search).get('tag');
+if(urlTag)setTag(urlTag);
+
+/* ════════════════════════════════════════════════════════════
+   END OF BLOG ENGINE
+   ════════════════════════════════════════════════════════════ */
 </script>
 </body>
 </html>
