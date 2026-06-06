@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Academy — Coming Soon · Piyusha Akash</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;600;700;800&family=Fira+Code:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --acid: #00ff9d;
+            --acid2: #00e5ff;
+            --red: #ff2d55;
+            --gold: #ffbd2e;
+            --bg: #060608;
+            --bg2: #0a0a0f;
+            --surface: #0e0e16;
+            --surface2: #14141f;
+            --border: rgba(0,255,157,0.12);
+            --border-bright: rgba(0,255,157,0.4);
+            --text: #c8ccd8;
+            --text-dim: #555870;
+            --white: #f0f2ff;
+        }
+
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Syne', sans-serif;
+            overflow-x: hidden;
+            cursor: none;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* CUSTOM CURSOR */
+        .cursor {
+            position: fixed;
+            width: 8px; height: 8px;
+            background: var(--acid2);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            transition: transform 0.1s;
+            box-shadow: 0 0 12px var(--acid2), 0 0 30px rgba(0,229,255,0.3);
+        }
+        .cursor-ring {
+            position: fixed;
+            width: 32px; height: 32px;
+            border: 1px solid rgba(0,229,255,0.5);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9998;
+            transform: translate(-50%, -50%);
+            transition: all 0.15s ease;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+            opacity: 0.025;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .grid-bg {
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(0,229,255,0.025) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,229,255,0.025) 1px, transparent 1px);
+            background-size: 60px 60px;
+            pointer-events: none;
+        }
+
+        .orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(90px);
+            pointer-events: none;
+        }
+        .orb1 {
+            width: 500px; height: 500px;
+            background: radial-gradient(circle, rgba(0,229,255,0.07), transparent 70%);
+            top: -150px; left: -100px;
+            animation: orb-drift 10s ease-in-out infinite;
+        }
+        .orb2 {
+            width: 350px; height: 350px;
+            background: radial-gradient(circle, rgba(0,255,157,0.05), transparent 70%);
+            bottom: -80px; right: 5%;
+            animation: orb-drift 12s ease-in-out infinite reverse;
+        }
+        @keyframes orb-drift { 0%,100%{transform:translate(0,0)} 50%{transform:translate(20px,-20px)} }
+
+        .scanline {
+            position: fixed;
+            width: 100%; height: 1px;
+            background: linear-gradient(90deg, transparent 0%, rgba(0,229,255,0.3) 50%, transparent 100%);
+            animation: scan 7s linear infinite;
+            pointer-events: none; z-index: 2;
+        }
+        @keyframes scan { 0%{top:-1px} 100%{top:100%} }
+
+        nav {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 900;
+            padding: 20px 48px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(6,6,8,0.85);
+            backdrop-filter: blur(24px);
+            border-bottom: 1px solid rgba(0,229,255,0.1);
+        }
+        .nav-logo {
+            font-family: 'Space Mono', monospace;
+            font-size: 14px;
+            color: var(--acid2);
+            letter-spacing: 0.1em;
+            text-decoration: none;
+        }
+        .nav-logo span { color: var(--text-dim); }
+        .nav-back {
+            font-family: 'Fira Code', monospace;
+            font-size: 12px;
+            color: var(--text-dim);
+            text-decoration: none;
+            letter-spacing: 0.08em;
+            transition: color 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .nav-back:hover { color: var(--acid2); }
+        .nav-back::before { content: '←'; color: var(--acid2); opacity: 0.6; }
+
+        .content {
+            position: relative;
+            z-index: 5;
+            text-align: center;
+            padding: 40px 24px;
+            max-width: 720px;
+            width: 100%;
+        }
+
+        /* SECTION TAG — blue tinted for academy */
+        .section-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-family: 'Fira Code', monospace;
+            font-size: 11px;
+            letter-spacing: 0.2em;
+            color: var(--acid2);
+            border: 1px solid rgba(0,229,255,0.35);
+            background: rgba(0,229,255,0.04);
+            padding: 8px 20px;
+            margin-bottom: 40px;
+            opacity: 0;
+            animation: fadeUp 0.6s 0.2s forwards;
+        }
+        .section-tag .dot {
+            width: 5px; height: 5px;
+            border-radius: 50%;
+            background: var(--acid2);
+            box-shadow: 0 0 6px var(--acid2);
+            animation: pulse-dot 2s infinite;
+        }
+        @keyframes pulse-dot { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+        .big-label {
+            font-family: 'Fira Code', monospace;
+            font-size: 11px;
+            letter-spacing: 0.3em;
+            color: var(--text-dim);
+            margin-bottom: 16px;
+            opacity: 0;
+            animation: fadeUp 0.6s 0.35s forwards;
+        }
+
+        h1 {
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(56px, 10vw, 100px);
+            font-weight: 800;
+            line-height: 0.88;
+            letter-spacing: -0.03em;
+            color: var(--white);
+            margin-bottom: 28px;
+            opacity: 0;
+            animation: fadeUp 0.7s 0.45s forwards;
+        }
+        h1 .accent { color: var(--acid2); }
+
+        .desc {
+            font-size: 16px;
+            line-height: 1.75;
+            color: var(--text-dim);
+            max-width: 520px;
+            margin: 0 auto 48px;
+            opacity: 0;
+            animation: fadeUp 0.7s 0.6s forwards;
+        }
+        .desc strong { color: var(--text); font-weight: 600; }
+
+        /* COURSE MODULES PREVIEW */
+        .modules {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 56px;
+            text-align: left;
+            opacity: 0;
+            animation: fadeUp 0.7s 0.75s forwards;
+        }
+        .module-card {
+            background: var(--surface);
+            border: 1px solid rgba(0,229,255,0.1);
+            padding: 20px 20px;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        .module-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 2px;
+            background: linear-gradient(90deg, var(--acid2), var(--acid));
+            transform: scaleX(0); transform-origin: left;
+            transition: transform 0.4s ease;
+        }
+        .module-card:hover::before { transform: scaleX(1); }
+        .module-card:hover {
+            border-color: rgba(0,229,255,0.3);
+            background: var(--surface2);
+        }
+        .module-num {
+            font-family: 'Fira Code', monospace;
+            font-size: 10px;
+            color: var(--acid2);
+            letter-spacing: 0.12em;
+            opacity: 0.5;
+            margin-bottom: 10px;
+        }
+        .module-icon { font-size: 22px; margin-bottom: 8px; }
+        .module-name {
+            font-family: 'Syne', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 6px;
+        }
+        .module-desc {
+            font-family: 'Fira Code', monospace;
+            font-size: 11px;
+            color: var(--text-dim);
+            line-height: 1.5;
+        }
+        .module-locked {
+            position: absolute;
+            top: 14px; right: 14px;
+            font-size: 12px;
+            opacity: 0.3;
+        }
+
+        /* PROGRESS BAR */
+        .progress-wrap {
+            margin-bottom: 48px;
+            opacity: 0;
+            animation: fadeUp 0.7s 0.9s forwards;
+        }
+        .progress-label {
+            font-family: 'Fira Code', monospace;
+            font-size: 11px;
+            color: var(--text-dim);
+            letter-spacing: 0.1em;
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        .progress-label span:last-child { color: var(--acid2); }
+        .progress-track {
+            width: 100%; height: 2px;
+            background: rgba(0,229,255,0.1);
+            position: relative; overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--acid2), var(--acid));
+            width: 0%;
+            animation: fill-bar 2s 1.4s cubic-bezier(0.4,0,0.2,1) forwards;
+        }
+        @keyframes fill-bar { to { width: 22%; } }
+        .progress-track::after {
+            content: '';
+            position: absolute;
+            top: 0; left: -40%;
+            width: 40%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shimmer-bar 2.5s 1.8s ease-in-out infinite;
+        }
+        @keyframes shimmer-bar { 0%{left:-40%} 100%{left:140%} }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-family: 'Fira Code', monospace;
+            font-size: 12px;
+            letter-spacing: 0.1em;
+            color: var(--text-dim);
+            text-decoration: none;
+            border: 1px solid rgba(0,229,255,0.2);
+            padding: 12px 24px;
+            transition: all 0.3s;
+            opacity: 0;
+            animation: fadeUp 0.7s 1.05s forwards;
+        }
+        .back-btn:hover {
+            border-color: rgba(0,229,255,0.5);
+            color: var(--acid2);
+            background: rgba(0,229,255,0.04);
+        }
+        .back-btn::before { content: '←'; color: var(--acid2); opacity: 0.7; }
+
+        .corner-tl, .corner-br {
+            position: fixed;
+            width: 60px; height: 60px;
+            pointer-events: none; z-index: 3;
+        }
+        .corner-tl {
+            top: 80px; right: 24px;
+            border-top: 1px solid rgba(0,229,255,0.3);
+            border-right: 1px solid rgba(0,229,255,0.3);
+        }
+        .corner-br {
+            bottom: 24px; left: 24px;
+            border-bottom: 1px solid rgba(0,229,255,0.3);
+            border-left: 1px solid rgba(0,229,255,0.3);
+        }
+
+        .status-strip {
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            background: var(--surface);
+            border-top: 1px solid rgba(0,229,255,0.1);
+            padding: 10px 48px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: 'Fira Code', monospace;
+            font-size: 10px;
+            color: var(--text-dim);
+            letter-spacing: 0.1em;
+            z-index: 100;
+        }
+        .status-strip .live {
+            display: flex; align-items: center; gap: 8px; color: var(--acid2);
+        }
+        .status-strip .live-dot {
+            width: 5px; height: 5px;
+            border-radius: 50%;
+            background: var(--acid2);
+            box-shadow: 0 0 5px var(--acid2);
+            animation: pulse-dot 2s infinite;
+        }
+
+        #particles-canvas {
+            position: fixed; inset: 0;
+            pointer-events: none; z-index: 1; opacity: 0.3;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 600px) {
+            nav { padding: 14px 20px; }
+            h1 { font-size: clamp(44px, 15vw, 72px); }
+            .modules { grid-template-columns: 1fr; }
+            .status-strip { padding: 10px 20px; font-size: 9px; }
+            .corner-tl, .corner-br { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+<canvas id="particles-canvas"></canvas>
+
+<div class="grid-bg"></div>
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
+<div class="scanline"></div>
+<div class="corner-tl"></div>
+<div class="corner-br"></div>
+
+<nav>
+    <a href="../" class="nav-logo">[<span>0x3xp</span>] <span style="color:var(--text-dim)">~</span></a>
+    <a href="../" class="nav-back">return to base</a>
+</nav>
+
+<main class="content">
+    <div class="section-tag">
+        <span class="dot"></span>
+        // academy.0x3xp
+    </div>
+
+    <div class="big-label">// CURRICULUM LOADING</div>
+
+    <h1>Coming<br><span class="accent">Soon.</span></h1>
+
+    <p class="desc">
+        Structured courses on <strong>offensive security</strong>, <strong>malware development</strong>,
+        and <strong>Windows internals</strong> — built for those who want to go deep.
+    </p>
+
+    <div class="modules">
+        <div class="module-card">
+            <div class="module-num">MODULE_01 //</div>
+            <div class="module-icon">🪟</div>
+            <div class="module-name">Windows Internals</div>
+            <div class="module-desc">Kernel, memory, processes & the NT layer</div>
+            <span class="module-locked">🔒</span>
+        </div>
+        <div class="module-card">
+            <div class="module-num">MODULE_02 //</div>
+            <div class="module-icon">🔬</div>
+            <div class="module-name">Malware Development</div>
+            <div class="module-desc">Custom implants, loaders & C2 channels</div>
+            <span class="module-locked">🔒</span>
+        </div>
+        <div class="module-card">
+            <div class="module-num">MODULE_03 //</div>
+            <div class="module-icon">🛡️</div>
+            <div class="module-name">EDR / AV Evasion</div>
+            <div class="module-desc">Bypass techniques & unhooking methods</div>
+            <span class="module-locked">🔒</span>
+        </div>
+        <div class="module-card">
+            <div class="module-num">MODULE_04 //</div>
+            <div class="module-icon">🔍</div>
+            <div class="module-name">Reverse Engineering</div>
+            <div class="module-desc">IDA Pro, Ghidra, and binary analysis</div>
+            <span class="module-locked">🔒</span>
+        </div>
+    </div>
+
+    <div class="progress-wrap">
+        <div class="progress-label">
+            <span>// curriculum_build_progress</span>
+            <span>22%</span>
+        </div>
+        <div class="progress-track">
+            <div class="progress-fill"></div>
+        </div>
+    </div>
+
+    <a href="../" class="back-btn">back to portfolio</a>
+</main>
+
+<div class="status-strip">
+    <span class="live"><span class="live-dot"></span>ACADEMY · UNDER CONSTRUCTION</span>
+    <span>// piyusha@native-framework:~/academy$</span>
+    <span>Piyusha Akash · 2025</span>
+</div>
+
+<script>
+    // CURSOR
+    const cursor = document.getElementById('cursor');
+    const ring = document.getElementById('cursorRing');
+    let mx = 0, my = 0, rx = 0, ry = 0;
+    document.addEventListener('mousemove', e => {
+        mx = e.clientX; my = e.clientY;
+        cursor.style.left = mx + 'px';
+        cursor.style.top = my + 'px';
+    });
+    (function animRing() {
+        rx += (mx - rx) * 0.12;
+        ry += (my - ry) * 0.12;
+        ring.style.left = rx + 'px';
+        ring.style.top = ry + 'px';
+        requestAnimationFrame(animRing);
+    })();
+    document.querySelectorAll('a, .module-card').forEach(el => {
+        el.addEventListener('mouseenter', () => {
+            cursor.style.transform = 'translate(-50%,-50%) scale(2)';
+            ring.style.transform = 'translate(-50%,-50%) scale(1.4)';
+            ring.style.borderColor = 'rgba(0,229,255,0.8)';
+        });
+        el.addEventListener('mouseleave', () => {
+            cursor.style.transform = 'translate(-50%,-50%) scale(1)';
+            ring.style.transform = 'translate(-50%,-50%) scale(1)';
+            ring.style.borderColor = 'rgba(0,229,255,0.5)';
+        });
+    });
+
+    // PARTICLES — blue tinted for academy
+    (function() {
+        const canvas = document.getElementById('particles-canvas');
+        const ctx = canvas.getContext('2d');
+        let W, H, particles = [];
+        function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+        resize();
+        window.addEventListener('resize', resize);
+        for (let i = 0; i < 45; i++) {
+            const useBlue = Math.random() > 0.4;
+            particles.push({ x: Math.random()*W, y: Math.random()*H, r: Math.random()*1.3+0.3, dx: (Math.random()-0.5)*0.3, dy: -(Math.random()*0.35+0.08), alpha: Math.random()*0.5+0.1, pulse: Math.random()*Math.PI*2, blue: useBlue });
+        }
+        function draw() {
+            ctx.clearRect(0,0,W,H);
+            particles.forEach(p => {
+                p.pulse += 0.018;
+                const a = p.alpha*(0.6+0.4*Math.sin(p.pulse));
+                ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+                ctx.fillStyle = p.blue ? `rgba(0,229,255,${a})` : `rgba(0,255,157,${a})`;
+                ctx.fill();
+                p.x += p.dx; p.y += p.dy;
+                if (p.y < -5) { p.y = H+5; p.x = Math.random()*W; }
+                if (p.x < -5) p.x = W+5;
+                if (p.x > W+5) p.x = -5;
+            });
+            requestAnimationFrame(draw);
+        }
+        draw();
+    })();
+
+    // ORB PARALLAX
+    const orb1 = document.querySelector('.orb1');
+    const orb2 = document.querySelector('.orb2');
+    window.addEventListener('mousemove', e => {
+        const rx = (e.clientX/window.innerWidth-0.5)*25;
+        const ry = (e.clientY/window.innerHeight-0.5)*18;
+        if(orb1) orb1.style.transform = `translate(${rx}px,${ry}px)`;
+        if(orb2) orb2.style.transform = `translate(${-rx*0.6}px,${-ry*0.6}px)`;
+    });
+</script>
+</body>
+</html>
