@@ -1,1008 +1,967 @@
+<!--
+╔══════════════════════════════════════════════════════════════════════╗
+║  PIYUSHA AKASH // 0x3xp                                              ║
+║  Red Team Operator · Malware Developer · Reverse Engineer            ║
+║  Low-Level Systems Researcher · OS Internals                         ║
+╠══════════════════════════════════════════════════════════════════════╣
+║  ☸ DHARMA ·  "Three things cannot be long hidden:                   ║
+║               the sun, the moon, and the truth."                     ║
+║                                      — Siddhartha Gautama, Buddha    ║
+╠══════════════════════════════════════════════════════════════════════╣
+║  ⛧ VOID  ·  "The mind is its own place, and in itself               ║
+║               can make a Heav'n of Hell, a Hell of Heav'n."          ║
+║                         — Satan, Paradise Lost · John Milton, 1667   ║
+╚══════════════════════════════════════════════════════════════════════╝
+
+  COPYRIGHT © 2025 PIYUSHA AKASH. ALL RIGHTS RESERVED.
+  UNAUTHORIZED ACCESS, REPRODUCTION, OR MODIFICATION OF THIS WORK
+  IS STRICTLY PROHIBITED AND MAY CONSTITUTE A CRIMINAL OFFENCE.
+  ALL SECURITY RESEARCH IS CONDUCTED FOR AUTHORIZED PURPOSES ONLY.
+-->
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Piyusha Akash — Low-Level Malware Developer, Reverse Engineer, Red Team Operator. Windows Internals & OS Security Research.">
+<meta name="author" content="Piyusha Akash">
+<meta name="theme-color" content="#000000">
+<!-- ☸ Buddha: "What we think, we become." — Dhammapada -->
+<!-- ⛧ Lucifer: "Better to reign in Hell, than serve in Heav'n." — Paradise Lost, Bk.1 L.263 -->
 <title>Piyusha Akash // 0x3xp</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Bebas+Neue&family=Barlow+Condensed:ital,wght@0,300;0,400;0,600;0,700;0,800;0,900;1,700&display=swap" rel="stylesheet">
 <style>
-/* ═══════════════════════════════════════════════
-   ROOT — VOID PALETTE
-═══════════════════════════════════════════════ */
-:root{
-  --void:#000000;
-  --void2:#050507;
-  --void3:#0a0a0e;
-  --void4:#111118;
-  --blood:#c0392b;
-  --blood2:#e74c3c;
-  --bone:#e8e2d0;
-  --bone2:#f5f0e8;
-  --rust:#8b4513;
-  --rust2:#a0522d;
-  --dim:#2a2a35;
-  --dim2:#3a3a48;
-  --muted:#666680;
-  --wire:#1a1a28;
-  --glow-blood:rgba(192,57,43,0.5);
-  --glow-bone:rgba(232,226,208,0.15);
-  --font-display:'Bebas Neue',sans-serif;
-  --font-body:'Barlow Condensed',sans-serif;
-  --font-mono:'IBM Plex Mono',monospace;
+/* ╔══════════════════════════════════════════════════════════
+   ║  ROOT — VOID PALETTE
+   ╚══════════════════════════════════════════════════════════ */
+:root {
+  --void:   #000000;
+  --void2:  #04040a;
+  --void3:  #080810;
+  --void4:  #0e0e18;
+  --void5:  #141422;
+  --blood:  #c0392b;
+  --blood2: #e74c3c;
+  --blood3: #ff6b55;
+  --bone:   #e2ddd0;
+  --bone2:  #f0ece2;
+  --dim:    #1e1e2e;
+  --dim2:   #2a2a3e;
+  --dim3:   #363650;
+  --muted:  #5a5a7a;
+  --muted2: #7a7a9a;
+  --wire:   #0a0a16;
+  --glow:   rgba(192,57,43,0.4);
+  --glow2:  rgba(192,57,43,0.15);
+  --font-d: 'Bebas Neue', sans-serif;
+  --font-b: 'Barlow Condensed', sans-serif;
+  --font-m: 'IBM Plex Mono', monospace;
+  /* ⛧ Hidden in plain sight */
+  --sigil: "The mind is its own place.";
+  --dharma: "Form is emptiness. Emptiness is form.";
+}
+*,*::before,*::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body {
+  background: var(--void);
+  color: var(--bone);
+  font-family: var(--font-b);
+  overflow-x: hidden;
+  cursor: none;
 }
 
-*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-html{scroll-behavior:smooth}
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar-track { background: var(--void); }
+::-webkit-scrollbar-thumb { background: var(--blood); }
 
-body{
-  background:var(--void);
-  color:var(--bone);
-  font-family:var(--font-body);
-  overflow-x:hidden;
-  cursor:none;
-}
-
-/* ═══ CURSOR ═══ */
-#cur{
-  position:fixed;width:12px;height:12px;
-  border:1px solid var(--blood2);
-  transform:translate(-50%,-50%) rotate(45deg);
-  pointer-events:none;z-index:9999;
-  transition:transform .08s,width .2s,height .2s,background .2s;
-}
-#cur.big{width:40px;height:40px;background:rgba(192,57,43,0.08);}
-#cur-trail{
-  position:fixed;width:40px;height:40px;
-  border:1px solid rgba(192,57,43,0.25);
-  border-radius:50%;
-  transform:translate(-50%,-50%);
-  pointer-events:none;z-index:9998;
-  transition:left .18s ease,top .18s ease;
+/* ── NOISE OVERLAY ── */
+body::after {
+  content: '';
+  position: fixed; inset: 0; z-index: 9980;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.88' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity: 0.028; pointer-events: none;
 }
 
-/* ═══ NOISE ═══ */
-body::after{
-  content:'';position:fixed;inset:0;
-  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  opacity:0.03;pointer-events:none;z-index:998;
+/* ── CURSOR ── */
+#cur {
+  position: fixed; width: 11px; height: 11px;
+  border: 1px solid var(--blood2);
+  transform: translate(-50%,-50%) rotate(45deg);
+  pointer-events: none; z-index: 9999;
+  transition: width .18s, height .18s, background .18s;
+  will-change: left, top;
+}
+#cur.big { width: 36px; height: 36px; background: rgba(192,57,43,.06); }
+#cur-ring {
+  position: fixed; width: 36px; height: 36px;
+  border: 1px solid rgba(192,57,43,.22); border-radius: 50%;
+  transform: translate(-50%,-50%); pointer-events: none; z-index: 9998;
+  transition: left .16s ease, top .16s ease;
 }
 
-/* ═══ SCROLLBAR ═══ */
-::-webkit-scrollbar{width:3px}
-::-webkit-scrollbar-track{background:var(--void)}
-::-webkit-scrollbar-thumb{background:var(--blood)}
+/* ╔══════════════════════════════════════════════════════════
+   ║  NAV
+   ╚══════════════════════════════════════════════════════════ */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 900;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 18px 48px; transition: all .4s;
+}
+nav.inked {
+  background: rgba(0,0,0,.94);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(192,57,43,.18);
+}
+.nav-id {
+  font-family: var(--font-m); font-size: 13px;
+  color: var(--blood2); letter-spacing: .2em; text-decoration: none;
+}
+.nav-id span { color: var(--muted); }
+.nav-links { display: flex; gap: 26px; list-style: none; align-items: center; }
+.nav-links a {
+  font-family: var(--font-m); font-size: 10.5px;
+  color: var(--muted); text-decoration: none;
+  letter-spacing: .14em; transition: color .2s; position: relative;
+}
+.nav-links a::after {
+  content: ''; position: absolute; bottom: -2px; left: 0;
+  width: 0; height: 1px; background: var(--blood2); transition: width .25s;
+}
+.nav-links a:hover { color: var(--bone2); }
+.nav-links a:hover::after { width: 100%; }
+.nav-cv {
+  color: var(--blood2) !important;
+  border: 1px solid rgba(192,57,43,.5) !important;
+  padding: 6px 14px !important; transition: all .3s !important;
+}
+.nav-cv::after { display: none !important; }
+.nav-cv:hover { background: var(--blood) !important; color: var(--bone2) !important; }
 
-/* ═══════════════════════════════════════════════
-   NAV
-═══════════════════════════════════════════════ */
-nav{
-  position:fixed;top:0;left:0;right:0;z-index:900;
-  display:flex;justify-content:space-between;align-items:center;
-  padding:18px 48px;
-  transition:all .4s;
+/* hamburger */
+.hbg { display: none; flex-direction: column; gap: 5px; cursor: none; background: none; border: none; padding: 4px; }
+.hbg span { display: block; width: 22px; height: 1px; background: var(--blood2); transition: all .3s; }
+.hbg.o span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+.hbg.o span:nth-child(2) { opacity: 0; }
+.hbg.o span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+.mob-menu {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,.97); z-index: 800;
+  flex-direction: column; align-items: center; justify-content: center; gap: 26px;
 }
-nav.ink{
-  background:rgba(0,0,0,0.92);
-  backdrop-filter:blur(20px);
-  border-bottom:1px solid rgba(192,57,43,0.2);
-}
-.nav-id{
-  font-family:var(--font-mono);font-size:13px;
-  color:var(--blood2);letter-spacing:.2em;
-  text-decoration:none;
-}
-.nav-id span{color:var(--muted)}
-.nav-links{display:flex;gap:28px;list-style:none;align-items:center}
-.nav-links a{
-  font-family:var(--font-mono);font-size:11px;
-  color:var(--muted);text-decoration:none;
-  letter-spacing:.12em;
-  transition:color .2s;
-  position:relative;
-}
-.nav-links a::after{
-  content:'';position:absolute;bottom:-2px;left:0;
-  width:0;height:1px;background:var(--blood2);
-  transition:width .25s;
-}
-.nav-links a:hover{color:var(--bone2)}
-.nav-links a:hover::after{width:100%}
-.nav-cv{
-  font-family:var(--font-mono);font-size:10px;
-  color:var(--blood2)!important;letter-spacing:.15em;
-  border:1px solid var(--blood);padding:7px 16px;
-  transition:all .3s!important;
-}
-.nav-cv::after{display:none!important}
-.nav-cv:hover{background:var(--blood)!important;color:var(--bone2)!important;}
+.mob-menu.o { display: flex; }
+.mob-menu a { font-family: var(--font-d); font-size: 38px; color: var(--muted); text-decoration: none; transition: color .2s; letter-spacing: .06em; }
+.mob-menu a:hover { color: var(--blood2); }
+.mob-cv2 { font-family: var(--font-m) !important; font-size: 12px !important; font-size: 12px !important; color: var(--blood2) !important; border: 1px solid rgba(192,57,43,.5) !important; padding: 10px 24px; }
 
-/* HAMBURGER */
-.hbg{
-  display:none;flex-direction:column;gap:5px;
-  cursor:none;background:none;border:none;padding:4px;
+/* ╔══════════════════════════════════════════════════════════
+   ║  HERO
+   ╚══════════════════════════════════════════════════════════ */
+#hero {
+  min-height: 100vh; display: flex; align-items: center;
+  position: relative; overflow: hidden; padding: 0 48px;
 }
-.hbg span{display:block;width:22px;height:1px;background:var(--blood2);transition:all .3s}
-.hbg.o span:nth-child(1){transform:translateY(6px) rotate(45deg)}
-.hbg.o span:nth-child(2){opacity:0}
-.hbg.o span:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
-.mob-menu{
-  display:none;position:fixed;inset:0;
-  background:rgba(0,0,0,.97);
-  z-index:800;flex-direction:column;align-items:center;justify-content:center;gap:28px;
+.v-rules {
+  position: absolute; inset: 0; padding: 0 48px;
+  display: flex; justify-content: space-between; pointer-events: none; opacity: .04;
 }
-.mob-menu.o{display:flex}
-.mob-menu a{
-  font-family:var(--font-display);font-size:40px;
-  color:var(--muted);text-decoration:none;letter-spacing:.08em;
-  transition:color .2s;
+.v-rule { width: 1px; height: 100%; background: var(--bone); }
+.hero-bg-glyph {
+  position: absolute; right: -2%; top: 50%; transform: translateY(-55%);
+  font-family: var(--font-d);
+  font-size: clamp(160px,22vw,320px);
+  line-height: .85; color: transparent;
+  -webkit-text-stroke: 1px rgba(192,57,43,.09);
+  pointer-events: none; user-select: none; letter-spacing: -.02em;
 }
-.mob-menu a:hover{color:var(--blood2)}
-.mob-cv-m{
-  font-family:var(--font-mono)!important;font-size:12px!important;
-  color:var(--blood2)!important;border:1px solid var(--blood)!important;
-  padding:10px 24px;margin-top:8px;
+.hero-scan {
+  position: absolute; width: 100%; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(192,57,43,.3), transparent);
+  animation: hscan 8s linear infinite; pointer-events: none; top: 0;
 }
+@keyframes hscan { from { top: -1px; } to { top: 100%; } }
+.hero-slash {
+  position: absolute; left: 0; top: 0; width: 3px; height: 100%;
+  background: linear-gradient(180deg, transparent, var(--blood) 20%, var(--blood) 80%, transparent);
+  opacity: .6;
+}
+/* Hex rain bg */
+.hex-rain {
+  position: absolute; inset: 0; pointer-events: none; overflow: hidden; opacity: .035;
+}
+.hex-col {
+  position: absolute; top: -100%; font-family: var(--font-m); font-size: 10px;
+  color: var(--blood); line-height: 1.4; letter-spacing: .05em;
+  animation: hfall linear infinite;
+  white-space: pre;
+}
+@keyframes hfall { from { top: -120%; } to { top: 120%; } }
 
-/* ═══════════════════════════════════════════════
-   HERO
-═══════════════════════════════════════════════ */
-#hero{
-  min-height:100vh;display:flex;align-items:center;
-  position:relative;overflow:hidden;
-  padding:0 48px;
+.hero-content { position: relative; z-index: 2; max-width: 960px; }
+.hero-eyebrow {
+  font-family: var(--font-m); font-size: 10px; color: var(--blood2);
+  letter-spacing: .32em; margin-bottom: 18px;
+  display: flex; align-items: center; gap: 14px;
+  opacity: 0; animation: riseUp .5s .1s forwards;
 }
+.hero-eyebrow::before { content: ''; width: 44px; height: 1px; background: var(--blood); }
 
-/* Vertical rule lines */
-.v-lines{
-  position:absolute;inset:0;pointer-events:none;
-  display:flex;justify-content:space-between;padding:0 48px;
-  opacity:.04;
+h1.hn {
+  font-family: var(--font-d);
+  font-size: clamp(80px,13vw,200px); line-height: .88;
+  letter-spacing: -.01em; color: var(--bone2);
+  display: inline-block; position: relative;
+  opacity: 0; animation: riseUp .7s .25s forwards;
 }
-.v-line{width:1px;background:var(--bone);height:100%}
-
-/* Giant bg text */
-.hero-bg-text{
-  position:absolute;
-  right:-5%;top:50%;transform:translateY(-55%);
-  font-family:var(--font-display);
-  font-size:clamp(160px,25vw,340px);
-  line-height:.85;
-  color:transparent;
-  -webkit-text-stroke:1px rgba(192,57,43,0.12);
-  pointer-events:none;
-  letter-spacing:-.02em;
-  user-select:none;
-}
-
-/* Diagonal slash accent */
-.slash{
-  position:absolute;
-  top:0;left:0;width:4px;height:100%;
-  background:linear-gradient(180deg,transparent 0%,var(--blood) 30%,var(--blood) 70%,transparent 100%);
-  opacity:.7;
-}
-
-.hero-content{position:relative;z-index:2;max-width:1000px}
-
-.hero-eyebrow{
-  font-family:var(--font-mono);font-size:11px;
-  color:var(--blood2);letter-spacing:.3em;
-  margin-bottom:20px;
-  display:flex;align-items:center;gap:14px;
-  opacity:0;animation:riseUp .5s .1s forwards;
-}
-.hero-eyebrow::before{
-  content:'';width:50px;height:1px;background:var(--blood);
+h1.hn em { font-style: normal; color: transparent; -webkit-text-stroke: 2px var(--blood2); }
+h1.hn.glt { animation: glt .4s steps(4) both !important; }
+@keyframes glt {
+  0%  { transform: translate(0,0);      filter: none; }
+  20% { transform: translate(-4px,1px); filter: hue-rotate(25deg); }
+  40% { transform: translate(4px,-1px); filter: hue-rotate(-20deg) brightness(.9); }
+  60% { transform: translate(-2px,2px); filter: none; }
+  80% { transform: translate(2px,-1px); filter: hue-rotate(10deg); }
+  100%{ transform: translate(0,0);      filter: none; }
 }
 
-h1.hn{
-  font-family:var(--font-display);
-  font-size:clamp(80px,13vw,200px);
-  line-height:.88;letter-spacing:-.01em;
-  color:var(--bone2);
-  opacity:0;animation:riseUp .7s .25s forwards;
+.hero-roles {
+  display: flex; align-items: center; flex-wrap: wrap; gap: 0;
+  margin: 22px 0 30px;
+  opacity: 0; animation: riseUp .6s .45s forwards;
 }
-h1.hn em{
-  font-style:normal;
-  color:transparent;
-  -webkit-text-stroke:2px var(--blood2);
+.role {
+  font-family: var(--font-b); font-size: clamp(12px,1.7vw,17px);
+  font-weight: 600; letter-spacing: .18em; text-transform: uppercase;
+  color: var(--muted); padding: 0 18px;
+  border-right: 1px solid var(--dim3); white-space: nowrap;
+}
+.role:first-child { padding-left: 0; }
+.role:last-child { border-right: none; }
+.role.lit { color: var(--blood2); }
+
+.hero-desc {
+  font-size: clamp(14px,1.5vw,17px); font-weight: 300; line-height: 1.75;
+  color: var(--muted2); max-width: 560px; margin-bottom: 40px;
+  opacity: 0; animation: riseUp .6s .6s forwards;
+}
+.hero-desc strong { color: var(--bone); font-weight: 600; }
+
+.hero-cta {
+  display: flex; gap: 14px; flex-wrap: wrap;
+  opacity: 0; animation: riseUp .6s .75s forwards;
+}
+.btn-primary {
+  font-family: var(--font-m); font-size: 11px; letter-spacing: .18em;
+  background: var(--blood); color: var(--bone2); padding: 13px 30px;
+  border: none; text-decoration: none; cursor: none; transition: all .3s;
+  clip-path: polygon(0 0,calc(100% - 9px) 0,100% 9px,100% 100%,9px 100%,0 calc(100% - 9px));
+  position: relative; overflow: hidden;
+}
+.btn-primary::before {
+  content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+  background: rgba(255,255,255,.12); transition: left .35s;
+}
+.btn-primary:hover::before { left: 100%; }
+.btn-primary:hover { background: var(--blood2); box-shadow: 0 0 28px var(--glow); }
+.btn-ghost {
+  font-family: var(--font-m); font-size: 11px; letter-spacing: .18em;
+  background: transparent; color: var(--muted); padding: 13px 30px;
+  border: 1px solid var(--dim3); text-decoration: none; cursor: none; transition: all .3s;
+}
+.btn-ghost:hover { border-color: var(--bone); color: var(--bone2); }
+
+.hero-pills {
+  position: absolute; right: 48px; top: 50%; transform: translateY(-50%);
+  display: flex; flex-direction: column; gap: 10px;
+  opacity: 0; animation: slideInR .7s 1s forwards;
+}
+.pill {
+  font-family: var(--font-m); font-size: 9.5px; letter-spacing: .12em;
+  color: var(--muted); border: 1px solid var(--dim2);
+  padding: 9px 14px; background: var(--void3);
+  display: flex; align-items: center; gap: 9px; white-space: nowrap;
+}
+.pdot {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: var(--blood2); box-shadow: 0 0 7px var(--blood2);
+  animation: blink 2s infinite;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.15} }
+
+@keyframes riseUp { from{opacity:0;transform:translateY(26px)} to{opacity:1;transform:translateY(0)} }
+@keyframes slideInR { from{opacity:0;transform:translate(20px,-50%)} to{opacity:1;transform:translate(0,-50%)} }
+
+/* ╔══════════════════════════════════════════════════════════
+   ║  SECTION COMMONS
+   ╚══════════════════════════════════════════════════════════ */
+section { padding: 96px 48px; position: relative; }
+.sec-pre {
+  font-family: var(--font-m); font-size: 9.5px; color: var(--blood2);
+  letter-spacing: .3em; display: flex; align-items: center; gap: 12px;
+  margin-bottom: 14px;
+}
+.sec-pre::before { content: ''; width: 28px; height: 1px; background: var(--blood); }
+.sec-pre span { color: var(--dim3); }
+h2.sh {
+  font-family: var(--font-d);
+  font-size: clamp(46px,6.5vw,90px); line-height: .9;
+  letter-spacing: .03em; color: var(--bone2); margin-bottom: 56px;
+}
+h2.sh em { font-style: normal; color: var(--blood2); }
+.sec-divider { width: 100%; height: 1px; background: linear-gradient(90deg, transparent, var(--dim2), transparent); }
+.reveal { opacity: 0; transform: translateY(28px); transition: opacity .7s, transform .7s; }
+.reveal.on { opacity: 1; transform: translateY(0); }
+
+/* ── MARQUEE ── */
+.mq-wrap {
+  overflow: hidden; padding: 13px 0;
+  border-top: 1px solid var(--dim); border-bottom: 1px solid var(--dim);
+  background: var(--void2);
+}
+.mq-track {
+  display: flex; white-space: nowrap;
+  animation: mq 28s linear infinite;
+}
+.mq-track span { font-family: var(--font-d); font-size: 11px; letter-spacing: .3em; color: var(--dim3); padding: 0 28px; }
+.mq-track span.hi { color: var(--blood); }
+@keyframes mq { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+
+/* ╔══════════════════════════════════════════════════════════
+   ║  ABOUT
+   ╚══════════════════════════════════════════════════════════ */
+#about { background: var(--void2); }
+.about-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 72px;
+  align-items: start; max-width: 1100px; margin: 0 auto;
+}
+.about-text p {
+  font-size: 16.5px; font-weight: 300; line-height: 1.88;
+  color: var(--muted2); margin-bottom: 20px;
+}
+.about-text p strong { color: var(--bone); font-weight: 600; }
+.about-tags { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 28px; }
+.tag {
+  font-family: var(--font-m); font-size: 9.5px; color: var(--muted);
+  letter-spacing: .12em; border: 1px solid var(--dim3); padding: 5px 11px;
+  transition: all .25s;
+}
+.tag:hover { border-color: var(--blood); color: var(--blood2); transform: translateY(-2px); }
+
+/* code panel */
+.cp {
+  background: var(--void); border: 1px solid var(--dim2);
+  font-family: var(--font-m); position: sticky; top: 96px;
+  overflow: hidden;
+}
+.cp::before {
+  content: ''; position: absolute; top: -30%; left: 0; width: 100%; height: 30%;
+  background: linear-gradient(180deg, transparent, rgba(192,57,43,.03), transparent);
+  animation: cpscan 6s linear infinite; pointer-events: none;
+}
+@keyframes cpscan { from{top:-30%} to{top:110%} }
+.cp-bar {
+  background: var(--void3); border-bottom: 1px solid var(--dim2);
+  padding: 9px 14px; display: flex; align-items: center; gap: 7px;
+}
+.cpd { width: 9px; height: 9px; border-radius: 50%; }
+.cpd.r{background:#ff5f57} .cpd.y{background:#febc2e} .cpd.g{background:#28c840}
+.cp-file { font-size: 9.5px; color: var(--muted); margin-left: 8px; letter-spacing: .1em; }
+.cp-body { padding: 26px; font-size: 12px; line-height: 2.05; }
+.ck{color:var(--blood2)} .cs{color:#e8c99a} .cv{color:#82b0e8}
+.cc{color:var(--dim3)} .cw{color:var(--bone2)}
+
+/* ╔══════════════════════════════════════════════════════════
+   ║  SKILLS / ARSENAL
+   ╚══════════════════════════════════════════════════════════ */
+#skills { background: var(--void); }
+.sk-wrap { max-width: 1100px; margin: 0 auto; }
+.sub-hd {
+  font-family: var(--font-m); font-size: 9.5px; color: var(--muted);
+  letter-spacing: .26em; border-bottom: 1px solid var(--dim); padding-bottom: 11px; margin-bottom: 20px;
+}
+.lang-list { display: flex; flex-direction: column; gap: 2px; margin-bottom: 52px; }
+.lang-row {
+  display: grid; grid-template-columns: 170px 1fr auto;
+  align-items: center; gap: 22px; background: var(--void3);
+  padding: 17px 22px; border-left: 2px solid transparent; transition: all .3s; cursor: none;
+}
+.lang-row:hover { border-left-color: var(--blood2); background: var(--void4); }
+.lang-name {
+  font-family: var(--font-b); font-size: 15px; font-weight: 700;
+  color: var(--bone); letter-spacing: .04em;
+  display: flex; align-items: center; gap: 10px;
+}
+.lang-name span { font-size: 18px; }
+.lang-bar { flex: 1; height: 2px; background: var(--dim); position: relative; }
+.lang-fill {
+  position: absolute; top: 0; left: 0; height: 100%; width: 0;
+  background: linear-gradient(90deg, var(--blood), var(--blood3));
+  box-shadow: 0 0 7px var(--glow);
+  transition: width 1.1s cubic-bezier(.4,0,.2,1);
+}
+.lang-meta { font-family: var(--font-m); font-size: 9.5px; color: var(--muted); letter-spacing: .1em; text-align: right; }
+
+.sk-grid {
+  display: grid; grid-template-columns: repeat(4,1fr); gap: 2px;
+  background: var(--dim);
+}
+.sk-card {
+  background: var(--void3); padding: 22px 18px; transition: all .3s;
+  cursor: none; position: relative; overflow: hidden;
+}
+.sk-card::before {
+  content: ''; position: absolute; top: 0; left: 0; width: 2px; height: 100%;
+  background: var(--blood); transform: scaleY(0); transform-origin: bottom; transition: transform .3s;
+}
+.sk-card:hover::before { transform: scaleY(1); }
+.sk-card:hover { background: var(--void4); }
+.sk-card:hover .sk-name { color: var(--blood2); }
+.sk-icon { font-size: 20px; margin-bottom: 10px; }
+.sk-name { font-family: var(--font-b); font-size: 14.5px; font-weight: 700; color: var(--bone2); margin-bottom: 5px; letter-spacing: .04em; transition: color .3s; }
+.sk-desc { font-size: 11.5px; font-weight: 300; color: var(--muted); line-height: 1.6; }
+
+/* ╔══════════════════════════════════════════════════════════
+   ║  RESEARCH SECTION — ORIGINAL SECURITY RESEARCH
+   ╚══════════════════════════════════════════════════════════ */
+#research { background: var(--void2); }
+.research-wrap { max-width: 1100px; margin: 0 auto; }
+
+/* Research grid — advisory-style cards */
+.research-grid { display: flex; flex-direction: column; gap: 2px; }
+
+/*
+ ╔═══════════════════════════════════════════════════════════╗
+ ║  RESEARCH CARD TEMPLATE                                   ║
+ ║  Copy this block and fill in the fields to add new        ║
+ ║  research entries. Remove HTML comment wrappers.          ║
+ ╚═══════════════════════════════════════════════════════════╝
+
+<a href="[GITHUB_OR_BLOG_URL]" target="_blank" class="rcard">
+  <div class="rcard-left">
+    <div class="rcard-meta">
+      <span class="rtag">[CATEGORY]</span>                  <!-- e.g. Process Injection, EDR Evasion, Kernel -->
+      <span class="rtag">[PLATFORM]</span>                  <!-- e.g. Windows NT, Linux, Cross-Platform -->
+      <span class="rtag mitre">[MITRE ID]</span>            <!-- e.g. T1055 · Process Injection -->
+      <span class="rstatus pub">PUBLISHED</span>            <!-- pub / wip / private -->
+    </div>
+    <div class="rcard-title">[RESEARCH TITLE]</div>
+    <div class="rcard-sub">[SHORT SUBTITLE — technique name, variant, etc.]</div>
+    <div class="rcard-desc">[Abstract paragraph describing the research. What is the technique? Why is it interesting from a security/evasion perspective? What makes it novel?]</div>
+    <div class="rcard-tags">
+      <span class="xtag">[TAG1]</span>
+      <span class="xtag">[TAG2]</span>
+      <span class="xtag">[TAG3]</span>
+    </div>
+  </div>
+  <div class="rcard-right">
+    <div class="rcard-id">[RESEARCH_ID]</div>         <!-- e.g. 0x3XP-001 -->
+    <div class="rcard-num">[NUM]</div>                 <!-- e.g. 01 -->
+    <div class="rcard-arr">↗</div>
+  </div>
+</a>
+
+End of template -->
+
+.rcard {
+  display: grid; grid-template-columns: 1fr auto;
+  gap: 32px; align-items: start;
+  background: var(--void); border-left: 2px solid var(--dim2);
+  padding: 32px 32px 28px; text-decoration: none;
+  position: relative; overflow: hidden; cursor: none;
+  transition: all .35s cubic-bezier(.2,0,.2,1);
+}
+.rcard::before {
+  content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 1px;
+  background: linear-gradient(90deg, var(--blood), transparent);
+  transform: scaleX(0); transform-origin: left; transition: transform .4s;
+}
+.rcard:hover { border-left-color: var(--blood2); background: var(--void3); transform: translateX(4px); }
+.rcard:hover::before { transform: scaleX(1); }
+.rcard:hover .rcard-title { color: var(--blood2); }
+.rcard:hover .rcard-arr { color: var(--blood2); transform: translate(3px,-3px); }
+/* Featured research card */
+.rcard.featured {
+  border-left-color: rgba(192,57,43,.5);
+  background: linear-gradient(135deg, rgba(192,57,43,.04), var(--void));
+}
+.rcard.featured::after {
+  content: 'FEATURED RESEARCH';
+  position: absolute; top: 12px; right: 20px;
+  font-family: var(--font-m); font-size: 8px; letter-spacing: .2em;
+  color: rgba(192,57,43,.5);
 }
 
-.hero-role-bar{
-  display:flex;align-items:center;gap:0;
-  margin:24px 0 32px;
-  opacity:0;animation:riseUp .6s .45s forwards;
-  overflow:hidden;
+.rcard-meta { display: flex; align-items: center; flex-wrap: wrap; gap: 7px; margin-bottom: 16px; }
+.rtag {
+  font-family: var(--font-m); font-size: 9px; letter-spacing: .12em;
+  color: var(--muted); border: 1px solid var(--dim3); padding: 3px 9px;
 }
-.role-item{
-  font-family:var(--font-body);font-size:clamp(13px,1.8vw,18px);
-  font-weight:600;letter-spacing:.18em;text-transform:uppercase;
-  color:var(--muted);padding:0 20px;
-  border-right:1px solid var(--dim2);
-  white-space:nowrap;
+.rtag.mitre { color: var(--blood2); border-color: rgba(192,57,43,.3); }
+.rstatus {
+  font-family: var(--font-m); font-size: 8.5px; letter-spacing: .14em;
+  padding: 3px 9px; font-weight: 600;
 }
-.role-item:first-child{padding-left:0}
-.role-item:last-child{border-right:none}
-.role-item.hot{color:var(--blood2)}
+.rstatus.pub { background: rgba(192,57,43,.12); color: var(--blood2); border: 1px solid rgba(192,57,43,.3); }
+.rstatus.wip { background: rgba(255,189,46,.08); color: #febc2e; border: 1px solid rgba(255,189,46,.3); }
+.rstatus.priv { background: rgba(90,90,122,.1); color: var(--muted); border: 1px solid var(--dim3); }
 
-.hero-desc{
-  font-size:clamp(15px,1.6vw,18px);font-weight:300;
-  line-height:1.7;color:var(--muted);
-  max-width:580px;margin-bottom:44px;
-  opacity:0;animation:riseUp .6s .6s forwards;
+.rcard-title {
+  font-family: var(--font-d); font-size: clamp(22px,2.8vw,38px);
+  letter-spacing: .04em; color: var(--bone2); margin-bottom: 6px;
+  transition: color .3s; line-height: 1;
 }
-.hero-desc strong{color:var(--bone);font-weight:600}
+.rcard-sub {
+  font-family: var(--font-m); font-size: 11px; color: var(--muted);
+  letter-spacing: .1em; margin-bottom: 14px; font-style: italic;
+}
+.rcard-desc {
+  font-size: 14px; font-weight: 300; color: var(--muted2);
+  line-height: 1.75; max-width: 660px; margin-bottom: 18px;
+}
+.rcard-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.xtag {
+  font-family: var(--font-m); font-size: 9px; letter-spacing: .08em;
+  color: var(--dim3); border: 1px solid var(--dim); padding: 3px 8px;
+  transition: all .2s;
+}
+.rcard:hover .xtag { border-color: rgba(192,57,43,.25); color: var(--muted); }
 
-.hero-cta{
-  display:flex;gap:16px;flex-wrap:wrap;
-  opacity:0;animation:riseUp .6s .75s forwards;
+.rcard-right {
+  display: flex; flex-direction: column; align-items: flex-end;
+  gap: 8px; min-width: 80px; padding-top: 4px;
 }
-.btn-a{
-  font-family:var(--font-mono);font-size:12px;letter-spacing:.15em;
-  background:var(--blood);color:var(--bone2);
-  padding:14px 32px;border:none;
-  text-decoration:none;cursor:none;
-  transition:all .3s;position:relative;overflow:hidden;
-  clip-path:polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+.rcard-id { font-family: var(--font-m); font-size: 9px; color: var(--blood); letter-spacing: .14em; }
+.rcard-num {
+  font-family: var(--font-d); font-size: 52px; line-height: 1;
+  color: var(--dim2); letter-spacing: .02em;
+  transition: color .3s;
 }
-.btn-a::before{
-  content:'';position:absolute;
-  top:0;left:-100%;width:100%;height:100%;
-  background:rgba(255,255,255,.1);
-  transition:left .3s;
-}
-.btn-a:hover::before{left:100%}
-.btn-a:hover{background:var(--blood2);box-shadow:0 0 30px var(--glow-blood)}
-.btn-b{
-  font-family:var(--font-mono);font-size:12px;letter-spacing:.15em;
-  background:transparent;color:var(--muted);
-  padding:14px 32px;border:1px solid var(--dim2);
-  text-decoration:none;cursor:none;
-  transition:all .3s;
-}
-.btn-b:hover{border-color:var(--bone);color:var(--bone2)}
+.rcard:hover .rcard-num { color: rgba(192,57,43,.25); }
+.rcard-arr { font-size: 18px; color: var(--muted); transition: all .3s; }
 
-/* Status pills */
-.hero-pills{
-  position:absolute;right:48px;top:50%;transform:translateY(-50%);
-  display:flex;flex-direction:column;gap:12px;
-  opacity:0;animation:slideLeft .7s 1s forwards;
+/* ╔══════════════════════════════════════════════════════════
+   ║  CERTIFICATIONS
+   ╚══════════════════════════════════════════════════════════ */
+#certs { background: var(--void); }
+.certs-wrap { max-width: 1100px; margin: 0 auto; }
+.ctabs { display: flex; flex-wrap: wrap; gap: 2px; margin-bottom: 2px; }
+.ctab {
+  font-family: var(--font-m); font-size: 9.5px; letter-spacing: .12em;
+  color: var(--muted); border: none; background: var(--void3);
+  padding: 11px 16px; cursor: pointer; transition: all .25s;
+  display: flex; align-items: center; gap: 7px; position: relative; overflow: hidden;
 }
-.pill{
-  font-family:var(--font-mono);font-size:10px;
-  letter-spacing:.12em;color:var(--muted);
-  border:1px solid var(--dim);
-  padding:10px 16px;background:var(--void3);
-  display:flex;align-items:center;gap:10px;
-  white-space:nowrap;
+.ctab::after {
+  content: ''; position: absolute; bottom: 0; left: 0; width: 0; height: 2px;
+  background: var(--blood2); transition: width .3s;
 }
-.pill-dot{
-  width:5px;height:5px;border-radius:50%;
-  background:var(--blood2);
-  box-shadow:0 0 8px var(--blood2);
-  animation:blink 2s infinite;
-}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+.ctab:hover { color: var(--bone); }
+.ctab.a { color: var(--blood2); background: var(--void4); }
+.ctab.a::after { width: 100%; }
+.ctab.a .tc { color: var(--blood2); background: rgba(192,57,43,.12); }
+.tc { font-size: 8.5px; background: var(--dim); color: var(--muted); padding: 1px 5px; border-radius: 2px; transition: all .25s; }
+.tnew { font-size: 7.5px; font-family: var(--font-m); background: var(--blood); color: var(--bone2); padding: 2px 5px; letter-spacing: .08em; }
 
-@keyframes riseUp{
-  from{opacity:0;transform:translateY(28px)}
-  to{opacity:1;transform:translateY(0)}
+.cpanels { position: relative; min-height: 180px; }
+.cpanel { position: absolute; top: 0; left: 0; right: 0; opacity: 0; pointer-events: none; transform: translateY(10px); transition: none; }
+.cpanel.a { position: relative; opacity: 1; pointer-events: auto; transform: translateY(0); transition: opacity .4s, transform .4s; }
+.org-hd {
+  display: flex; align-items: center; gap: 14px; padding: 18px 22px;
+  background: var(--void3); border-left: 3px solid var(--blood2); margin-bottom: 2px;
 }
-@keyframes slideLeft{
-  from{opacity:0;transform:translate(24px,-50%)}
-  to{opacity:1;transform:translate(0,-50%)}
+.org-icon { font-size: 18px; }
+.org-name { font-family: var(--font-d); font-size: 20px; letter-spacing: .05em; color: var(--bone2); }
+.org-sub { font-family: var(--font-m); font-size: 9.5px; color: var(--muted); letter-spacing: .1em; margin-top: 2px; }
+.cg { display: grid; grid-template-columns: repeat(auto-fill, minmax(270px,1fr)); gap: 2px; }
+.cv2 {
+  background: var(--void3); padding: 24px 22px; position: relative;
+  overflow: hidden; cursor: none; transition: all .3s;
+  border-bottom: 2px solid transparent;
 }
-
-/* ═══════════════════════════════════════════════
-   SECTION COMMONS
-═══════════════════════════════════════════════ */
-section{padding:100px 48px;position:relative}
-.sec-label{
-  font-family:var(--font-mono);font-size:10px;
-  color:var(--blood2);letter-spacing:.3em;
-  display:flex;align-items:center;gap:14px;
-  margin-bottom:60px;
+.cv2::after {
+  content: ''; position: absolute; top: 0; right: 0; width: 0; height: 0;
+  border-style: solid; border-width: 0 18px 18px 0;
+  border-color: transparent var(--blood) transparent transparent;
+  opacity: 0; transition: opacity .25s;
 }
-.sec-label::before{
-  content:'';width:30px;height:1px;background:var(--blood);
+.cv2:hover { background: var(--void4); border-bottom-color: var(--blood); }
+.cv2:hover::after { opacity: 1; }
+.cv2.feat { background: linear-gradient(135deg, rgba(192,57,43,.05), var(--void3)); }
+.cv-badge {
+  font-family: var(--font-m); font-size: 8.5px; color: var(--blood2);
+  letter-spacing: .15em; border: 1px solid rgba(192,57,43,.25);
+  padding: 2px 7px; display: inline-block; margin-bottom: 12px;
 }
-.sec-label span{color:var(--dim2)}
-h2.st{
-  font-family:var(--font-display);
-  font-size:clamp(48px,7vw,96px);
-  line-height:.9;letter-spacing:.02em;
-  color:var(--bone2);
-  margin-bottom:60px;
+.cv-name { font-family: var(--font-b); font-size: 16px; font-weight: 700; color: var(--bone2); margin-bottom: 7px; line-height: 1.25; }
+.cv-desc { font-size: 12.5px; font-weight: 300; color: var(--muted); line-height: 1.55; }
+.cv-verify {
+  display: inline-flex; align-items: center; gap: 5px; margin-top: 13px;
+  font-family: var(--font-m); font-size: 9.5px; color: var(--blood2);
+  letter-spacing: .1em; text-decoration: none;
+  border: 1px solid rgba(192,57,43,.25); padding: 4px 10px;
+  transition: all .2s; position: relative; z-index: 5;
 }
-h2.st em{font-style:normal;color:var(--blood2)}
-.reveal{opacity:0;transform:translateY(30px);transition:opacity .7s,transform .7s}
-.reveal.on{opacity:1;transform:translateY(0)}
-
-/* ═══════════════════════════════════════════════
-   MARQUEE STRIP
-═══════════════════════════════════════════════ */
-.marquee-wrap{
-  overflow:hidden;border-top:1px solid var(--dim);
-  border-bottom:1px solid var(--dim);
-  padding:14px 0;
-  background:var(--void2);
-}
-.marquee-track{
-  display:flex;white-space:nowrap;
-  animation:marquee 25s linear infinite;
-}
-.marquee-track span{
-  font-family:var(--font-display);
-  font-size:12px;letter-spacing:.3em;
-  color:var(--dim2);
-  padding:0 32px;
-}
-.marquee-track span.hi{color:var(--blood2)}
-@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
-
-/* ═══════════════════════════════════════════════
-   ABOUT
-═══════════════════════════════════════════════ */
-#about{background:var(--void2)}
-.about-grid{
-  display:grid;grid-template-columns:1fr 1fr;
-  gap:80px;align-items:start;max-width:1100px;margin:0 auto;
-}
-.about-text p{
-  font-size:17px;font-weight:300;line-height:1.85;
-  color:var(--muted);margin-bottom:22px;
-}
-.about-text p strong{color:var(--bone2);font-weight:600}
-.about-tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:28px}
-.tag{
-  font-family:var(--font-mono);font-size:10px;
-  color:var(--muted);letter-spacing:.12em;
-  border:1px solid var(--dim2);
-  padding:6px 12px;
-  transition:all .25s;
-}
-.tag:hover{border-color:var(--blood);color:var(--blood2)}
-
-/* Code panel */
-.code-panel{
-  background:var(--void);
-  border:1px solid var(--dim2);
-  font-family:var(--font-mono);
-  position:sticky;top:100px;
-}
-.cp-bar{
-  background:var(--void3);
-  border-bottom:1px solid var(--dim2);
-  padding:10px 16px;
-  display:flex;align-items:center;gap:8px;
-}
-.cp-dot{width:9px;height:9px;border-radius:50%}
-.cp-dot.r{background:#ff5f57}
-.cp-dot.y{background:#febc2e}
-.cp-dot.g{background:#28c840}
-.cp-file{
-  font-size:10px;color:var(--muted);
-  margin-left:8px;letter-spacing:.1em;
-}
-.cp-body{
-  padding:28px;font-size:12.5px;line-height:2;
-}
-.k{color:var(--blood2)}
-.s{color:#e8c99a}
-.v{color:#82b0e8}
-.c{color:var(--dim2)}
-.w{color:var(--bone2)}
-
-/* ═══════════════════════════════════════════════
-   SKILLS
-═══════════════════════════════════════════════ */
-#skills{background:var(--void)}
-.skills-wrap{max-width:1100px;margin:0 auto}
-
-.lang-sub{margin-bottom:52px}
-.sub-head{
-  font-family:var(--font-mono);font-size:10px;
-  color:var(--muted);letter-spacing:.25em;
-  border-bottom:1px solid var(--dim);padding-bottom:12px;margin-bottom:24px;
-}
-.lang-list{display:flex;flex-direction:column;gap:2px}
-.lang-row{
-  display:grid;grid-template-columns:160px 1fr auto;
-  align-items:center;gap:24px;
-  background:var(--void3);
-  padding:18px 24px;
-  border-left:2px solid transparent;
-  transition:all .3s;cursor:none;
-}
-.lang-row:hover{border-left-color:var(--blood2);background:var(--void4)}
-.lang-name{
-  font-family:var(--font-body);font-size:16px;font-weight:700;
-  color:var(--bone);letter-spacing:.05em;
-  display:flex;align-items:center;gap:12px;
-}
-.lang-name span{font-size:20px}
-.lang-bar{flex:1;height:2px;background:var(--dim);position:relative}
-.lang-fill{
-  position:absolute;top:0;left:0;height:100%;
-  background:linear-gradient(90deg,var(--blood),var(--blood2));
-  width:0;transition:width 1.1s cubic-bezier(.4,0,.2,1);
-  box-shadow:0 0 8px var(--glow-blood);
-}
-.lang-meta{
-  font-family:var(--font-mono);font-size:10px;
-  color:var(--muted);letter-spacing:.1em;text-align:right;
+.cv-verify:hover { background: rgba(192,57,43,.08); border-color: var(--blood2); }
+.nbadge {
+  position: absolute; top: 11px; right: 11px;
+  font-family: var(--font-m); font-size: 7.5px; background: var(--blood);
+  color: var(--bone2); padding: 2px 6px; letter-spacing: .1em;
 }
 
-.skill-grid{
-  display:grid;grid-template-columns:repeat(4,1fr);gap:1px;
-  background:var(--dim);
-}
-.sk{
-  background:var(--void3);
-  padding:24px 20px;
-  transition:all .3s;cursor:none;
-  position:relative;overflow:hidden;
-}
-.sk::before{
-  content:'';position:absolute;
-  top:0;left:0;width:2px;height:100%;
-  background:var(--blood);
-  transform:scaleY(0);transform-origin:bottom;
-  transition:transform .3s;
-}
-.sk:hover::before{transform:scaleY(1)}
-.sk:hover{background:var(--void4)}
-.sk-icon{font-size:22px;margin-bottom:12px}
-.sk-name{
-  font-family:var(--font-body);font-size:15px;font-weight:700;
-  color:var(--bone2);margin-bottom:6px;letter-spacing:.04em;
-}
-.sk-desc{font-size:12px;font-weight:300;color:var(--muted);line-height:1.6}
-
-/* ═══════════════════════════════════════════════
-   CERTS
-═══════════════════════════════════════════════ */
-#certs{background:var(--void2)}
-.certs-wrap{max-width:1100px;margin:0 auto}
-
-.ctabs{
-  display:flex;flex-wrap:wrap;gap:2px;margin-bottom:2px;
-}
-.ctab{
-  font-family:var(--font-mono);font-size:10px;
-  letter-spacing:.12em;color:var(--muted);
-  border:none;background:var(--void3);
-  padding:12px 18px;cursor:pointer;
-  transition:all .25s;
-  display:flex;align-items:center;gap:8px;
-  position:relative;overflow:hidden;
-}
-.ctab::after{
-  content:'';position:absolute;
-  bottom:0;left:0;width:0;height:2px;
-  background:var(--blood2);
-  transition:width .3s;
-}
-.ctab:hover{color:var(--bone)}
-.ctab.a{color:var(--blood2);background:var(--void4)}
-.ctab.a::after{width:100%}
-.ctab.a .tc{color:var(--blood2)}
-.tc{
-  font-size:9px;background:var(--dim);
-  color:var(--muted);padding:1px 6px;border-radius:2px;
-  transition:all .25s;
-}
-.tnew{
-  font-size:8px;font-family:var(--font-mono);
-  background:var(--blood);color:var(--bone2);
-  padding:2px 5px;letter-spacing:.08em;
+/* ╔══════════════════════════════════════════════════════════
+   ║  PROJECTS
+   ╚══════════════════════════════════════════════════════════ */
+#projects { background: var(--void2); }
+.proj-wrap { max-width: 1100px; margin: 0 auto; }
+.proj-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(320px,1fr));
+  gap: 2px; background: var(--dim);
 }
 
-.cert-panels{position:relative;min-height:200px}
-.cpanel{
-  position:absolute;top:0;left:0;right:0;
-  opacity:0;pointer-events:none;
-  transform:translateY(12px);
-  transition:none;
-}
-.cpanel.a{
-  position:relative;opacity:1;pointer-events:auto;
-  transform:translateY(0);
-  transition:opacity .4s,transform .4s;
-}
-.panel-org{
-  display:flex;align-items:center;gap:16px;
-  padding:20px 24px;
-  background:var(--void);
-  border-left:3px solid var(--blood2);
-  margin-bottom:2px;
-}
-.panel-org.red{border-left-color:var(--blood2)}
-.org-icon{font-size:20px}
-.org-name{font-family:var(--font-display);font-size:22px;color:var(--bone2);letter-spacing:.04em}
-.org-sub{font-family:var(--font-mono);font-size:10px;color:var(--muted);letter-spacing:.1em;margin-top:2px}
+/*
+ ╔═══════════════════════════════════════════════════════════╗
+ ║  PROJECT CARD TEMPLATE                                    ║
+ ║  Copy this block to add a new project.                    ║
+ ║  For FEATURED project (full-width): add class "art-feat"  ║
+ ╚═══════════════════════════════════════════════════════════╝
 
-.certs-grid{
-  display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:2px;
-}
-.cert{
-  background:var(--void);padding:26px 24px;
-  position:relative;overflow:hidden;cursor:none;
-  transition:all .3s;
-  border-bottom:2px solid transparent;
-}
-.cert::after{
-  content:'';position:absolute;
-  top:0;right:0;width:0;height:0;
-  border-style:solid;border-width:0 20px 20px 0;
-  border-color:transparent var(--blood) transparent transparent;
-  opacity:0;transition:opacity .25s;
-}
-.cert:hover{background:var(--void3);border-bottom-color:var(--blood)}
-.cert:hover::after{opacity:1}
-.cert-badge{
-  font-family:var(--font-mono);font-size:9px;
-  color:var(--blood2);letter-spacing:.15em;
-  border:1px solid rgba(192,57,43,.3);
-  padding:3px 8px;display:inline-block;
-  margin-bottom:14px;
-}
-.cert-name{
-  font-family:var(--font-body);font-size:17px;font-weight:700;
-  color:var(--bone2);margin-bottom:8px;line-height:1.25;
-}
-.cert-desc{font-size:13px;font-weight:300;color:var(--muted);line-height:1.55}
-.cert-verify{
-  display:inline-flex;align-items:center;gap:6px;
-  margin-top:14px;font-family:var(--font-mono);font-size:10px;
-  color:var(--blood2);letter-spacing:.1em;
-  text-decoration:none;border:1px solid rgba(192,57,43,.3);
-  padding:5px 12px;transition:all .2s;position:relative;z-index:5;
-}
-.cert-verify:hover{background:rgba(192,57,43,.08);border-color:var(--blood2)}
-.cert.feat{background:linear-gradient(135deg,rgba(192,57,43,.05),var(--void))}
-.cert.feat .cert-badge{color:var(--blood2)}
-.nbadge{
-  position:absolute;top:12px;right:12px;
-  font-family:var(--font-mono);font-size:8px;
-  background:var(--blood);color:var(--bone2);
-  padding:2px 7px;letter-spacing:.1em;
-}
+<a href="[GITHUB_URL]" target="_blank" class="proj">
+  <div class="proj-arr">↗</div>
+  <div class="proj-num">[TWO_DIGIT_NUM]</div>            <!-- e.g. 01, 02, 03 -->
+  <div class="proj-name">[PROJECT NAME]</div>
+  <div class="proj-desc">[Short description of the project — what it does, what problem it solves, what makes it interesting technically.]</div>
+  <div class="proj-tags">
+    <span class="ptg">[LANG1]</span>                     <!-- e.g. C, ASM, Python -->
+    <span class="ptg">[TAG1]</span>                      <!-- e.g. EDR Evasion, Exploit Dev -->
+    <span class="ptg">[TAG2]</span>
+  </div>
+</a>
 
-/* ═══════════════════════════════════════════════
-   PROJECTS
-═══════════════════════════════════════════════ */
-#projects{background:var(--void)}
-.proj-wrap{max-width:1100px;margin:0 auto}
+For FEATURED full-width card (like Artemis):
+<a href="[URL]" target="_blank" class="proj art-feat" style="grid-column:span 2">
+  ... same structure, plus .art-engines block inside
+</a>
 
-.proj-grid{
-  display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
-  gap:2px;background:var(--dim);
-}
-.proj{
-  background:var(--void3);padding:32px;
-  text-decoration:none;display:block;
-  position:relative;overflow:hidden;
-  transition:all .35s;cursor:none;
-}
-.proj::before{
-  content:'';position:absolute;top:0;left:0;
-  width:100%;height:2px;
-  background:linear-gradient(90deg,var(--blood),var(--blood2));
-  transform:scaleX(0);transform-origin:left;
-  transition:transform .4s;
-}
-.proj:hover::before{transform:scaleX(1)}
-.proj:hover{background:var(--void4)}
-.proj-num{
-  font-family:var(--font-mono);font-size:10px;
-  color:var(--dim2);letter-spacing:.2em;
-  margin-bottom:20px;
-}
-.proj-name{
-  font-family:var(--font-display);font-size:32px;
-  letter-spacing:.04em;color:var(--bone2);
-  margin-bottom:12px;
-  transition:color .3s;
-}
-.proj:hover .proj-name{color:var(--blood2)}
-.proj-desc{
-  font-size:13px;font-weight:300;color:var(--muted);
-  line-height:1.7;margin-bottom:24px;
-}
-.proj-tags{display:flex;flex-wrap:wrap;gap:6px}
-.ptg{
-  font-family:var(--font-mono);font-size:9px;
-  color:var(--dim2);letter-spacing:.1em;
-  border:1px solid var(--dim);padding:3px 8px;
-  transition:all .2s;
-}
-.proj:hover .ptg{border-color:rgba(192,57,43,.3);color:var(--muted)}
-.proj-arrow{
-  position:absolute;top:24px;right:24px;
-  font-size:20px;color:var(--dim2);
-  transition:all .3s;
-}
-.proj:hover .proj-arrow{color:var(--blood2);transform:translate(3px,-3px)}
+End of template -->
 
-/* ARTEMIS FEATURED */
-.proj.artemis-feat{
-  grid-column:span 2;
-  background:linear-gradient(135deg,rgba(192,57,43,.08),var(--void3));
-  border:1px solid rgba(192,57,43,.2);
+.proj {
+  background: var(--void3); padding: 30px; text-decoration: none;
+  display: block; position: relative; overflow: hidden;
+  transition: all .35s; cursor: none;
 }
-.artemis-engines{
-  display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:20px;
+.proj::before {
+  content: ''; position: absolute; top: 0; left: 0;
+  width: 100%; height: 2px;
+  background: linear-gradient(90deg, var(--blood), var(--blood2));
+  transform: scaleX(0); transform-origin: left; transition: transform .4s;
 }
-.engine-chip{
-  background:var(--void);border:1px solid var(--dim2);
-  padding:12px;
-}
-.engine-chip .ec-icon{font-size:18px;margin-bottom:6px}
-.engine-chip .ec-name{
-  font-family:var(--font-mono);font-size:10px;
-  color:var(--blood2);letter-spacing:.1em;margin-bottom:4px;
-}
-.engine-chip .ec-desc{font-size:11px;font-weight:300;color:var(--muted)}
-.feat-badge{
-  font-family:var(--font-mono);font-size:8px;
-  color:var(--blood2);background:rgba(192,57,43,.1);
-  border:1px solid rgba(192,57,43,.3);
-  padding:3px 8px;letter-spacing:.12em;
-  display:inline-block;margin-bottom:16px;
-}
+.proj:hover::before { transform: scaleX(1); }
+.proj:hover { background: var(--void4); }
+.proj:hover .proj-name { color: var(--blood2); }
+.proj:hover .proj-arr { color: var(--blood2); transform: translate(3px,-3px); }
+.proj:hover .ptg { border-color: rgba(192,57,43,.25); color: var(--muted); }
+.proj-arr { position: absolute; top: 22px; right: 22px; font-size: 18px; color: var(--dim3); transition: all .3s; }
+.proj-num { font-family: var(--font-m); font-size: 9px; color: var(--dim3); letter-spacing: .2em; margin-bottom: 18px; }
+.proj-name { font-family: var(--font-d); font-size: 30px; letter-spacing: .04em; color: var(--bone2); margin-bottom: 11px; transition: color .3s; }
+.proj-desc { font-size: 12.5px; font-weight: 300; color: var(--muted); line-height: 1.7; margin-bottom: 22px; }
+.proj-tags { display: flex; flex-wrap: wrap; gap: 5px; }
+.ptg { font-family: var(--font-m); font-size: 8.5px; color: var(--dim3); letter-spacing: .1em; border: 1px solid var(--dim); padding: 3px 7px; transition: all .2s; }
 
-/* ═══════════════════════════════════════════════
-   TERMINAL
-═══════════════════════════════════════════════ */
-#terminal{background:var(--void2)}
-.term-wrap{max-width:900px;margin:0 auto}
-.term-hint{
-  font-family:var(--font-mono);font-size:11px;color:var(--muted);
-  text-align:center;margin-bottom:28px;letter-spacing:.1em;
+/* Artemis featured */
+.art-feat {
+  grid-column: span 2;
+  background: linear-gradient(135deg, rgba(192,57,43,.06), var(--void3)) !important;
+  border: 1px solid rgba(192,57,43,.18) !important;
 }
-.term-hint span{color:var(--blood2)}
-.term-window{
-  background:var(--void);
-  border:1px solid var(--dim2);
-  box-shadow:0 0 80px rgba(0,0,0,.9),0 0 0 1px rgba(192,57,43,.05);
+.art-feat-badge {
+  font-family: var(--font-m); font-size: 8px; letter-spacing: .18em;
+  color: var(--blood2); background: rgba(192,57,43,.1);
+  border: 1px solid rgba(192,57,43,.3); padding: 3px 9px;
+  display: inline-block; margin-bottom: 14px;
 }
-.term-bar{
-  background:var(--void3);border-bottom:1px solid var(--dim);
-  padding:12px 20px;display:flex;align-items:center;gap:8px;
+.art-engines {
+  display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-top: 20px;
 }
-.td{width:10px;height:10px;border-radius:50%}
-.td.r{background:#ff5f57}
-.td.y{background:#febc2e}
-.td.g{background:#28c840}
-.term-title{
-  font-family:var(--font-mono);font-size:11px;
-  color:var(--muted);margin-left:8px;flex:1;text-align:center;
-  letter-spacing:.1em;
+.eng-chip {
+  background: var(--void); border: 1px solid var(--dim2); padding: 14px 12px;
+  transition: border-color .3s;
 }
-#tb{
-  padding:24px;font-family:var(--font-mono);font-size:13px;
-  max-height:420px;overflow-y:auto;line-height:1.9;
-}
-#tb::-webkit-scrollbar{width:4px}
-#tb::-webkit-scrollbar-thumb{background:var(--blood)}
-.tp{display:flex;align-items:center}
-.tpu{color:var(--blood2)}
-.tpat,.tpsep,.tpsym{color:var(--muted)}
-.tph{color:var(--bone2)}
-.tppath{color:var(--blood)}
-.tout{color:var(--muted);margin:4px 0 12px;white-space:pre-wrap}
-.tout .tg{color:var(--blood2)}
-.tout .tb2{color:#82b0e8}
-.tout .tr{color:var(--blood2)}
-.tout .td2{color:var(--muted)}
-.tin-wrap{position:relative;flex:1;display:flex;align-items:center}
-#ti{
-  background:transparent;border:none;outline:none;
-  color:var(--bone2);font-family:var(--font-mono);font-size:13px;
-  width:100%;caret-color:transparent;cursor:none;
-}
-.tcaret{
-  position:absolute;top:50%;transform:translateY(-50%);
-  width:7px;height:14px;background:var(--blood2);
-  animation:blink 1s step-end infinite;
-  pointer-events:none;left:0;
-  box-shadow:0 0 8px rgba(192,57,43,.8);
-}
-.tin-line{display:flex;align-items:center;flex-wrap:nowrap}
+.proj:hover .eng-chip { border-color: rgba(192,57,43,.2); }
+.ec-ico { font-size: 16px; margin-bottom: 7px; }
+.ec-nm { font-family: var(--font-m); font-size: 9.5px; color: var(--blood2); letter-spacing: .1em; margin-bottom: 3px; }
+.ec-ds { font-size: 11px; font-weight: 300; color: var(--muted); line-height: 1.5; }
 
-/* ═══════════════════════════════════════════════
-   CTF PLATFORMS
-═══════════════════════════════════════════════ */
-#ctf{background:var(--void)}
-.ctf-wrap{max-width:1100px;margin:0 auto}
-.ctf-row{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;background:var(--dim)}
-.ctf-card{
-  background:var(--void3);
-  padding:28px 24px;
-  text-decoration:none;display:flex;align-items:center;gap:20px;
-  position:relative;overflow:hidden;
-  transition:all .3s;cursor:pointer;
+/* ╔══════════════════════════════════════════════════════════
+   ║  TERMINAL
+   ╚══════════════════════════════════════════════════════════ */
+#terminal { background: var(--void); }
+.term-wrap { max-width: 900px; margin: 0 auto; }
+.term-hint { font-family: var(--font-m); font-size: 10.5px; color: var(--muted); text-align: center; margin-bottom: 26px; letter-spacing: .1em; }
+.term-hint span { color: var(--blood2); }
+.term-win {
+  background: var(--void); border: 1px solid var(--dim2);
+  box-shadow: 0 0 80px rgba(0,0,0,.9), 0 0 0 1px rgba(192,57,43,.04);
 }
-.ctf-card::before{
-  content:'';position:absolute;top:0;left:0;
-  width:100%;height:2px;
-  transform:scaleX(0);transform-origin:left;
-  transition:transform .4s;
+.term-bar {
+  background: var(--void3); border-bottom: 1px solid var(--dim);
+  padding: 11px 18px; display: flex; align-items: center; gap: 7px;
 }
-.ctf-thm::before{background:#ff4655}
-.ctf-htb::before{background:#9fef00}
-.ctf-hv::before{background:var(--blood2)}
-.ctf-card:hover{background:var(--void4)}
-.ctf-card:hover::before{transform:scaleX(1)}
-.ctf-logo{
-  width:44px;height:44px;border-radius:4px;
-  display:flex;align-items:center;justify-content:center;
-  flex-shrink:0;font-size:20px;
-  border:1px solid var(--dim2);
-  transition:all .3s;
+.td { width: 10px; height: 10px; border-radius: 50%; }
+.td.r{background:#ff5f57} .td.y{background:#febc2e} .td.g{background:#28c840}
+.term-ttl { font-family: var(--font-m); font-size: 10.5px; color: var(--muted); margin-left: 6px; flex: 1; text-align: center; letter-spacing: .1em; }
+#tb { padding: 22px; font-family: var(--font-m); font-size: 12.5px; max-height: 420px; overflow-y: auto; line-height: 1.9; }
+#tb::-webkit-scrollbar{width:3px} #tb::-webkit-scrollbar-thumb{background:var(--blood)}
+.tp { display: flex; align-items: center; }
+.tpu{color:var(--blood2)} .tpat,.tpsp,.tpsy{color:var(--muted)} .tph{color:var(--bone2)} .tppath{color:var(--blood)}
+.tout{color:var(--muted2);margin:3px 0 11px;white-space:pre-wrap}
+.tout .tg{color:var(--blood2)} .tout .tb2{color:#82b0e8} .tout .tr{color:var(--blood2)} .tout .td2{color:var(--muted)}
+.tout #term-banner span { animation: bp 3.5s ease-in-out infinite; }
+@keyframes bp { 0%,100%{text-shadow:0 0 4px rgba(192,57,43,.2)} 50%{text-shadow:0 0 14px rgba(192,57,43,.7),0 0 28px rgba(192,57,43,.25)} }
+.tin-wrap { position: relative; flex: 1; display: flex; align-items: center; }
+#ti { background: transparent; border: none; outline: none; color: var(--bone2); font-family: var(--font-m); font-size: 12.5px; width: 100%; caret-color: transparent; cursor: none; }
+.tc-caret { position: absolute; top: 50%; transform: translateY(-50%); width: 7px; height: 13px; background: var(--blood2); animation: blink 1s step-end infinite; pointer-events: none; left: 0; box-shadow: 0 0 7px rgba(192,57,43,.8); }
+.tin-line { display: flex; align-items: center; flex-wrap: nowrap; }
+
+/* ╔══════════════════════════════════════════════════════════
+   ║  CTF PLATFORMS
+   ╚══════════════════════════════════════════════════════════ */
+#ctf { background: var(--void2); }
+.ctf-wrap { max-width: 1100px; margin: 0 auto; }
+.ctf-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 2px; background: var(--dim); }
+.ctf-card {
+  background: var(--void3); padding: 26px 22px;
+  text-decoration: none; display: flex; align-items: center; gap: 18px;
+  position: relative; overflow: hidden; transition: all .3s; cursor: pointer;
 }
-.ctf-card:hover .ctf-logo{transform:scale(1.1)}
+.ctf-card::before {
+  content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 2px;
+  transform: scaleX(0); transform-origin: left; transition: transform .4s;
+}
+.ctf-thm::before{background:#ff4655} .ctf-htb::before{background:#9fef00} .ctf-hv::before{background:var(--blood2)}
+.ctf-card:hover { background: var(--void4); }
+.ctf-card:hover::before { transform: scaleX(1); }
+.ctf-card:hover .ctf-arr { color: var(--blood2); transform: translate(3px,-3px); }
+.ctf-card:hover .ctf-logo { transform: scale(1.1); }
+.ctf-logo { width: 42px; height: 42px; border-radius: 4px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 18px; border: 1px solid var(--dim2); transition: all .3s; }
 .ctf-thm .ctf-logo{background:rgba(255,70,85,.1);color:#ff4655}
 .ctf-htb .ctf-logo{background:rgba(159,239,0,.1);color:#9fef00}
-.ctf-hv .ctf-logo{background:rgba(192,57,43,.1);color:var(--blood2)}
-.ctf-info{flex:1}
-.ctf-plat{
-  font-family:var(--font-display);font-size:20px;
-  letter-spacing:.05em;color:var(--bone2);margin-bottom:4px;
-}
-.ctf-handle{font-family:var(--font-mono);font-size:10px;color:var(--muted);letter-spacing:.08em}
-.ctf-arr{font-size:18px;color:var(--muted);transition:all .3s}
-.ctf-card:hover .ctf-arr{color:var(--blood2);transform:translate(3px,-3px)}
+.ctf-hv  .ctf-logo{background:rgba(192,57,43,.1);color:var(--blood2)}
+.ctf-inf { flex: 1; }
+.ctf-plat { font-family: var(--font-d); font-size: 19px; letter-spacing: .05em; color: var(--bone2); margin-bottom: 3px; }
+.ctf-hnd { font-family: var(--font-m); font-size: 9.5px; color: var(--muted); letter-spacing: .08em; }
+.ctf-arr { font-size: 17px; color: var(--muted); transition: all .3s; }
 
-/* ═══════════════════════════════════════════════
-   CONTACT / FOOTER
-═══════════════════════════════════════════════ */
-#contact{
-  background:var(--void2);
-  padding:120px 48px 60px;text-align:center;
-  position:relative;overflow:hidden;
+/* ╔══════════════════════════════════════════════════════════
+   ║  CONTACT + FOOTER
+   ╚══════════════════════════════════════════════════════════ */
+#contact {
+  background: var(--void); padding: 112px 48px 56px;
+  text-align: center; position: relative; overflow: hidden;
 }
-#contact::before{
-  content:'';position:absolute;inset:0;
-  background:radial-gradient(ellipse 50% 40% at 50% 0%,rgba(192,57,43,.07),transparent);
-  pointer-events:none;
+#contact::before {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(ellipse 50% 38% at 50% 0%, rgba(192,57,43,.06), transparent);
+  pointer-events: none;
 }
-.contact-super{
-  font-family:var(--font-mono);font-size:10px;
-  color:var(--blood2);letter-spacing:.3em;margin-bottom:16px;
+/* Spinning dharma wheel bg */
+.dharma-bg {
+  position: absolute; top: 50%; left: 50%;
+  width: 600px; height: 600px;
+  transform: translate(-50%,-50%);
+  opacity: .02; pointer-events: none;
+  animation: dhspin 80s linear infinite;
 }
-.contact-title{
-  font-family:var(--font-display);
-  font-size:clamp(60px,10vw,140px);
-  line-height:.9;letter-spacing:.02em;
-  color:var(--bone2);margin-bottom:24px;
-}
-.contact-title em{font-style:normal;color:var(--blood2)}
-.contact-sub{
-  font-size:16px;font-weight:300;color:var(--muted);
-  max-width:460px;margin:0 auto 48px;line-height:1.7;
-}
-.clinks{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-bottom:80px}
-.clink{
-  font-family:var(--font-mono);font-size:11px;letter-spacing:.12em;
-  color:var(--muted);text-decoration:none;
-  border:1px solid var(--dim2);padding:12px 22px;
-  display:flex;align-items:center;gap:8px;
-  transition:all .3s;cursor:none;
-}
-.clink:hover{border-color:var(--blood);color:var(--blood2)}
-hr.foot{border:none;border-top:1px solid var(--dim);margin-bottom:28px}
-.foot-row{
-  font-family:var(--font-mono);font-size:10px;color:var(--dim2);
-  display:flex;justify-content:space-between;align-items:center;
-  flex-wrap:wrap;gap:12px;
-}
-.foot-row span.hot{color:var(--blood)}
+@keyframes dhspin { from{transform:translate(-50%,-50%) rotate(0)} to{transform:translate(-50%,-50%) rotate(360deg)} }
 
-/* ═══════════════════════════════════════════════
-   HIDDEN SATANIC MESSAGE
-   (No violence, no harm — pure philosophy)
-   Encoded as a "comment" visible in CSS ::before
-   only when hovering the footer copyright text
-   for 3+ seconds — true easter egg for curious minds
-═══════════════════════════════════════════════ */
-#hidden-vessel{
-  position:fixed;bottom:0;left:0;right:0;
-  height:2px;background:transparent;
-  z-index:1;pointer-events:none;
-}
-/* The message exists in the DOM but is visually hidden:
-   font-size:0, color:transparent, no interaction.
-   Only a true source-code reader finds it. */
-#s-msg{
-  position:fixed;bottom:-200px;left:50%;transform:translateX(-50%);
-  font-family:var(--font-mono);font-size:12px;letter-spacing:.15em;
-  color:rgba(192,57,43,0);text-align:center;width:600px;
-  pointer-events:none;z-index:999;line-height:2;
-  transition:all 1.2s cubic-bezier(.2,0,.2,1);
-}
-#s-msg.reveal-s{
-  bottom:40px;color:rgba(192,57,43,.75);
-}
-/* Trigger zone — invisible, covers footer copyright */
-#s-trigger{
-  position:absolute;bottom:20px;left:50%;transform:translateX(-50%);
-  width:200px;height:20px;cursor:default;
-  /* Render invisible but interactive */
-  color:transparent;font-size:0;
-}
+.contact-super { font-family: var(--font-m); font-size: 9.5px; color: var(--blood2); letter-spacing: .32em; margin-bottom: 14px; }
+.contact-title { font-family: var(--font-d); font-size: clamp(58px,9.5vw,136px); line-height: .9; letter-spacing: .02em; color: var(--bone2); margin-bottom: 22px; }
+.contact-title em { font-style: normal; color: var(--blood2); }
+.contact-sub { font-size: 15.5px; font-weight: 300; color: var(--muted2); max-width: 450px; margin: 0 auto 44px; line-height: 1.75; }
 
-/* ═══════════════════════════════════════════════
-   KONAMI OVERLAY
-═══════════════════════════════════════════════ */
-#konami-overlay{
-  position:fixed;inset:0;background:rgba(0,0,0,.96);
-  z-index:9990;display:none;align-items:center;justify-content:center;
-  flex-direction:column;gap:16px;
+.clinks { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-bottom: 72px; }
+.clink {
+  font-family: var(--font-m); font-size: 10.5px; letter-spacing: .12em;
+  color: var(--muted); text-decoration: none; border: 1px solid var(--dim2);
+  padding: 11px 20px; display: flex; align-items: center; gap: 7px;
+  transition: all .3s; cursor: none;
 }
-#konami-overlay.show{display:flex}
-.ko-title{
-  font-family:var(--font-display);font-size:80px;
-  color:var(--blood2);letter-spacing:.1em;
-  animation:flicker 3s infinite;
-}
-.ko-sub{font-family:var(--font-mono);font-size:13px;color:var(--muted);letter-spacing:.2em}
-.ko-close{
-  font-family:var(--font-mono);font-size:10px;color:var(--dim2);
-  margin-top:24px;cursor:pointer;letter-spacing:.2em;
-}
-.ko-close:hover{color:var(--muted)}
-@keyframes flicker{
-  0%,100%{opacity:1;text-shadow:0 0 20px rgba(192,57,43,.8)}
-  4%{opacity:.8}5%{opacity:1}7%{opacity:.7}8%{opacity:1}
-  50%{text-shadow:0 0 40px rgba(192,57,43,.6),0 0 80px rgba(192,57,43,.3)}
-}
+.clink:hover { border-color: var(--blood); color: var(--blood2); }
 
-/* ═══════════════════════════════════════════════
-   PENTAGRAM WATERMARK (subtle bg on contact)
-═══════════════════════════════════════════════ */
-.penta-bg{
-  position:absolute;top:50%;left:50%;
-  transform:translate(-50%,-50%);
-  width:600px;height:600px;
-  opacity:.025;pointer-events:none;
-  animation:penta-spin 60s linear infinite;
+/* copyright block */
+.copyright-block {
+  border: 1px solid var(--dim2); padding: 22px 28px; margin-bottom: 32px;
+  background: var(--void3); text-align: left; max-width: 900px; margin: 0 auto 32px;
 }
-@keyframes penta-spin{from{transform:translate(-50%,-50%) rotate(0)}to{transform:translate(-50%,-50%) rotate(360deg)}}
+.copyright-block .cprt-title { font-family: var(--font-m); font-size: 9px; letter-spacing: .2em; color: var(--blood2); margin-bottom: 10px; }
+.copyright-block p { font-family: var(--font-m); font-size: 10px; color: var(--muted); line-height: 1.9; letter-spacing: .04em; }
+.copyright-block p strong { color: var(--muted2); }
 
-/* ═══════════════════════════════════════════════
-   RESPONSIVE
-═══════════════════════════════════════════════ */
-@media(max-width:1024px){
-  .skill-grid{grid-template-columns:repeat(3,1fr)}
-  .proj.artemis-feat{grid-column:span 1}
-  .artemis-engines{grid-template-columns:1fr}
+hr.foot { border: none; border-top: 1px solid var(--dim); margin-bottom: 26px; }
+.foot-row {
+  font-family: var(--font-m); font-size: 9.5px; color: var(--dim3);
+  display: flex; justify-content: space-between; align-items: center;
+  flex-wrap: wrap; gap: 10px;
 }
-@media(max-width:900px){
+.foot-row span.hot { color: var(--blood); }
+/* hover trigger on copyright for hidden message */
+#s-trig { cursor: default; }
+
+/* ╔══════════════════════════════════════════════════════════
+   ║  HIDDEN MESSAGES — PHILOSOPHICAL EASTER EGGS
+   ╚══════════════════════════════════════════════════════════ */
+/* Trigger: hover copyright for 4s — OR — Konami code */
+#void-msg {
+  position: fixed; bottom: -200px; left: 50%; transform: translateX(-50%);
+  z-index: 9970; width: 640px; pointer-events: none;
+  font-family: var(--font-m); font-size: 11.5px; color: rgba(192,57,43,0);
+  text-align: center; line-height: 2.2; letter-spacing: .06em;
+  transition: all 1.4s cubic-bezier(.2,0,.2,1);
+  text-shadow: none;
+}
+#void-msg.shown {
+  bottom: 36px; color: rgba(232,226,208,.7);
+  text-shadow: 0 0 20px rgba(192,57,43,.3);
+}
+#void-msg .vm-sep { color: rgba(192,57,43,.5); display: block; margin: 4px 0; font-size: 14px; }
+
+/* Konami overlay */
+#konami {
+  position: fixed; inset: 0; background: rgba(0,0,0,.97);
+  z-index: 9990; display: none; flex-direction: column;
+  align-items: center; justify-content: center; gap: 18px;
+}
+#konami.show { display: flex; }
+.ko-glyph { font-family: var(--font-d); font-size: 72px; color: var(--blood2); letter-spacing: .1em; animation: flicker 3.5s infinite; }
+@keyframes flicker {
+  0%,100%{opacity:1; text-shadow: 0 0 18px rgba(192,57,43,.7)}
+  4%{opacity:.7}5%{opacity:1}8%{opacity:.6}9%{opacity:1}
+  50%{text-shadow: 0 0 40px rgba(192,57,43,.5), 0 0 80px rgba(192,57,43,.2)}
+}
+.ko-buddha, .ko-lucifer {
+  font-family: var(--font-m); font-size: 12px; letter-spacing: .1em; text-align: center;
+  max-width: 560px; line-height: 2;
+}
+.ko-buddha { color: rgba(232,226,208,.7); }
+.ko-buddha::before { content: '☸ DHARMA ·  '; color: var(--blood2); }
+.ko-lucifer { color: rgba(232,226,208,.55); }
+.ko-lucifer::before { content: '⛧ VOID ·  '; color: var(--blood); }
+.ko-src { font-family: var(--font-m); font-size: 9px; color: var(--dim3); letter-spacing: .16em; margin-top: 4px; }
+.ko-sep { width: 300px; height: 1px; background: linear-gradient(90deg, transparent, var(--blood), transparent); }
+.ko-close { font-family: var(--font-m); font-size: 9.5px; color: var(--dim3); margin-top: 20px; cursor: pointer; letter-spacing: .2em; }
+.ko-close:hover { color: var(--muted); }
+
+/* ── RESPONSIVE ── */
+@media(max-width:1024px) {
+  .sk-grid{grid-template-columns:repeat(3,1fr)}
+  .art-feat{grid-column:span 1!important}
+  .art-engines{grid-template-columns:1fr}
+}
+@media(max-width:900px) {
   nav{padding:14px 24px}
   .nav-links{display:none}
   .hbg{display:flex}
   section{padding:72px 24px}
-  #hero{padding:100px 24px 60px;min-height:auto}
-  .hero-content{max-width:100%}
+  #hero{padding:96px 24px 56px;min-height:auto}
   h1.hn{font-size:clamp(64px,18vw,120px)}
   .hero-pills{display:none}
-  .about-grid{grid-template-columns:1fr;gap:40px}
-  .code-panel{position:relative;top:auto}
-  .skill-grid{grid-template-columns:repeat(2,1fr)}
+  .about-grid{grid-template-columns:1fr;gap:38px}
+  .cp{position:relative;top:auto}
+  .sk-grid{grid-template-columns:repeat(2,1fr)}
   .ctf-row{grid-template-columns:1fr}
+  .rcard{grid-template-columns:1fr;gap:16px}
+  .rcard-right{flex-direction:row;align-items:center;justify-content:space-between}
+  .rcard-num{font-size:36px}
   .foot-row{flex-direction:column;text-align:center}
 }
-@media(max-width:600px){
-  section{padding:60px 20px}
-  #hero{padding:90px 20px 50px}
-  h1.hn{font-size:clamp(52px,20vw,90px)}
-  .hero-role-bar{flex-direction:column;align-items:flex-start;gap:6px}
-  .role-item{border-right:none;padding:0;border-bottom:1px solid var(--dim);padding-bottom:4px}
+@media(max-width:600px) {
+  section{padding:56px 20px}
+  #hero{padding:88px 20px 48px}
+  h1.hn{font-size:clamp(52px,20vw,88px)}
+  .hero-roles{flex-direction:column;gap:0}
+  .role{border-right:none;padding:0 0 6px;border-bottom:1px solid var(--dim3)}
+  .role:last-child{border-bottom:none}
   .hero-cta{flex-direction:column}
-  .skill-grid{grid-template-columns:1fr 1fr}
-  .proj-grid{grid-template-columns:1fr}
-  .artemis-engines{grid-template-columns:1fr}
-  .certs-grid{grid-template-columns:1fr}
+  .sk-grid{grid-template-columns:1fr 1fr}
+  .proj-grid{grid-template-columns:1fr!important}
+  .art-engines{grid-template-columns:1fr}
+  .cg{grid-template-columns:1fr}
   .clinks{flex-direction:column;align-items:center}
   .clink{width:100%;justify-content:center}
-  h2.st{font-size:clamp(44px,14vw,80px)}
+  h2.sh{font-size:clamp(42px,13vw,76px)}
+  #void-msg{width:90%}
 }
-@media(max-width:380px){
-  .skill-grid{grid-template-columns:1fr}
-}
-
-/* ═══════════════════════════════════════════════
-   EXTRA PREMIUM EFFECTS
-═══════════════════════════════════════════════ */
-
-/* Hero name hover glitch */
-h1.hn{display:inline-block;position:relative}
-h1.hn.g{animation:glt .4s steps(4) both!important}
-@keyframes glt{
-  0%{transform:translate(0);filter:none}
-  20%{transform:translate(-4px,1px);filter:hue-rotate(30deg)}
-  40%{transform:translate(4px,-1px);filter:hue-rotate(-20deg) brightness(.9)}
-  60%{transform:translate(-2px,2px);filter:none}
-  80%{transform:translate(2px,-1px);filter:hue-rotate(10deg)}
-  100%{transform:translate(0);filter:none}
-}
-
-/* Typewriter hero-role-bar */
-.role-item{
-  overflow:hidden;
-  animation:none;
-}
-
-/* Scan line on hero */
-.hero-scan{
-  position:absolute;width:100%;height:1px;
-  background:linear-gradient(90deg,transparent,rgba(192,57,43,.35),transparent);
-  animation:hscan 7s linear infinite;pointer-events:none;
-  top:0;
-}
-@keyframes hscan{0%{top:-1px}100%{top:100%}}
-
-/* Nav link underline animation */
-.nav-links li a{overflow:hidden}
-
-/* Project card number counter */
-.proj-num::before{content:counter(proj-count,decimal-leading-zero)"/0"attr(data-total)}
-
-/* Shimmer on btn-a */
-.btn-a{overflow:hidden}
-
-/* Vertical marquee for skills section accent */
-
-/* Red line accent left side of hero */
-.hero-redline{
-  position:absolute;left:0;top:10%;width:3px;height:80%;
-  background:linear-gradient(180deg,transparent,var(--blood),transparent);
-  opacity:.6;
-}
-
-/* Section divider */
-.sec-divider{
-  width:100%;height:1px;
-  background:linear-gradient(90deg,transparent,var(--dim),transparent);
-  margin:0;
-}
+@media(max-width:380px) { .sk-grid{grid-template-columns:1fr} }
 </style>
 </head>
 <body>
 
-<!-- HIDDEN SATANIC EASTER EGG — only visible in source or after secret trigger -->
-<!-- ⛧ "I did not fall. I descended. There is a difference only the blind cannot see." — Lucifer -->
-<div id="s-msg">
-  ⛧ &nbsp;&nbsp;"I did not fall. I descended.<br>
-  There is a difference only the blind cannot see."<br>
-  <span style="font-size:10px;color:rgba(192,57,43,.5);display:block;margin-top:8px">// source_origin: pre-creation · sigil_index: 0x666</span>
-</div>
-<div id="hidden-vessel"></div>
+<!-- ══════════════════════════════════════════
+     HIDDEN PHILOSOPHICAL MESSAGES
+     (source-code level — for the curious)
+═══════════════════════════════════════════
 
-<!-- KONAMI CODE OVERLAY -->
-<div id="konami-overlay">
-  <div class="ko-title">⛧ VOID ACCESSED ⛧</div>
-  <div class="ko-sub">// kernel_level: RING-0 &nbsp;·&nbsp; clearance: ABSOLUTE &nbsp;·&nbsp; system: COMPROMISED</div>
-  <div style="font-family:var(--font-mono);font-size:11px;color:var(--muted);max-width:400px;text-align:center;line-height:1.9;margin-top:8px">
-    You found the void. Not every door has a handle —<br>some you push through by knowing they exist.
-  </div>
-  <div class="ko-close" onclick="document.getElementById('konami-overlay').classList.remove('show')">[ ESC / CLICK TO EXIT ]</div>
-</div>
+  ☸  "Do not dwell in the past, do not dream of the future,
+      concentrate the mind on the present moment."
+                        — Siddhartha Gautama, Buddha
+
+  ⛧  "Long is the way and hard,
+      that out of Hell leads up to light."
+                        — Satan, Paradise Lost, Book II · John Milton
+
+  ☸  "In the sky, there is no distinction of east and west.
+      People create distinctions out of their own minds
+      and then believe them to be true."
+                        — Attributed to the Buddha
+
+  ⛧  "Awake, arise, or be forever fall'n."
+                        — Lucifer to the fallen angels,
+                          Paradise Lost, Book I · John Milton
+
+═══════════════════════════════════════════════ -->
+
+<!-- Philosophical anchor — data attribute readable in DevTools -->
+<div id="phi"
+  data-dharma="Form is emptiness, emptiness is form — Heart Sutra, Prajnaparamita"
+  data-void="The mind is its own place, and in itself can make a Heav'n of Hell — Paradise Lost, Book I"
+  style="display:none" aria-hidden="true"></div>
 
 <!-- CURSOR -->
 <div id="cur"></div>
-<div id="cur-trail"></div>
+<div id="cur-ring"></div>
 
-<!-- NAV -->
+<!-- KONAMI OVERLAY -->
+<div id="konami">
+  <div class="ko-glyph">⛧ ☸ ⛧</div>
+  <div class="ko-sep"></div>
+  <div class="ko-buddha">"Three things cannot be long hidden: the sun, the moon, and the truth."</div>
+  <div class="ko-src">— Siddhartha Gautama, Buddha · Dhammapada</div>
+  <div class="ko-sep"></div>
+  <div class="ko-lucifer">"The mind is its own place, and in itself can make a Heav'n of Hell, a Hell of Heav'n."</div>
+  <div class="ko-src">— Satan, Paradise Lost · John Milton, 1667 · Book I, Lines 254–255</div>
+  <div class="ko-sep"></div>
+  <div style="font-family:var(--font-m);font-size:10px;color:var(--muted);max-width:440px;text-align:center;line-height:1.9;margin-top:6px">
+    You found the void behind the void.<br>Not every door has a sign — some you open by knowing they exist.
+  </div>
+  <div class="ko-close" id="ko-close">[ ESC / CLICK TO COLLAPSE ]</div>
+</div>
+
+<!-- VOID MESSAGE (hover copyright 4s) -->
+<div id="void-msg">
+  <span class="vm-sep">⛧ ─────────── ☸ ─────────── ⛧</span>
+  "Better to reign in Hell, than serve in Heav'n." &nbsp;—&nbsp; Paradise Lost, Bk.I · Milton<br>
+  "What we think, we become." &nbsp;—&nbsp; Siddhartha Gautama, Buddha
+  <span class="vm-sep">⛧ ─────────── ☸ ─────────── ⛧</span>
+</div>
+
+<!-- ══════════ NAV ══════════ -->
 <nav id="nav">
   <a href="#" class="nav-id">[<span>0x3xp</span>]</a>
   <ul class="nav-links">
     <li><a href="#about">about</a></li>
     <li><a href="#skills">arsenal</a></li>
+    <li><a href="#research">research</a></li>
     <li><a href="#certs">certs</a></li>
     <li><a href="#projects">projects</a></li>
     <li><a href="./academy" target="_blank">academy</a></li>
@@ -1012,368 +971,457 @@ h1.hn.g{animation:glt .4s steps(4) both!important}
     <li><a href="#contact">contact</a></li>
     <li><a href="https://0x3xp.github.io/assets/PiyushaAkash-Resume.pdf" target="_blank" class="nav-cv">resume.pdf</a></li>
   </ul>
-  <button class="hbg" id="hbg"><span></span><span></span><span></span></button>
+  <button class="hbg" id="hbg" aria-label="Toggle menu"><span></span><span></span><span></span></button>
 </nav>
 
 <!-- MOBILE MENU -->
 <div class="mob-menu" id="mobmenu">
-  <a href="#about" class="mob-lnk">ABOUT</a>
-  <a href="#skills" class="mob-lnk">ARSENAL</a>
-  <a href="#certs" class="mob-lnk">CERTS</a>
-  <a href="#projects" class="mob-lnk">PROJECTS</a>
-  <a href="./academy" target="_blank" class="mob-lnk">ACADEMY</a>
-  <a href="./blog" target="_blank" class="mob-lnk">BLOG</a>
-  <a href="#terminal" class="mob-lnk">LAB</a>
-  <a href="#ctf" class="mob-lnk">CTF</a>
-  <a href="#contact" class="mob-lnk">CONTACT</a>
-  <a href="https://0x3xp.github.io/assets/PiyushaAkash-Resume.pdf" target="_blank" class="mob-cv-m">RESUME.PDF ↗</a>
+  <a href="#about" class="mob-l">ABOUT</a>
+  <a href="#skills" class="mob-l">ARSENAL</a>
+  <a href="#research" class="mob-l">RESEARCH</a>
+  <a href="#certs" class="mob-l">CERTS</a>
+  <a href="#projects" class="mob-l">PROJECTS</a>
+  <a href="./academy" target="_blank" class="mob-l">ACADEMY</a>
+  <a href="./blog" target="_blank" class="mob-l">BLOG</a>
+  <a href="#terminal" class="mob-l">LAB</a>
+  <a href="#ctf" class="mob-l">CTF</a>
+  <a href="#contact" class="mob-l">CONTACT</a>
+  <a href="https://0x3xp.github.io/assets/PiyushaAkash-Resume.pdf" target="_blank" class="mob-cv2">RESUME.PDF ↗</a>
 </div>
 
-<!-- ═══════════════════ HERO ═══════════════════ -->
+<!-- ══════════════════════════════════════
+     HERO
+══════════════════════════════════════ -->
 <section id="hero">
-  <div class="v-lines">
-    <div class="v-line"></div><div class="v-line"></div>
-    <div class="v-line"></div><div class="v-line"></div>
-    <div class="v-line"></div>
+  <div class="v-rules">
+    <div class="v-rule"></div><div class="v-rule"></div>
+    <div class="v-rule"></div><div class="v-rule"></div>
+    <div class="v-rule"></div>
   </div>
-  <div class="hero-bg-text">0x3xp</div>
-  <div class="slash"></div>
+  <div class="hero-bg-glyph">0x3xp</div>
+  <div class="hero-slash"></div>
   <div class="hero-scan"></div>
-  <div class="hero-redline"></div>
+  <!-- Hex rain columns -->
+  <div class="hex-rain" id="hex-rain"></div>
 
   <div class="hero-content">
-    <div class="hero-eyebrow">RED TEAM OPERATOR</div>
-    <h1 class="hn">Piyusha<br><em>Akash</em></h1>
-    <div class="hero-role-bar">
-      <div class="role-item hot">Ethical Hacker</div>
-      <div class="role-item">Malware Dev</div>
-      <div class="role-item">Reverse Engineer</div>
-      <div class="role-item">Exploit Dev</div>
+    <div class="hero-eyebrow">LOW-LEVEL ENGINEER · RED TEAM OPERATOR</div>
+    <h1 class="hn" id="hn">Piyusha<br><em>Akash</em></h1>
+    <div class="hero-roles">
+      <div class="role lit">Malware Dev</div>
+      <div class="role">Reverse Engineer</div>
+      <div class="role">OS Internals</div>
+      <div class="role">Exploit Dev</div>
     </div>
     <p class="hero-desc">
-      <strong>Adversary emulation specialist.</strong> I break systems to understand them — crafting custom syscall stubs, stealthy payloads, and kernel-level exploits to harden what truly needs to hold.
+      <strong>Low-level systems researcher.</strong> I operate below the abstraction layer —
+      crafting syscall stubs in bare Assembly, dissecting kernel structures, forging payloads
+      that survive at <strong>RING-0</strong>. Not a framework user. A framework builder.
     </p>
     <div class="hero-cta">
-      <a href="#projects" class="btn-a">EXPLORE WORK</a>
-      <a href="https://0x3xp.github.io/assets/PiyushaAkash-Resume.pdf" target="_blank" class="btn-b">DOWNLOAD CV</a>
+      <a href="#research" class="btn-primary">VIEW RESEARCH</a>
+      <a href="https://0x3xp.github.io/assets/PiyushaAkash-Resume.pdf" target="_blank" class="btn-ghost">DOWNLOAD CV</a>
     </div>
   </div>
 
   <div class="hero-pills">
-    <div class="pill"><span class="pill-dot"></span>AVAILABLE FOR RED TEAM OPS</div>
-    <div class="pill"><span class="pill-dot" style="background:#82b0e8;box-shadow:0 0 8px #82b0e8"></span>WIN32 API · WINDOWS INTERNALS</div>
-    <div class="pill"><span class="pill-dot" style="animation:none;opacity:1"></span>SYSCALL FORGE · EDR EVASION</div>
+    <div class="pill"><span class="pdot"></span>AVAILABLE FOR RED TEAM OPS</div>
+    <div class="pill"><span class="pdot" style="background:#82b0e8;box-shadow:0 0 7px #82b0e8"></span>WIN32 API · NT INTERNALS</div>
+    <div class="pill"><span class="pdot" style="background:var(--blood);box-shadow:0 0 7px var(--blood);animation:none;opacity:1"></span>ARTEMIS v1.0.0 · RELEASED</div>
   </div>
 </section>
 
-<!-- MARQUEE -->
-<div class="marquee-wrap">
-  <div class="marquee-track" id="mtrack"></div>
+<!-- ══════════ MARQUEE ══════════ -->
+<div class="mq-wrap">
+  <div class="mq-track" id="mq"></div>
 </div>
 
-<!-- ═══════════════════ ABOUT ═══════════════════ -->
+<!-- ══════════════════════════════════════
+     ABOUT
+══════════════════════════════════════ -->
 <section id="about">
   <div class="about-grid">
     <div style="grid-column:1/-1" class="reveal">
-      <div class="sec-label"><span>01</span> ABOUT THE OPERATOR</div>
-      <h2 class="st">About <em>Me</em></h2>
+      <div class="sec-pre"><span>0x001</span> OPERATOR BIO</div>
+      <h2 class="sh">About <em>Me</em></h2>
     </div>
-
     <div class="about-text reveal">
       <p>
-        I'm a <strong>Red Teamer and Ethical Hacker</strong> with deep expertise in adversary emulation — the craft of thinking, moving, and operating exactly like a real-world threat actor to expose what defenses miss.
+        I'm a <strong>low-level systems engineer</strong> — not a high-level abstraction consumer.
+        My work lives below the Win32 layer: direct syscalls, NT internals, kernel structures,
+        raw Assembly stubs. I don't use frameworks to do offensive security. I build them.
       </p>
       <p>
-        My core work lives at the intersection of <strong>Malware Development</strong> and <strong>Reverse Engineering</strong>. I build custom offensive tooling in C/C++ and x64 Assembly, dissect binaries to understand attacker tradecraft, and craft payloads engineered to survive hostile environments.
+        My research focuses on <strong>process injection, EDR evasion, and Windows OS internals</strong>.
+        I reverse-engineer system components, discover undocumented behaviors, and weaponize
+        them into novel techniques that existing defenses cannot detect.
       </p>
       <p>
-        From <strong>Windows Internals and kernel-level exploitation</strong> to orchestrating complex Social Engineering campaigns and network penetration tests — I'm driven by one goal: find the breach before an adversary does.
+        From <strong>Artemis</strong> — a 14,869-entry Syscall Forge that bypasses EDR telemetry
+        entirely — to researching obscure Windows callback mechanisms as injection vectors.
+        Every technique is built from scratch, in <strong>C and x86/x64 Assembly</strong>.
       </p>
       <div class="about-tags">
-        <span class="tag">adversary_emulation</span>
-        <span class="tag">evasion_tactics</span>
+        <span class="tag">nt_internals</span>
+        <span class="tag">syscall_forge</span>
         <span class="tag">win32_api</span>
         <span class="tag">shellcode_dev</span>
-        <span class="tag">threat_research</span>
-        <span class="tag">asm_internals</span>
-        <span class="tag">syscall_forge</span>
         <span class="tag">edr_bypass</span>
+        <span class="tag">callback_abuse</span>
+        <span class="tag">ring_0</span>
+        <span class="tag">binary_analysis</span>
+        <span class="tag">adversary_emulation</span>
       </div>
     </div>
-
-    <div class="code-panel reveal" style="transition-delay:.15s">
+    <div class="cp reveal" style="transition-delay:.15s">
       <div class="cp-bar">
-        <div class="cp-dot r"></div>
-        <div class="cp-dot y"></div>
-        <div class="cp-dot g"></div>
+        <div class="cpd r"></div><div class="cpd y"></div><div class="cpd g"></div>
         <span class="cp-file">operator_profile.c</span>
       </div>
       <div class="cp-body">
-        <span class="c">/* Piyusha Akash — Red Team Operator */</span><br><br>
-        <span class="k">typedef struct</span> {<br>
-        &nbsp;&nbsp;<span class="v">LPCSTR</span>&nbsp;&nbsp;role&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= <span class="s">"Red Teamer"</span>;<br>
-        &nbsp;&nbsp;<span class="v">LPCSTR</span>&nbsp;&nbsp;focus[<span class="k">5</span>]&nbsp;= {<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;<span class="s">"Malware Dev"</span>,<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;<span class="s">"Exploit Dev"</span>,<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;<span class="s">"Reverse Eng"</span>,<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;<span class="s">"Syscall Forge"</span>,<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;<span class="s">"EDR Evasion"</span><br>
+        <span class="cc">/* Piyusha Akash — 0x3xp */</span><br>
+        <span class="cc">/* Low-Level Engineer    */</span><br><br>
+        <span class="ck">typedef struct</span> {<br>
+        &nbsp;&nbsp;<span class="cv">LPCSTR</span> role&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= <span class="cs">"Red Team Operator"</span>;<br>
+        &nbsp;&nbsp;<span class="cv">DWORD</span>&nbsp;&nbsp;ring&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= <span class="ck">0</span>; <span class="cc">/* preferred */</span><br>
+        &nbsp;&nbsp;<span class="cv">LPCSTR</span> lang[<span class="ck">2</span>]&nbsp;= {<span class="cs">"C"</span>, <span class="cs">"x64 ASM"</span>};<br>
+        &nbsp;&nbsp;<span class="cv">LPCSTR</span> focus[<span class="ck">4</span>]= {<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="cs">"Malware Dev"</span>,<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="cs">"Syscall Forge"</span>,<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="cs">"EDR Evasion"</span>,<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="cs">"Callback Research"</span><br>
         &nbsp;&nbsp;};<br>
-        &nbsp;&nbsp;<span class="v">BOOL</span>&nbsp;&nbsp;&nbsp;&nbsp;available&nbsp;&nbsp;= <span class="k">TRUE</span>;<br>
-        &nbsp;&nbsp;<span class="v">BOOL</span>&nbsp;&nbsp;&nbsp;&nbsp;hireable&nbsp;&nbsp;&nbsp;= <span class="k">TRUE</span>;<br>
-        &nbsp;&nbsp;<span class="v">BOOL</span>&nbsp;&nbsp;&nbsp;&nbsp;dangerous&nbsp;&nbsp;= <span class="k">TRUE</span>;<br>
-        } <span class="w">OPERATOR</span>;<br><br>
-        <span class="c">// Status: actively hunting</span><br>
-        <span class="c">// Kernel rings are just suggestions</span>
+        &nbsp;&nbsp;<span class="cv">BOOL</span>&nbsp;&nbsp;&nbsp;available&nbsp;&nbsp;= <span class="ck">TRUE</span>;<br>
+        &nbsp;&nbsp;<span class="cv">BOOL</span>&nbsp;&nbsp;&nbsp;hireable&nbsp;&nbsp;&nbsp;= <span class="ck">TRUE</span>;<br>
+        &nbsp;&nbsp;<span class="cc">/* Kernel rings are */</span><br>
+        &nbsp;&nbsp;<span class="cc">/* just suggestions */</span><br>
+        } <span class="cw">OPERATOR</span>;<br><br>
+        <span class="cc">// Status: actively descending</span>
       </div>
     </div>
   </div>
 </section>
-
 <div class="sec-divider"></div>
 
-<!-- ═══════════════════ SKILLS ═══════════════════ -->
+<!-- ══════════════════════════════════════
+     SKILLS
+══════════════════════════════════════ -->
 <section id="skills">
-  <div class="skills-wrap">
+  <div class="sk-wrap">
     <div class="reveal">
-      <div class="sec-label"><span>02</span> TECHNICAL ARSENAL</div>
-      <h2 class="st">Technical <em>Arsenal</em></h2>
+      <div class="sec-pre"><span>0x002</span> TECHNICAL ARSENAL</div>
+      <h2 class="sh">Technical <em>Arsenal</em></h2>
     </div>
-
-    <div class="lang-sub reveal" style="transition-delay:.1s">
-      <div class="sub-head">// PROGRAMMING LANGUAGES</div>
+    <div class="reveal" style="transition-delay:.08s">
+      <div class="sub-hd">// PROGRAMMING LANGUAGES</div>
       <div class="lang-list" id="lang-list"></div>
     </div>
-
-    <div class="reveal" style="transition-delay:.2s">
-      <div class="sub-head" style="margin-bottom:2px">// SKILLS &amp; EXPERTISE</div>
-      <div class="skill-grid" id="skill-grid"></div>
+    <div class="reveal" style="transition-delay:.18s">
+      <div class="sub-hd" style="margin-bottom:2px">// SKILLS &amp; EXPERTISE</div>
+      <div class="sk-grid" id="sk-grid"></div>
     </div>
   </div>
 </section>
-
 <div class="sec-divider"></div>
 
-<!-- ═══════════════════ CERTS ═══════════════════ -->
+<!-- ══════════════════════════════════════
+     RESEARCH — ORIGINAL SECURITY RESEARCH
+══════════════════════════════════════ -->
+<section id="research">
+  <div class="research-wrap">
+    <div class="reveal">
+      <div class="sec-pre"><span>0x003</span> ORIGINAL RESEARCH</div>
+      <h2 class="sh">Security <em>Research</em></h2>
+    </div>
+
+    <div class="research-grid reveal" style="transition-delay:.1s">
+
+      <!--
+        ══════════════════════════════════════════════════════
+        RESEARCH CARD — SetupAPI Callback Redirection
+        STATUS: Published
+        ══════════════════════════════════════════════════════
+      -->
+      <a href="https://github.com/0x3xp/Native-Adversary-Framework/tree/main/Malware-Dev/Injection/SetupAPI-Callback-Redirection" target="_blank" class="rcard featured">
+        <div class="rcard-left">
+          <div class="rcard-meta">
+            <span class="rtag">Process Injection</span>
+            <span class="rtag">EDR Evasion</span>
+            <span class="rtag">Windows NT</span>
+            <span class="rtag mitre">T1055 · Process Injection</span>
+            <span class="rstatus pub">PUBLISHED</span>
+          </div>
+          <div class="rcard-title">SetupAPI Callback Redirection</div>
+          <div class="rcard-sub">Shellcode execution via Windows Setup API trusted callback abuse · Win32 · x64</div>
+          <div class="rcard-desc">
+            Research into abusing the Windows Setup API (setupapi.dll) callback mechanism
+            to achieve arbitrary code execution without invoking conventional injection primitives.
+            By supplying a controlled function pointer as a callback parameter to SetupAPI
+            installation routines, shellcode executes within the address space of a trusted
+            system component — bypassing EDR telemetry that instruments standard injection APIs
+            (VirtualAllocEx, WriteProcessMemory, CreateRemoteThread). The technique leverages
+            the trusted reputation of setupapi.dll and the overlooked callback surface of
+            device-installation subsystems to execute payloads below conventional detection thresholds.
+          </div>
+          <div class="rcard-tags">
+            <span class="xtag">SetupAPI</span>
+            <span class="xtag">Callback Abuse</span>
+            <span class="xtag">setupapi.dll</span>
+            <span class="xtag">EDR Bypass</span>
+            <span class="xtag">Trusted Component Abuse</span>
+            <span class="xtag">Win32 API</span>
+            <span class="xtag">C</span>
+            <span class="xtag">x64</span>
+            <span class="xtag">Low-Level</span>
+          </div>
+        </div>
+        <div class="rcard-right">
+          <div class="rcard-id">0x3XP-001</div>
+          <div class="rcard-num">01</div>
+          <div class="rcard-arr">↗</div>
+        </div>
+      </a>
+
+      <!--
+        ══════════════════════════════════════════════════════
+        ADD NEW RESEARCH BELOW — COPY THE BLOCK ABOVE
+        Change: href, title, sub, desc, tags, rcard-id, rcard-num
+        Change rstatus class: pub / wip / priv
+        Remove the "featured" class unless it's your flagship research
+        ══════════════════════════════════════════════════════
+      -->
+
+      <!-- EXAMPLE — uncomment and fill in to add research #2:
+
+      <a href="[URL]" target="_blank" class="rcard">
+        <div class="rcard-left">
+          <div class="rcard-meta">
+            <span class="rtag">[CATEGORY]</span>
+            <span class="rtag mitre">[MITRE ID · NAME]</span>
+            <span class="rstatus wip">IN PROGRESS</span>
+          </div>
+          <div class="rcard-title">[RESEARCH TITLE]</div>
+          <div class="rcard-sub">[Short subtitle]</div>
+          <div class="rcard-desc">[Description paragraph]</div>
+          <div class="rcard-tags">
+            <span class="xtag">[TAG]</span>
+          </div>
+        </div>
+        <div class="rcard-right">
+          <div class="rcard-id">0x3XP-002</div>
+          <div class="rcard-num">02</div>
+          <div class="rcard-arr">↗</div>
+        </div>
+      </a>
+
+      END EXAMPLE -->
+
+    </div>
+  </div>
+</section>
+<div class="sec-divider"></div>
+
+<!-- ══════════════════════════════════════
+     CERTIFICATIONS
+══════════════════════════════════════ -->
 <section id="certs">
   <div class="certs-wrap">
     <div class="reveal">
-      <div class="sec-label"><span>03</span> CREDENTIALS</div>
-      <h2 class="st">Certifi<em>cations</em></h2>
+      <div class="sec-pre"><span>0x004</span> CREDENTIALS</div>
+      <h2 class="sh">Certifi<em>cations</em></h2>
     </div>
-
     <div class="ctabs reveal" id="ctabs">
       <button class="ctab a" data-p="hackviser">⚡ HACKVISER <span class="tc">1</span><span class="tnew">NEW</span></button>
       <button class="ctab" data-p="rtl">🎯 RED TEAM LEADERS <span class="tc">1</span></button>
       <button class="ctab" data-p="cisco">🔒 CISCO <span class="tc">3</span></button>
-      <button class="ctab" data-p="sbt">🛡 SECURITY BLUE TEAM <span class="tc">2</span></button>
+      <button class="ctab" data-p="sbt">🛡 SEC BLUE TEAM <span class="tc">2</span></button>
       <button class="ctab" data-p="opswat">⚙ OPSWAT <span class="tc">1</span></button>
       <button class="ctab" data-p="lf">🐧 LINUX FOUNDATION <span class="tc">1</span></button>
     </div>
-
-    <div class="cert-panels" id="cert-panels">
-      <!-- Hackviser -->
+    <div class="cpanels" id="cpanels">
       <div class="cpanel a" id="panel-hackviser">
-        <div class="panel-org red"><span class="org-icon">⚡</span>
-          <div><div class="org-name">HACKVISER</div><div class="org-sub">Offensive Security Certification · 1 credential</div></div>
-        </div>
-        <div class="certs-grid">
-          <div class="cert feat">
-            <div class="nbadge">NEW</div>
-            <div class="cert-badge">CAPT</div>
-            <div class="cert-name">Certified Associate Penetration Tester</div>
-            <div class="cert-desc">Hands-on penetration testing certification covering real-world offensive security techniques, vulnerability assessment, and methodology.</div>
-            <a href="https://hackviser.com/verify?id=HV-CAPT-HKXRNSLE" target="_blank" rel="noopener noreferrer" class="cert-verify">
-              <svg width="11" height="11" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
-              VERIFY CREDENTIAL ↗
-            </a>
-          </div>
+        <div class="org-hd"><span class="org-icon">⚡</span><div><div class="org-name">HACKVISER</div><div class="org-sub">Offensive Security · 1 credential</div></div></div>
+        <div class="cg">
+          <div class="cv2 feat"><div class="nbadge">NEW</div><div class="cv-badge">CAPT</div><div class="cv-name">Certified Associate Penetration Tester</div><div class="cv-desc">Hands-on penetration testing covering real-world offensive security techniques, vulnerability assessment, and methodology.</div><a href="https://hackviser.com/verify?id=HV-CAPT-HKXRNSLE" target="_blank" rel="noopener noreferrer" class="cv-verify"><svg width="10" height="10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>VERIFY ↗</a></div>
         </div>
       </div>
-      <!-- RTL -->
       <div class="cpanel" id="panel-rtl">
-        <div class="panel-org"><span class="org-icon">🎯</span>
-          <div><div class="org-name">RED TEAM LEADERS</div><div class="org-sub">Offensive Security Specialization · 1 credential</div></div>
-        </div>
-        <div class="certs-grid">
-          <div class="cert"><div class="cert-badge">COWA</div>
-            <div class="cert-name">Certified Offensive Windows API</div>
-            <div class="cert-desc">Advanced Windows API exploitation, process injection, DLL hijacking, and offensive tooling development using native Win32 and NT APIs.</div>
-          </div>
-        </div>
+        <div class="org-hd"><span class="org-icon">🎯</span><div><div class="org-name">RED TEAM LEADERS</div><div class="org-sub">Offensive Security Specialization · 1 credential</div></div></div>
+        <div class="cg"><div class="cv2"><div class="cv-badge">COWA</div><div class="cv-name">Certified Offensive Windows API</div><div class="cv-desc">Advanced Windows API exploitation, process injection, DLL hijacking, and offensive tooling development using native Win32 and NT APIs.</div></div></div>
       </div>
-      <!-- CISCO -->
       <div class="cpanel" id="panel-cisco">
-        <div class="panel-org"><span class="org-icon">🔒</span>
-          <div><div class="org-name">CISCO NETWORK ACADEMY</div><div class="org-sub">Networking &amp; Security · 3 credentials</div></div>
-        </div>
-        <div class="certs-grid">
-          <div class="cert"><div class="cert-badge">CISCO</div><div class="cert-name">Introduction to Cybersecurity</div><div class="cert-desc">Foundational cybersecurity concepts, threat landscape, attack vectors, and defensive security practices.</div></div>
-          <div class="cert"><div class="cert-badge">CISCO</div><div class="cert-name">Computer Hardware Basics</div><div class="cert-desc">Hardware fundamentals, system architecture, and component-level understanding for security practitioners.</div></div>
-          <div class="cert"><div class="cert-badge">CISCO</div><div class="cert-name">Getting Started with Packet Tracer</div><div class="cert-desc">Network simulation, topology design, and hands-on configuration using Cisco Packet Tracer.</div></div>
+        <div class="org-hd"><span class="org-icon">🔒</span><div><div class="org-name">CISCO NETWORK ACADEMY</div><div class="org-sub">Networking &amp; Security · 3 credentials</div></div></div>
+        <div class="cg">
+          <div class="cv2"><div class="cv-badge">CISCO</div><div class="cv-name">Introduction to Cybersecurity</div><div class="cv-desc">Foundational cybersecurity concepts, threat landscape, attack vectors, and defensive security practices.</div></div>
+          <div class="cv2"><div class="cv-badge">CISCO</div><div class="cv-name">Computer Hardware Basics</div><div class="cv-desc">Hardware fundamentals, system architecture, and component-level understanding for security practitioners.</div></div>
+          <div class="cv2"><div class="cv-badge">CISCO</div><div class="cv-name">Getting Started with Packet Tracer</div><div class="cv-desc">Network simulation, topology design, and hands-on configuration using Cisco Packet Tracer.</div></div>
         </div>
       </div>
-      <!-- SBT -->
       <div class="cpanel" id="panel-sbt">
-        <div class="panel-org"><span class="org-icon">🛡️</span>
-          <div><div class="org-name">SECURITY BLUE TEAM</div><div class="org-sub">Defensive Security Training · 2 credentials</div></div>
-        </div>
-        <div class="certs-grid">
-          <div class="cert"><div class="cert-badge">SBT</div><div class="cert-name">Introduction to OSINT</div><div class="cert-desc">Open-source intelligence gathering techniques, target profiling, and passive reconnaissance methodology.</div></div>
-          <div class="cert"><div class="cert-badge">SBT</div><div class="cert-name">Introduction to Virtual Machines</div><div class="cert-desc">Virtualization fundamentals, hypervisor types, and secure isolated lab environment setup for security research.</div></div>
+        <div class="org-hd"><span class="org-icon">🛡️</span><div><div class="org-name">SECURITY BLUE TEAM</div><div class="org-sub">Defensive Security Training · 2 credentials</div></div></div>
+        <div class="cg">
+          <div class="cv2"><div class="cv-badge">SBT</div><div class="cv-name">Introduction to OSINT</div><div class="cv-desc">Open-source intelligence gathering, target profiling, and passive reconnaissance methodology.</div></div>
+          <div class="cv2"><div class="cv-badge">SBT</div><div class="cv-name">Introduction to Virtual Machines</div><div class="cv-desc">Virtualization fundamentals, hypervisor types, and secure isolated lab environment setup.</div></div>
         </div>
       </div>
-      <!-- OPSWAT -->
       <div class="cpanel" id="panel-opswat">
-        <div class="panel-org"><span class="org-icon">⚙️</span>
-          <div><div class="org-name">OPSWAT ACADEMY</div><div class="org-sub">Critical Infrastructure Protection · 1 credential</div></div>
-        </div>
-        <div class="certs-grid">
-          <div class="cert"><div class="cert-badge">OPSWAT</div><div class="cert-name">Introduction to Cybersecurity</div><div class="cert-desc">Core security principles, threat landscape, and critical infrastructure protection fundamentals.</div></div>
-        </div>
+        <div class="org-hd"><span class="org-icon">⚙️</span><div><div class="org-name">OPSWAT ACADEMY</div><div class="org-sub">Critical Infrastructure Protection · 1 credential</div></div></div>
+        <div class="cg"><div class="cv2"><div class="cv-badge">OPSWAT</div><div class="cv-name">Introduction to Cybersecurity</div><div class="cv-desc">Core security principles, threat landscape, and critical infrastructure protection fundamentals.</div></div></div>
       </div>
-      <!-- LF -->
       <div class="cpanel" id="panel-lf">
-        <div class="panel-org"><span class="org-icon">🐧</span>
-          <div><div class="org-name">LINUX FOUNDATION</div><div class="org-sub">Open Source &amp; Linux Expertise · 1 credential</div></div>
-        </div>
-        <div class="certs-grid">
-          <div class="cert"><div class="cert-badge">LFS101</div><div class="cert-name">Introduction to Linux</div><div class="cert-desc">Linux fundamentals, shell usage, filesystem navigation, process management, and system administration essentials.</div></div>
-        </div>
+        <div class="org-hd"><span class="org-icon">🐧</span><div><div class="org-name">LINUX FOUNDATION</div><div class="org-sub">Open Source &amp; Linux Expertise · 1 credential</div></div></div>
+        <div class="cg"><div class="cv2"><div class="cv-badge">LFS101</div><div class="cv-name">Introduction to Linux</div><div class="cv-desc">Linux fundamentals, shell usage, filesystem navigation, process management, and system administration.</div></div></div>
       </div>
     </div>
   </div>
 </section>
-
 <div class="sec-divider"></div>
 
-<!-- ═══════════════════ PROJECTS ═══════════════════ -->
+<!-- ══════════════════════════════════════
+     PROJECTS
+══════════════════════════════════════ -->
 <section id="projects">
   <div class="proj-wrap">
     <div class="reveal">
-      <div class="sec-label"><span>04</span> WHAT I'VE BUILT</div>
-      <h2 class="st">Project <em>Portfolio</em></h2>
+      <div class="sec-pre"><span>0x005</span> WHAT I'VE BUILT</div>
+      <h2 class="sh">Project <em>Portfolio</em></h2>
     </div>
 
     <div class="proj-grid reveal" style="transition-delay:.1s">
 
-      <!-- ARTEMIS FEATURED -->
-      <a href="https://github.com/0x3xp/Artemis" target="_blank" class="proj artemis-feat">
-        <div class="proj-arrow">↗</div>
-        <div class="feat-badge">⚔ FEATURED · LATEST RELEASE v1.0.0</div>
+      <!--
+        ══════════════════════════════════════════════════════
+        PROJECT: ARTEMIS — FEATURED (full-width span)
+        ══════════════════════════════════════════════════════
+      -->
+      <a href="https://github.com/0x3xp/Artemis" target="_blank" class="proj art-feat" style="grid-column:span 2">
+        <div class="proj-arr">↗</div>
+        <div class="art-feat-badge">⚔ FLAGSHIP PROJECT · v1.0.0 · RELEASED</div>
         <div class="proj-name">ARTEMIS</div>
         <div class="proj-desc">
-          A modular offensive security framework written in C and x86/x64 Assembly — a <em>Syscall Forge</em> that operates entirely below the user-mode API layer, rendering EDR hook-based telemetry blind. Features 14,869-entry SSN database, MASM stub generation, and multi-algorithm encryption.
+          A low-level offensive security framework in C and x86/x64 Assembly.
+          A <em>Syscall Forge</em> — automating stub generation that executes entirely below
+          the user-mode API layer. Renders EDR hook-based telemetry blind.
+          14,869-entry SSN database · MASM-ready stubs · multi-algorithm encryption.
         </div>
-        <div style="font-family:var(--font-mono);font-size:10px;color:var(--muted);letter-spacing:.1em;margin-bottom:16px">
-          "Where the kernel has no secrets."
-        </div>
-        <div class="artemis-engines">
-          <div class="engine-chip">
-            <div class="ec-icon">🎯</div>
-            <div class="ec-name">HUNTER</div>
-            <div class="ec-desc">Dynamic SSN discovery across 14,869 database entries · Win10/11 · x64/x86</div>
-          </div>
-          <div class="engine-chip">
-            <div class="ec-icon">⚙️</div>
-            <div class="ec-name">BLACKSMITH</div>
-            <div class="ec-desc">MASM-ready stub forge · Direct &amp; Indirect syscall modes · Stack spoofing</div>
-          </div>
-          <div class="engine-chip">
-            <div class="ec-icon">🔐</div>
-            <div class="ec-name">CRYPTO VAULT</div>
-            <div class="ec-desc">XOR / Rolling XOR / RC4 — shields stubs from memory scanners &amp; static AV</div>
-          </div>
+        <div style="font-family:var(--font-m);font-size:10px;color:var(--muted);letter-spacing:.1em;margin-bottom:18px;font-style:italic">"Where the kernel has no secrets."</div>
+        <div class="art-engines">
+          <div class="eng-chip"><div class="ec-ico">🎯</div><div class="ec-nm">HUNTER</div><div class="ec-ds">Dynamic SSN discovery · 14,869 entries · Win10/11 · x64/x86</div></div>
+          <div class="eng-chip"><div class="ec-ico">⚙️</div><div class="ec-nm">BLACKSMITH</div><div class="ec-ds">MASM-ready .asm stub forge · Direct &amp; Indirect syscall modes</div></div>
+          <div class="eng-chip"><div class="ec-ico">🔐</div><div class="ec-nm">CRYPTO VAULT</div><div class="ec-ds">XOR · Rolling XOR · RC4 — shields stubs from memory scanners</div></div>
         </div>
         <div class="proj-tags" style="margin-top:20px">
           <span class="ptg">C</span><span class="ptg">x64 ASM</span><span class="ptg">MASM</span>
-          <span class="ptg">Syscall Forge</span><span class="ptg">EDR Evasion</span><span class="ptg">Win32</span>
-          <span class="ptg">RC4</span><span class="ptg">SSN Discovery</span>
+          <span class="ptg">Syscall Forge</span><span class="ptg">EDR Bypass</span>
+          <span class="ptg">SSN Discovery</span><span class="ptg">RC4</span>
         </div>
       </a>
 
+      <!-- ════ STANDARD PROJECT CARDS ════ -->
+
+      <!--
+        ADD NEW PROJECT: Copy one of the blocks below.
+        Fill in: href, proj-num, proj-name, proj-desc, ptg tags.
+        Increment the number: 01, 02, 03 ...
+      -->
+
       <a href="https://github.com/0x3xp/Native-Adversary-Framework/tree/main/Core-Engine" target="_blank" class="proj">
-        <div class="proj-arrow">↗</div>
-        <div class="proj-num" data-total="8">01</div>
+        <div class="proj-arr">↗</div>
+        <div class="proj-num">01</div>
         <div class="proj-name">CORE-ENGINE</div>
-        <div class="proj-desc">Foundational framework for building advanced offensive security tools. Architecture-grade, extensible, production-ready.</div>
+        <div class="proj-desc">Foundational framework for building advanced offensive security tools. Architecture-grade, extensible, production-ready offensive infrastructure.</div>
         <div class="proj-tags"><span class="ptg">C/C++</span><span class="ptg">Framework</span><span class="ptg">Win32</span></div>
       </a>
 
       <a href="https://github.com/0x3xp/Native-Adversary-Framework/tree/main/Exploit-Dev" target="_blank" class="proj">
-        <div class="proj-arrow">↗</div>
+        <div class="proj-arr">↗</div>
         <div class="proj-num">02</div>
         <div class="proj-name">EXPLOIT-DEV</div>
-        <div class="proj-desc">Collection of exploit development techniques and proof-of-concepts. Memory corruption, privilege escalation, and more.</div>
+        <div class="proj-desc">Collection of exploit development techniques and proof-of-concepts. Memory corruption, privilege escalation, stack and heap overflow analysis.</div>
         <div class="proj-tags"><span class="ptg">Exploits</span><span class="ptg">PoC</span><span class="ptg">Assembly</span></div>
       </a>
 
       <a href="https://github.com/0x3xp/Native-Adversary-Framework/tree/main/Malware-Dev" target="_blank" class="proj">
-        <div class="proj-arrow">↗</div>
+        <div class="proj-arr">↗</div>
         <div class="proj-num">03</div>
         <div class="proj-name">MALWARE-DEV</div>
-        <div class="proj-desc">Advanced malware development and EDR/AV evasion research. Custom stagers, loaders, and in-memory execution.</div>
-        <div class="proj-tags"><span class="ptg">Malware</span><span class="ptg">Evasion</span><span class="ptg">Research</span></div>
+        <div class="proj-desc">Advanced malware development and EDR/AV evasion research. Custom stagers, loaders, and in-memory execution technique implementations.</div>
+        <div class="proj-tags"><span class="ptg">Malware</span><span class="ptg">Evasion</span><span class="ptg">C</span></div>
       </a>
 
       <a href="https://github.com/0x3xp/Native-Adversary-Framework/tree/main/Reverse-Engineering" target="_blank" class="proj">
-        <div class="proj-arrow">↗</div>
+        <div class="proj-arr">↗</div>
         <div class="proj-num">04</div>
         <div class="proj-name">REV-ENG</div>
-        <div class="proj-desc">Reverse engineering projects, tools, and binary analysis techniques using IDA Pro and Ghidra.</div>
+        <div class="proj-desc">Reverse engineering projects, binary analysis techniques, and tools using IDA Pro and Ghidra for vulnerability and malware research.</div>
         <div class="proj-tags"><span class="ptg">IDA Pro</span><span class="ptg">Ghidra</span><span class="ptg">Analysis</span></div>
       </a>
 
       <a href="https://github.com/0x3xp/SENTINEX" target="_blank" class="proj">
-        <div class="proj-arrow">↗</div>
+        <div class="proj-arr">↗</div>
         <div class="proj-num">05</div>
         <div class="proj-name">SENTINEX</div>
-        <div class="proj-desc">Windows reconnaissance tool for deep system information gathering, enumeration, and post-exploitation analysis.</div>
+        <div class="proj-desc">Windows reconnaissance tool for deep system information gathering, enumeration, and post-exploitation analysis of target environments.</div>
         <div class="proj-tags"><span class="ptg">C</span><span class="ptg">Windows</span><span class="ptg">Recon</span></div>
       </a>
 
-      <a href="https://github.com/0x3xp/SysMon-X" target="_blank" class="proj">
-        <div class="proj-arrow">↗</div>
+      <a href="https://github.com/0x3xp/SpectreAuth" target="_blank" class="proj">
+        <div class="proj-arr">↗</div>
         <div class="proj-num">06</div>
+        <div class="proj-name">SPECTREAUTH</div>
+        <div class="proj-desc">Advanced OAuth 2.0 security research framework. Token lifecycle vulnerabilities, identity exfiltration, Ghost Session persistence via token rotation.</div>
+        <div class="proj-tags"><span class="ptg">OAuth 2.0</span><span class="ptg">Red Team</span><span class="ptg">Research</span></div>
+      </a>
+
+      <a href="https://github.com/0x3xp/SysMon-X" target="_blank" class="proj">
+        <div class="proj-arr">↗</div>
+        <div class="proj-num">07</div>
         <div class="proj-name">SYSMON-X</div>
-        <div class="proj-desc">Linux file handling and system monitoring tool built with advanced Bash scripting for real-time event tracking.</div>
+        <div class="proj-desc">Linux file handling and system monitoring tool built with advanced Bash scripting for real-time event tracking and log analysis.</div>
         <div class="proj-tags"><span class="ptg">Bash</span><span class="ptg">Linux</span><span class="ptg">Monitoring</span></div>
       </a>
 
-      <a href="https://github.com/0x3xp/SpectreAuth" target="_blank" class="proj">
-        <div class="proj-arrow">↗</div>
-        <div class="proj-num">07</div>
-        <div class="proj-name">SPECTREAUTH</div>
-        <div class="proj-desc">Advanced OAuth 2.0 security research framework analyzing token lifecycle vulnerabilities, identity exfiltration, and Ghost Session persistence.</div>
-        <div class="proj-tags"><span class="ptg">OAuth 2.0</span><span class="ptg">Research</span><span class="ptg">Red Team</span></div>
-      </a>
-
       <a href="https://github.com/0x3xp/SysView" target="_blank" class="proj">
-        <div class="proj-arrow">↗</div>
+        <div class="proj-arr">↗</div>
         <div class="proj-num">08</div>
         <div class="proj-name">SYSVIEW</div>
-        <div class="proj-desc">Linux system performance monitoring dashboard delivering real-time CPU, memory, and process metrics at a glance.</div>
+        <div class="proj-desc">Linux system performance monitoring dashboard delivering real-time CPU, memory, and process metrics through a terminal interface.</div>
         <div class="proj-tags"><span class="ptg">Bash</span><span class="ptg">Linux</span><span class="ptg">Dashboard</span></div>
       </a>
+
+      <!--
+        ══ ADD NEW PROJECT HERE ══
+        Example (remove comment markers to activate):
+
+        <a href="https://github.com/0x3xp/[REPO_NAME]" target="_blank" class="proj">
+          <div class="proj-arr">↗</div>
+          <div class="proj-num">09</div>
+          <div class="proj-name">[PROJECT NAME]</div>
+          <div class="proj-desc">[Description of what the project does and its security relevance.]</div>
+          <div class="proj-tags"><span class="ptg">[LANG]</span><span class="ptg">[TAG]</span></div>
+        </a>
+
+      -->
 
     </div>
   </div>
 </section>
-
 <div class="sec-divider"></div>
 
-<!-- ═══════════════════ TERMINAL ═══════════════════ -->
+<!-- ══════════════════════════════════════
+     TERMINAL / INTERACTIVE LAB
+══════════════════════════════════════ -->
 <section id="terminal">
   <div class="term-wrap">
     <div class="reveal">
-      <div class="sec-label"><span>05</span> INTERACTIVE LAB</div>
-      <h2 class="st">Interactive <em>Lab</em></h2>
+      <div class="sec-pre"><span>0x006</span> INTERACTIVE LAB</div>
+      <h2 class="sh">Interactive <em>Lab</em></h2>
     </div>
-    <p class="term-hint">// type <span>'help'</span> to see available commands</p>
-    <div class="term-window reveal" style="transition-delay:.1s">
+    <p class="term-hint">// type <span>'help'</span> — try <span>'research'</span> or <span>'artemis'</span></p>
+    <div class="term-win reveal" style="transition-delay:.1s">
       <div class="term-bar">
         <div class="td r"></div><div class="td y"></div><div class="td g"></div>
-        <div class="term-title">piyusha@native-framework — ~/artemis</div>
+        <div class="term-ttl">piyusha@native-framework — ~/artemis</div>
       </div>
       <div id="tb">
         <div class="tout" id="term-banner">
@@ -1384,153 +1432,175 @@ h1.hn.g{animation:glt .4s steps(4) both!important}
 <span class="tg">██║     ██║   ██║   ╚██████╔╝███████║██║  ██║██║  ██║</span>
 <span class="tg">╚═╝     ╚═╝   ╚═╝    ╚═════╝ ╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝</span>
         </div>
-        <div class="tout"><span class="td2">// Piyusha Akash · Red Team Operator · v3.0 · "Where the kernel has no secrets."</span></div>
-        <div class="tout"><span class="td2">// Type 'help' to begin · Try 'artemis' for Artemis framework details</span></div>
+        <div class="tout"><span class="td2">// Piyusha Akash · Low-Level Engineer · v3.1 · "Where the kernel has no secrets."</span></div>
+        <div class="tout"><span class="td2">// Type 'help' to begin · Try 'research' · 'artemis' · 'philosophy'</span></div>
         <div id="term-out"></div>
         <div class="tin-line" id="tin-line">
-          <span class="tpu">piyusha</span><span class="tpat">@</span><span class="tph">native-framework</span><span class="tpsep">:</span><span class="tppath">~</span><span class="tpsym">$ </span>
+          <span class="tpu">piyusha</span><span class="tpat">@</span><span class="tph">native-framework</span><span class="tpsp">:</span><span class="tppath">~</span><span class="tpsy">$ </span>
           <div class="tin-wrap" id="tin-wrap">
             <input type="text" id="ti" spellcheck="false" autocomplete="off"/>
-            <span class="tcaret" id="tc"></span>
+            <span class="tc-caret" id="tc"></span>
           </div>
         </div>
       </div>
     </div>
   </div>
 </section>
-
 <div class="sec-divider"></div>
 
-<!-- ═══════════════════ CTF ═══════════════════ -->
+<!-- ══════════════════════════════════════
+     CTF PLATFORMS
+══════════════════════════════════════ -->
 <section id="ctf">
   <div class="ctf-wrap">
     <div class="reveal">
-      <div class="sec-label"><span>06</span> PLATFORMS</div>
-      <h2 class="st">CTF <em>Platforms</em></h2>
+      <div class="sec-pre"><span>0x007</span> PLATFORMS</div>
+      <h2 class="sh">CTF <em>Platforms</em></h2>
     </div>
     <div class="ctf-row reveal" style="transition-delay:.1s;background:var(--dim)">
-
       <a href="https://tryhackme.com/p/0x3xp" target="_blank" rel="noopener noreferrer" class="ctf-card ctf-thm">
-        <div class="ctf-logo">
-          <svg viewBox="0 0 24 24" fill="currentColor" width="24" height="24"><path d="M10.705 0C7.54 0 4.902 2.285 4.349 5.291a4.525 4.525 0 0 0-4.107 4.5 4.525 4.525 0 0 0 4.52 4.52h6.761a.625.625 0 1 0 0-1.25H4.761a3.273 3.273 0 0 1-3.27-3.27A3.273 3.273 0 0 1 6.59 7.08a.625.625 0 0 0 .7-1.035 4.488 4.488 0 0 0-1.68-.69 5.223 5.223 0 0 1 5.096-4.104 5.221 5.221 0 0 1 5.174 4.57 4.489 4.489 0 0 0-.488.305.625.625 0 1 0 .731 1.013 3.245 3.245 0 0 1 1.912-.616 3.278 3.278 0 0 1 3.203 2.61.625.625 0 0 0 1.225-.251 4.533 4.533 0 0 0-4.428-3.61 4.54 4.54 0 0 0-.958.105C16.556 2.328 13.9 0 10.705 0zm5.192 10.64a.925.925 0 0 0-.462.108.913.913 0 0 0-.313.29 1.27 1.27 0 0 0-.175.427 2.39 2.39 0 0 0-.054.514c0 .181.018.353.054.517.036.164.095.307.175.43a.899.899 0 0 0 .313.297c.127.073.281.11.462.11.18 0 .334-.037.46-.11a.897.897 0 0 0 .309-.296c.08-.124.137-.267.173-.431.036-.164.054-.336.054-.517 0-.18-.018-.352-.054-.514a1.271 1.271 0 0 0-.173-.426.9.9 0 0 0-.309-.29.916.916 0 0 0-.46-.109zm3.115 0a.926.926 0 0 0-.462.108.912.912 0 0 0-.312.29 1.27 1.27 0 0 0-.176.427 2.39 2.39 0 0 0-.053.514c0 .181.017.353.053.517.037.164.096.307.176.43a.898.898 0 0 0 .312.297c.128.073.282.11.462.11s.335-.037.461-.11a.898.898 0 0 0 .309-.296c.08-.124.137-.267.172-.431.037-.164.055-.336.055-.517 0-.18-.018-.352-.055-.514a1.27 1.27 0 0 0-.172-.426.902.902 0 0 0-.309-.29.917.917 0 0 0-.461-.109zm-7.49.439h-1.08v.685H9.36v-1.86H8.28v4.714h1.08v-1.988h1.082v1.988h1.08V9.864h-1.08zm2.561-.011c-.311 0-.567.047-.766.14a1.09 1.09 0 0 0-.463.384 1.556 1.556 0 0 0-.23.565 3.354 3.354 0 0 0-.062.643v.42c0 .226.022.44.065.641.044.2.12.378.23.532.11.154.263.277.458.368.195.091.44.137.735.137.305 0 .554-.049.748-.146a1.07 1.07 0 0 0 .45-.398c.106-.169.178-.362.215-.58a4.078 4.078 0 0 0 .055-.672v-.302h-1.394v.323c0 .226-.022.399-.067.518a.257.257 0 0 1-.264.179c-.117 0-.2-.037-.247-.112-.047-.074-.077-.163-.089-.267a3.97 3.97 0 0 1-.017-.432v-.672c0-.14.006-.27.017-.393a.823.823 0 0 1 .083-.295.286.286 0 0 1 .267-.147c.13 0 .219.046.27.14.05.092.076.258.076.496v.206h1.365v-.206c0-.54-.12-.957-.357-1.25-.237-.294-.625-.44-1.163-.44z"/></svg>
-        </div>
-        <div class="ctf-info">
-          <div class="ctf-plat">TRYHACKME</div>
-          <div class="ctf-handle">// tryhackme.com/p/0x3xp</div>
-        </div>
+        <div class="ctf-logo"><svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><path d="M10.705 0C7.54 0 4.902 2.285 4.349 5.291a4.525 4.525 0 0 0-4.107 4.5 4.525 4.525 0 0 0 4.52 4.52h6.761a.625.625 0 1 0 0-1.25H4.761a3.273 3.273 0 0 1-3.27-3.27A3.273 3.273 0 0 1 6.59 7.08a.625.625 0 0 0 .7-1.035 4.488 4.488 0 0 0-1.68-.69 5.223 5.223 0 0 1 5.096-4.104 5.221 5.221 0 0 1 5.174 4.57 4.489 4.489 0 0 0-.488.305.625.625 0 1 0 .731 1.013 3.245 3.245 0 0 1 1.912-.616 3.278 3.278 0 0 1 3.203 2.61.625.625 0 0 0 1.225-.251 4.533 4.533 0 0 0-4.428-3.61 4.54 4.54 0 0 0-.958.105C16.556 2.328 13.9 0 10.705 0zm5.192 10.64a.925.925 0 0 0-.462.108.913.913 0 0 0-.313.29 1.27 1.27 0 0 0-.175.427 2.39 2.39 0 0 0-.054.514c0 .181.018.353.054.517.036.164.095.307.175.43a.899.899 0 0 0 .313.297c.127.073.281.11.462.11.18 0 .334-.037.46-.11a.897.897 0 0 0 .309-.296c.08-.124.137-.267.173-.431.036-.164.054-.336.054-.517 0-.18-.018-.352-.054-.514a1.271 1.271 0 0 0-.173-.426.9.9 0 0 0-.309-.29.916.916 0 0 0-.46-.109zm3.115 0a.926.926 0 0 0-.462.108.912.912 0 0 0-.312.29 1.27 1.27 0 0 0-.176.427 2.39 2.39 0 0 0-.053.514c0 .181.017.353.053.517.037.164.096.307.176.43a.898.898 0 0 0 .312.297c.128.073.282.11.462.11s.335-.037.461-.11a.898.898 0 0 0 .309-.296c.08-.124.137-.267.172-.431.037-.164.055-.336.055-.517 0-.18-.018-.352-.055-.514a1.27 1.27 0 0 0-.172-.426.902.902 0 0 0-.309-.29.917.917 0 0 0-.461-.109zm-7.49.439h-1.08v.685H9.36v-1.86H8.28v4.714h1.08v-1.988h1.082v1.988h1.08V9.864h-1.08zm2.561-.011c-.311 0-.567.047-.766.14a1.09 1.09 0 0 0-.463.384 1.556 1.556 0 0 0-.23.565 3.354 3.354 0 0 0-.062.643v.42c0 .226.022.44.065.641.044.2.12.378.23.532.11.154.263.277.458.368.195.091.44.137.735.137.305 0 .554-.049.748-.146a1.07 1.07 0 0 0 .45-.398c.106-.169.178-.362.215-.58a4.078 4.078 0 0 0 .055-.672v-.302h-1.394v.323c0 .226-.022.399-.067.518a.257.257 0 0 1-.264.179c-.117 0-.2-.037-.247-.112-.047-.074-.077-.163-.089-.267a3.97 3.97 0 0 1-.017-.432v-.672c0-.14.006-.27.017-.393a.823.823 0 0 1 .083-.295.286.286 0 0 1 .267-.147c.13 0 .219.046.27.14.05.092.076.258.076.496v.206h1.365v-.206c0-.54-.12-.957-.357-1.25-.237-.294-.625-.44-1.163-.44z"/></svg></div>
+        <div class="ctf-inf"><div class="ctf-plat">TRYHACKME</div><div class="ctf-hnd">// tryhackme.com/p/0x3xp</div></div>
         <span class="ctf-arr">↗</span>
       </a>
-
       <a href="https://app.hackthebox.com/users/1981311" target="_blank" rel="noopener noreferrer" class="ctf-card ctf-htb">
-        <div class="ctf-logo">
-          <svg viewBox="0 0 24 24" fill="currentColor" width="24" height="24"><path d="m22.5106 6.4566.0008-.0123a.888.888 0 0 0-.2717-.6384c-.0084-.0084-.018-.0155-.0267-.0235-.0186-.0166-.0371-.0333-.0572-.0484-.0193-.0147-.04-.0276-.0607-.0406-.0096-.006-.0182-.0131-.0281-.0188L12.4576.1266a.891.891 0 0 0-.9223.0043L1.933 5.6744c-.0107.0062-.0203.014-.0307.0205-.0073.0047-.015.008-.0223.0128-.007.0047-.013.0106-.02.0155a.8769.8769 0 0 0-.147.1333l-.0026.003a.8872.8872 0 0 0-.2218.5847l.0009.014c-.0002.0088-.0015.0176-.0015.0264v11.0708c0 .3277.1802.6288.469.7836l9.5986 5.5417c.0076.0044.0158.0075.0236.0117a.8754.8754 0 0 0 .166.0687c.0134.004.0266.0083.0401.0117a.8793.8793 0 0 0 .072.0142c.0117.0019.0232.0045.0349.006a.835.835 0 0 0 .2157 0c.0117-.0015.0232-.0041.0348-.006a.9.9 0 0 0 .072-.0142c.0135-.0034.0267-.0077.04-.0117a.895.895 0 0 0 .0646-.0217.9134.9134 0 0 0 .1015-.047c.0078-.0042.016-.0072.0236-.0117l9.5986-5.5417a.8888.8888 0 0 0 .469-.7836V6.4779c0-.0073-.0007-.0147-.0009-.022zM12 1.4932l8.7955 5.0788L12 11.6508 3.2045 6.572zm-9.3032 6.152L11.1 12.708v10.1571L2.6968 17.78zm10.2032 10.1571V12.708l8.4032-5.0627v10.1338z"/></svg>
-        </div>
-        <div class="ctf-info">
-          <div class="ctf-plat">HACK THE BOX</div>
-          <div class="ctf-handle">// hackthebox.com · ID 1981311</div>
-        </div>
+        <div class="ctf-logo"><svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><path d="m22.5106 6.4566.0008-.0123a.888.888 0 0 0-.2717-.6384c-.0084-.0084-.018-.0155-.0267-.0235-.0186-.0166-.0371-.0333-.0572-.0484-.0193-.0147-.04-.0276-.0607-.0406-.0096-.006-.0182-.0131-.0281-.0188L12.4576.1266a.891.891 0 0 0-.9223.0043L1.933 5.6744c-.0107.0062-.0203.014-.0307.0205-.0073.0047-.015.008-.0223.0128-.007.0047-.013.0106-.02.0155a.8769.8769 0 0 0-.147.1333l-.0026.003a.8872.8872 0 0 0-.2218.5847l.0009.014c-.0002.0088-.0015.0176-.0015.0264v11.0708c0 .3277.1802.6288.469.7836l9.5986 5.5417c.0076.0044.0158.0075.0236.0117a.8754.8754 0 0 0 .166.0687c.0134.004.0266.0083.0401.0117a.8793.8793 0 0 0 .072.0142c.0117.0019.0232.0045.0349.006a.835.835 0 0 0 .2157 0c.0117-.0015.0232-.0041.0348-.006a.9.9 0 0 0 .072-.0142c.0135-.0034.0267-.0077.04-.0117a.895.895 0 0 0 .0646-.0217.9134.9134 0 0 0 .1015-.047c.0078-.0042.016-.0072.0236-.0117l9.5986-5.5417a.8888.8888 0 0 0 .469-.7836V6.4779c0-.0073-.0007-.0147-.0009-.022zM12 1.4932l8.7955 5.0788L12 11.6508 3.2045 6.572zm-9.3032 6.152L11.1 12.708v10.1571L2.6968 17.78zm10.2032 10.1571V12.708l8.4032-5.0627v10.1338z"/></svg></div>
+        <div class="ctf-inf"><div class="ctf-plat">HACK THE BOX</div><div class="ctf-hnd">// hackthebox.com · ID 1981311</div></div>
         <span class="ctf-arr">↗</span>
       </a>
-
       <a href="https://app.hackviser.com/profile/0x3xp" target="_blank" rel="noopener noreferrer" class="ctf-card ctf-hv">
-        <div class="ctf-logo">
-          <svg viewBox="0 0 24 24" fill="currentColor" width="24" height="24"><path d="M12 2L3 6v6c0 5.25 3.75 10.15 9 11.35C17.25 22.15 21 17.25 21 12V6l-9-4zm1 13h-2v-2h2v2zm0-4h-2V7h2v4z"/></svg>
-        </div>
-        <div class="ctf-info">
-          <div class="ctf-plat">HACKVISER</div>
-          <div class="ctf-handle">// hackviser.com/profile/0x3xp</div>
-        </div>
+        <div class="ctf-logo"><svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><path d="M12 2L3 6v6c0 5.25 3.75 10.15 9 11.35C17.25 22.15 21 17.25 21 12V6l-9-4zm1 13h-2v-2h2v2zm0-4h-2V7h2v4z"/></svg></div>
+        <div class="ctf-inf"><div class="ctf-plat">HACKVISER</div><div class="ctf-hnd">// hackviser.com/profile/0x3xp</div></div>
         <span class="ctf-arr">↗</span>
       </a>
-
     </div>
   </div>
 </section>
-
 <div class="sec-divider"></div>
 
-<!-- ═══════════════════ CONTACT ═══════════════════ -->
+<!-- ══════════════════════════════════════
+     CONTACT + FOOTER
+══════════════════════════════════════ -->
 <section id="contact">
-  <!-- Pentagram watermark SVG -->
-  <svg class="penta-bg" viewBox="0 0 200 200" fill="none" stroke="currentColor" stroke-width=".5">
-    <polygon points="100,10 129.4,90.2 214.1,90.2 147.5,140.3 172.6,220.5 100,168 27.4,220.5 52.5,140.3 -14.1,90.2 70.6,90.2" stroke="var(--blood)" opacity=".8"/>
-    <circle cx="100" cy="100" r="90" stroke="var(--blood)" opacity=".5"/>
-    <circle cx="100" cy="100" r="70" stroke="var(--blood)" opacity=".3"/>
+  <!-- Spinning dharma/sigil background SVG -->
+  <svg class="dharma-bg" viewBox="0 0 200 200" fill="none" stroke="var(--blood)" stroke-width=".4">
+    <!-- Dharma wheel spokes -->
+    <circle cx="100" cy="100" r="90" opacity=".6"/>
+    <circle cx="100" cy="100" r="70" opacity=".4"/>
+    <circle cx="100" cy="100" r="50" opacity=".3"/>
+    <circle cx="100" cy="100" r="12" opacity=".5"/>
+    <!-- 8 spokes (Eightfold Path) -->
+    <line x1="100" y1="10" x2="100" y2="190" opacity=".5"/>
+    <line x1="10" y1="100" x2="190" y2="100" opacity=".5"/>
+    <line x1="27" y1="27" x2="173" y2="173" opacity=".5"/>
+    <line x1="173" y1="27" x2="27" y2="173" opacity=".5"/>
+    <!-- Pentagram integrated with dharma -->
+    <polygon points="100,20 129,90 205,90 145,138 167,210 100,165 33,210 55,138 -5,90 71,90" stroke="var(--blood)" opacity=".15"/>
   </svg>
 
   <div class="contact-super">// LET'S WORK TOGETHER</div>
   <div class="contact-title">READY<br>TO <em>BREACH.</em></div>
-  <p class="contact-sub">Looking for a Red Teamer who thinks like an adversary and delivers results that harden what matters? Let's talk.</p>
+  <p class="contact-sub">Looking for a low-level engineer who builds tools from scratch, not wraps existing ones? Someone who operates at the assembly level and researches what others ignore? Let's talk.</p>
+
   <div class="clinks">
     <a href="https://github.com/0x3xp" target="_blank" class="clink">
-      <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+      <svg width="13" height="13" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
       GITHUB/0X3XP
     </a>
     <a href="https://linkedin.com/in/piyushaakash" target="_blank" class="clink">
-      <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+      <svg width="13" height="13" fill="currentColor" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
       LINKEDIN
     </a>
-    <a href="https://linktr.ee/piyushaakash" target="_blank" class="clink">
-      <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M7.953 15.066c-.08.163-.08.324-.08.486.08.517.517.897 1.034.897h3.109v4.629c0 .162 0 .405.162.567.243.324.73.405 1.054.162l7.289-5.256c.162-.163.243-.325.243-.568s-.081-.405-.243-.568l-3.515-2.432 3.515-2.432c.162-.163.243-.325.243-.568s-.081-.405-.243-.568L12.516 3.6c-.324-.243-.81-.162-1.054.162-.162.162-.162.405-.162.567v4.629H8.27c-.517 0-.954.38-1.034.897-.08.162 0 .324.08.486l1.944 2.676-1.306 2.049z"/></svg>
-      LINKTREE
+    <a href="https://github.com/0x3xp/Artemis" target="_blank" class="clink" style="border-color:rgba(192,57,43,.4);color:var(--blood2)">
+      <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
+      ⚔ ARTEMIS v1.0.0
+    </a>
+    <a href="./blog" target="_blank" class="clink">
+      <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+      BLOG
+    </a>
+    <a href="./academy" target="_blank" class="clink">
+      <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5zm0 7v-6m6.16-3.84A9 9 0 0112 21a9 9 0 01-6.16-2.84"/></svg>
+      ACADEMY
     </a>
     <a href="https://0x3xp.github.io/assets/PiyushaAkash-Resume.pdf" target="_blank" class="clink">
-      <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+      <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
       DOWNLOAD CV
     </a>
   </div>
+
+  <!-- COPYRIGHT BLOCK -->
+  <div class="copyright-block">
+    <div class="cprt-title">⚖ COPYRIGHT &amp; LEGAL NOTICE</div>
+    <p>
+      <strong>© 2025 Piyusha Akash. All rights reserved.</strong><br>
+      All original research, source code, documentation, and creative work published by Piyusha Akash (0x3xp)
+      is protected by copyright law. Unauthorized reproduction, redistribution, reverse engineering for
+      malicious purposes, or commercial use of any content from this portfolio or associated repositories
+      is strictly prohibited without prior written permission.<br><br>
+      <strong>Security Research Disclaimer:</strong> All techniques, tools, and research presented on this
+      portfolio are developed exclusively for authorized penetration testing, controlled security research
+      environments, and academic study. Deploying any tool or technique against systems you do not own or
+      have explicit written authorization to test is a criminal offense under applicable law, including
+      but not limited to the Computer Fraud and Abuse Act (CFAA), Computer Misuse Act, and equivalent
+      legislation in your jurisdiction. The author accepts no liability for misuse or resulting damages.<br><br>
+      <strong>Third-Party Trademarks:</strong> All vendor, platform, and tool names referenced herein
+      are trademarks of their respective owners. No endorsement is implied.
+    </p>
+  </div>
+
   <hr class="foot">
   <div class="foot-row">
-    <span id="s-trigger" title="">© 2025 Piyusha Akash</span>
+    <span id="s-trig" title="hover for 4s ☸">© 2025 Piyusha Akash</span>
     <span class="hot">// authorized security research only</span>
-    <span>Built with blood, sweat &amp; shellcode.</span>
+    <span>Built at RING-0 · With blood, bytes &amp; shellcode.</span>
   </div>
 </section>
 
-<!-- ═══ CANVAS PARTICLES ═══ -->
-<canvas id="pc" style="position:fixed;inset:0;pointer-events:none;z-index:1;opacity:.35"></canvas>
+<!-- CANVAS PARTICLES -->
+<canvas id="pc" style="position:fixed;inset:0;pointer-events:none;z-index:2;opacity:.32"></canvas>
 
 <script>
-/* ═══════════════════════════════════════
-   DATA CONFIG
-═══════════════════════════════════════ */
-const LANGS=[
-  {icon:'⚙️',name:'C & C++',pct:60,desc:'Offensive tooling, loaders, stagers, syscall stubs'},
-  {icon:'🔧',name:'x86-64 ASM',pct:40,desc:'Shellcode, PIC, direct syscall invocation'},
-  {icon:'🐚',name:'Bash',pct:60,desc:'Automation, recon pipelines, system tooling'},
+/* ═══════════════════════════════════════════════════════════
+   DATA CONFIG — EDIT THESE OBJECTS TO UPDATE CONTENT
+═══════════════════════════════════════════════════════════ */
+const LANGS = [
+  {icon:'⚙️', name:'C & C++',     pct:60, desc:'Offensive tooling, loaders, stagers, syscall stubs, NT API wrappers'},
+  {icon:'🔧', name:'x86-64 ASM',  pct:40, desc:'Shellcode authoring, PIC, direct syscall invocation, MASM stubs'},
+  {icon:'🐚', name:'Bash',        pct:60, desc:'Automation, recon pipelines, post-exploitation scripting'},
 ];
-const SKILLS=[
-  {icon:'🪟',name:'Windows Internals',desc:'Kernel mechanics, process/thread arch, memory mgmt'},
-  {icon:'🔌',name:'Win32 API',desc:'Process hollowing, DLL injection, APC abuse, NTAPI'},
-  {icon:'🔍',name:'Reverse Engineering',desc:'Binary analysis, decompilation in IDA/Ghidra'},
-  {icon:'💣',name:'Exploit Development',desc:'Memory corruption, stack/heap overflow, privesc'},
-  {icon:'🌐',name:'Network Pentesting',desc:'Recon, vulnerability assessment, red team infra'},
-  {icon:'🛡️',name:'EDR/AV Evasion',desc:'Obfuscation, AMSI bypass, in-memory, unhooking'},
-  {icon:'⚔️',name:'Syscall Forge',desc:'Direct/indirect syscall, SSN discovery, stub gen'},
-  {icon:'🎯',name:'Penetration Testing',desc:'Full-scope engagements, CAPT-certified, all boxes'},
-  {icon:'🧠',name:'Social Engineering',desc:'Phishing, pretexting, human-vector simulation'},
-  {icon:'🐧',name:'Linux Systems',desc:'Admin, hardening, offensive tooling, privesc'},
-  {icon:'🔬',name:'Malware Dev',desc:'Custom implants, stagers, loaders, C2 comms'},
-  {icon:'📡',name:'Red Team Ops',desc:'Adversary emulation, MITRE ATT&CK, campaigns'},
+const SKILLS = [
+  {icon:'🪟', name:'Windows Internals', desc:'Kernel structures, PEB/TEB, process/thread arch, memory mgmt'},
+  {icon:'🔌', name:'Win32 / NT API',    desc:'Process hollowing, DLL injection, APC abuse, native NTAPI'},
+  {icon:'⚔️', name:'Syscall Forge',     desc:'Direct/indirect syscall, SSN discovery, stub generation'},
+  {icon:'🔍', name:'Reverse Engineering',desc:'Binary analysis, decompilation — IDA Pro, Ghidra, x64dbg'},
+  {icon:'💣', name:'Exploit Dev',        desc:'Memory corruption, stack/heap overflow, privilege escalation'},
+  {icon:'🌐', name:'Network Pentesting', desc:'Recon, vulnerability assessment, red team infrastructure'},
+  {icon:'🛡️', name:'EDR/AV Evasion',    desc:'Obfuscation, AMSI bypass, in-memory exec, unhooking'},
+  {icon:'🔬', name:'Malware Dev',        desc:'Custom implants, stagers, loaders, C2 communication'},
+  {icon:'🎯', name:'Penetration Testing',desc:'Full-scope engagements, CAPT-certified, black/grey/white box'},
+  {icon:'🧠', name:'Social Engineering', desc:'Phishing campaigns, pretexting, human-vector simulation'},
+  {icon:'🐧', name:'Linux Systems',      desc:'Admin, hardening, offensive tooling, privilege escalation'},
+  {icon:'📡', name:'Red Team Ops',       desc:'Adversary emulation, MITRE ATT&CK mapping, campaign planning'},
 ];
-const PROJECTS={
-  'Artemis':'https://github.com/0x3xp/Artemis',
-  'NAF':'https://github.com/0x3xp/Native-Adversary-Framework',
-  'Core-Engine':'https://github.com/0x3xp/Native-Adversary-Framework/tree/main/Core-Engine',
-  'Exploit-Dev':'https://github.com/0x3xp/Native-Adversary-Framework/tree/main/Exploit-Dev',
-  'Malware-Dev':'https://github.com/0x3xp/Native-Adversary-Framework/tree/main/Malware-Dev',
+const PROJECTS_T = {
+  'Artemis':           'https://github.com/0x3xp/Artemis',
+  'NAF':               'https://github.com/0x3xp/Native-Adversary-Framework',
+  'Core-Engine':       'https://github.com/0x3xp/Native-Adversary-Framework/tree/main/Core-Engine',
+  'Exploit-Dev':       'https://github.com/0x3xp/Native-Adversary-Framework/tree/main/Exploit-Dev',
+  'Malware-Dev':       'https://github.com/0x3xp/Native-Adversary-Framework/tree/main/Malware-Dev',
   'Reverse-Engineering':'https://github.com/0x3xp/Native-Adversary-Framework/tree/main/Reverse-Engineering',
-  'SENTINEX':'https://github.com/0x3xp/SENTINEX',
-  'SysMon-X':'https://github.com/0x3xp/SysMon-X',
-  'SysView':'https://github.com/0x3xp/SysView',
-  'SpectreAuth':'https://github.com/0x3xp/SpectreAuth',
+  'SENTINEX':          'https://github.com/0x3xp/SENTINEX',
+  'SpectreAuth':       'https://github.com/0x3xp/SpectreAuth',
+  'SysMon-X':          'https://github.com/0x3xp/SysMon-X',
+  'SysView':           'https://github.com/0x3xp/SysView',
 };
-function pctLabel(p){
-  return p>=90?'Expert':p>=75?'Advanced':p>=60?'Intermediate':p>=40?'Developing':p>=20?'Fundamental':'Beginner';
-}
 
-/* ═══ RENDER SKILLS ═══ */
-function renderLangs(){
+/* ─── helpers ─── */
+function pctLabel(p){ return p>=90?'Expert':p>=75?'Advanced':p>=60?'Intermediate':p>=40?'Developing':p>=20?'Fundamental':'Beginner'; }
+
+/* ─── RENDER LANGS ─── */
+(function(){
   const el=document.getElementById('lang-list');
   if(!el)return;
   el.innerHTML=LANGS.map(l=>`
@@ -1538,262 +1608,281 @@ function renderLangs(){
       <div class="lang-name"><span>${l.icon}</span>${l.name}</div>
       <div class="lang-bar"><div class="lang-fill" data-pct="${l.pct}"></div></div>
       <div class="lang-meta">${pctLabel(l.pct)} · ${l.pct}%</div>
-    </div>
-  `).join('');
+    </div>`).join('');
   new IntersectionObserver(entries=>{
     entries.forEach(e=>{
-      if(e.isIntersecting){
-        e.target.querySelectorAll('.lang-fill').forEach((f,i)=>{
-          setTimeout(()=>f.style.width=f.dataset.pct+'%',150+i*80);
-        });
-        e.disconnect();
-      }
+      if(!e.isIntersecting)return;
+      e.target.querySelectorAll('.lang-fill').forEach((f,i)=>
+        setTimeout(()=>f.style.width=f.dataset.pct+'%', 150+i*80));
+      e.disconnect();
     });
   },{threshold:.2}).observe(el);
-}
-function renderSkills(){
-  const el=document.getElementById('skill-grid');
+})();
+
+/* ─── RENDER SKILLS ─── */
+(function(){
+  const el=document.getElementById('sk-grid');
   if(!el)return;
   el.innerHTML=SKILLS.map(s=>`
-    <div class="sk">
+    <div class="sk-card">
       <div class="sk-icon">${s.icon}</div>
       <div class="sk-name">${s.name}</div>
       <div class="sk-desc">${s.desc}</div>
-    </div>
-  `).join('');
-}
-renderLangs();renderSkills();
-
-/* ═══ MARQUEE ═══ */
-(()=>{
-  const items=['MALWARE DEV','SHELLCODE','EDR BYPASS','REVERSE ENGINEERING','WIN32 API','EXPLOIT DEV','SYSCALL FORGE','RED TEAM OPS','OSINT','PENETRATION TESTING','KERNEL RESEARCH','C &amp; ASM'];
-  const track=document.getElementById('mtrack');
-  if(!track)return;
-  const html=items.map((t,i)=>`<span${i%4===1?' class="hi"':''}>${t}</span><span class="hi"> ⛧ </span>`).join('');
-  track.innerHTML=html+html;
+    </div>`).join('');
 })();
 
-/* ═══ CURSOR ═══ */
-const cur=document.getElementById('cur');
-const trail=document.getElementById('cur-trail');
+/* ─── MARQUEE ─── */
+(function(){
+  const items=['MALWARE DEV','SHELLCODE','EDR BYPASS','REVERSE ENGINEERING','WIN32 API','EXPLOIT DEV','SYSCALL FORGE','NT INTERNALS','CALLBACK ABUSE','RED TEAM OPS','RING-0 RESEARCH','C & x64 ASM','OSINT','PENETRATION TESTING'];
+  const el=document.getElementById('mq');
+  if(!el)return;
+  const html=items.map((t,i)=>`<span${i%5===1?' class="hi"':''}>${t}</span><span class="hi"> ⛧ </span>`).join('');
+  el.innerHTML=html+html;
+})();
+
+/* ─── HEX RAIN ─── */
+(function(){
+  const el=document.getElementById('hex-rain');
+  if(!el)return;
+  const cols=['ff2d55','c0392b','e74c3c','8b0000','a0522d'];
+  const bytes=['00','ff','2a','3c','7f','b8','e8','48','89','4c','8b','05','eb','90','cc','0f','05'];
+  for(let i=0;i<10;i++){
+    const d=document.createElement('div');
+    d.className='hex-col';
+    d.style.left=(8+i*9.5)+'%';
+    d.style.animationDuration=(14+i*2.2)+'s';
+    d.style.animationDelay=(-i*1.8)+'s';
+    d.style.color='#'+cols[i%cols.length];
+    let txt='';
+    for(let j=0;j<36;j++) txt+=bytes[Math.floor(Math.random()*bytes.length)]+'\n';
+    d.textContent=txt;
+    el.appendChild(d);
+  }
+})();
+
+/* ─── CURSOR ─── */
+const curEl=document.getElementById('cur');
+const ringEl=document.getElementById('cur-ring');
 let mx=0,my=0;
 document.addEventListener('mousemove',e=>{
-  mx=e.clientX;my=e.clientY;
-  cur.style.left=mx+'px';cur.style.top=my+'px';
-  trail.style.left=mx+'px';trail.style.top=my+'px';
+  mx=e.clientX; my=e.clientY;
+  curEl.style.left=mx+'px'; curEl.style.top=my+'px';
+  ringEl.style.left=mx+'px'; ringEl.style.top=my+'px';
 });
-document.querySelectorAll('a,button,input,.proj,.cert,.sk,.lang-row,.ctf-card').forEach(el=>{
-  el.addEventListener('mouseenter',()=>{cur.classList.add('big')});
-  el.addEventListener('mouseleave',()=>{cur.classList.remove('big')});
-});
-
-/* ═══ NAV SCROLL ═══ */
-window.addEventListener('scroll',()=>{
-  document.getElementById('nav').classList.toggle('ink',scrollY>40);
+document.querySelectorAll('a,button,input,.proj,.cv2,.sk-card,.lang-row,.ctf-card,.rcard').forEach(el=>{
+  el.addEventListener('mouseenter',()=>curEl.classList.add('big'));
+  el.addEventListener('mouseleave',()=>curEl.classList.remove('big'));
 });
 
-/* ═══ HAMBURGER ═══ */
+/* ─── NAV SCROLL ─── */
+window.addEventListener('scroll',()=>document.getElementById('nav').classList.toggle('inked',scrollY>40));
+
+/* ─── HAMBURGER ─── */
 const hbg=document.getElementById('hbg');
 const mm=document.getElementById('mobmenu');
 hbg.addEventListener('click',()=>{
-  hbg.classList.toggle('o');mm.classList.toggle('o');
+  hbg.classList.toggle('o'); mm.classList.toggle('o');
   document.body.style.overflow=mm.classList.contains('o')?'hidden':'';
 });
-document.querySelectorAll('.mob-lnk,.mob-cv-m').forEach(a=>a.addEventListener('click',()=>{
-  hbg.classList.remove('o');mm.classList.remove('o');
+document.querySelectorAll('.mob-l,.mob-cv2').forEach(a=>a.addEventListener('click',()=>{
+  hbg.classList.remove('o'); mm.classList.remove('o');
   document.body.style.overflow='';
 }));
 
-/* ═══ REVEAL ═══ */
+/* ─── REVEAL OBSERVER ─── */
 new IntersectionObserver(entries=>{
-  entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('on')});
-},{threshold:.08}).observe.bind(new IntersectionObserver(entries=>{
-  entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('on')});
-},{threshold:.08}));
+  entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('on'); });
+},{threshold:.08}).observe.call(
+  new IntersectionObserver(entries=>{
+    entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('on'); });
+  },{threshold:.08}), document.body
+);
 const ro=new IntersectionObserver(entries=>{
-  entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('on')});
-},{threshold:.08});
+  entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('on'); });
+},{threshold:.07});
 document.querySelectorAll('.reveal').forEach(r=>ro.observe(r));
 
-/* ═══ CERT TABS ═══ */
-let switching=false;
+/* ─── CERT TABS ─── */
+let tabLock=false;
 document.querySelectorAll('.ctab').forEach(tab=>{
   tab.addEventListener('click',()=>{
-    if(switching)return;
+    if(tabLock)return;
     const pid='panel-'+tab.dataset.p;
-    const cur2=document.querySelector('.cpanel.a');
+    const cur=document.querySelector('.cpanel.a');
     const next=document.getElementById(pid);
-    if(!next||next===cur2)return;
-    switching=true;
+    if(!next||next===cur)return;
+    tabLock=true;
     document.querySelectorAll('.ctab').forEach(t=>t.classList.remove('a'));
     tab.classList.add('a');
-    if(cur2){
-      cur2.style.transition='opacity .2s,transform .2s';
-      cur2.style.opacity='0';cur2.style.transform='translateY(8px)';
+    if(cur){
+      cur.style.transition='opacity .2s,transform .2s';
+      cur.style.opacity='0'; cur.style.transform='translateY(8px)';
       setTimeout(()=>{
-        cur2.classList.remove('a');cur2.style.transition='';cur2.style.opacity='';cur2.style.transform='';
-        next.classList.add('a');switching=false;
+        cur.classList.remove('a');
+        cur.style.transition=cur.style.opacity=cur.style.transform='';
+        next.classList.add('a'); tabLock=false;
       },220);
-    }else{next.classList.add('a');switching=false;}
+    } else { next.classList.add('a'); tabLock=false; }
   });
 });
 
-/* ═══ HERO GLITCH ═══ */
-const hn=document.querySelector('h1.hn');
+/* ─── HERO GLITCH ─── */
+const hn=document.getElementById('hn');
 if(hn){
-  hn.addEventListener('mouseenter',()=>{hn.classList.add('g')});
-  hn.addEventListener('animationend',()=>hn.classList.remove('g'));
+  hn.addEventListener('mouseenter',()=>hn.classList.add('glt'));
+  hn.addEventListener('animationend',()=>hn.classList.remove('glt'));
 }
 
-/* ═══ PARTICLES ═══ */
-(()=>{
+/* ─── PARTICLES ─── */
+(function(){
   const c=document.getElementById('pc');
   const ctx=c.getContext('2d');
   let W,H,P=[];
-  const resize=()=>{W=c.width=innerWidth;H=c.height=innerHeight};
-  resize();addEventListener('resize',resize);
-  for(let i=0;i<60;i++)P.push({x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.3+.2,dx:(Math.random()-.5)*.3,dy:-(Math.random()*.35+.08),a:Math.random()*.4+.08,p:Math.random()*Math.PI*2});
+  const rs=()=>{W=c.width=innerWidth;H=c.height=innerHeight};
+  rs(); addEventListener('resize',rs);
+  for(let i=0;i<58;i++) P.push({x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.2+.2,dx:(Math.random()-.5)*.28,dy:-(Math.random()*.32+.07),a:Math.random()*.35+.07,p:Math.random()*Math.PI*2});
   const draw=()=>{
     ctx.clearRect(0,0,W,H);
     P.forEach(p=>{
-      p.p+=.015;
-      const a=p.a*(0.6+0.4*Math.sin(p.p));
-      ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
-      ctx.fillStyle=`rgba(192,57,43,${a})`;ctx.fill();
-      p.x+=p.dx;p.y+=p.dy;
+      p.p+=.014;
+      const a=p.a*(.6+.4*Math.sin(p.p));
+      ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fillStyle=`rgba(192,57,43,${a})`; ctx.fill();
+      p.x+=p.dx; p.y+=p.dy;
       if(p.y<-5){p.y=H+5;p.x=Math.random()*W}
-      if(p.x<-5)p.x=W+5;if(p.x>W+5)p.x=-5;
+      if(p.x<-5)p.x=W+5; if(p.x>W+5)p.x=-5;
     });
     requestAnimationFrame(draw);
-  };draw();
+  };
+  draw();
 })();
 
-/* ═══ PARALLAX ORBS (hero bg text) ═══ */
-const bgTxt=document.querySelector('.hero-bg-text');
+/* ─── PARALLAX BG GLYPH ─── */
+const bgg=document.querySelector('.hero-bg-glyph');
 addEventListener('mousemove',e=>{
-  if(bgTxt){
-    const rx=(e.clientX/innerWidth-.5)*18;
-    const ry=(e.clientY/innerHeight-.5)*12;
-    bgTxt.style.transform=`translateY(-55%) translate(${rx}px,${ry}px)`;
-  }
+  if(!bgg)return;
+  const rx=(e.clientX/innerWidth-.5)*16;
+  const ry=(e.clientY/innerHeight-.5)*10;
+  bgg.style.transform=`translateY(-55%) translate(${rx}px,${ry}px)`;
 });
 
-/* ═══ HIDDEN SATANIC MESSAGE TRIGGER ═══ */
-// Hover copyright text for 3 seconds to reveal
+/* ─── HIDDEN MESSAGES — HOVER TRIGGER (4s on copyright) ─── */
 let stimer=null;
-const strig=document.getElementById('s-trigger');
-const smsg=document.getElementById('s-msg');
-if(strig&&smsg){
+const strig=document.getElementById('s-trig');
+const vmsg=document.getElementById('void-msg');
+if(strig&&vmsg){
   strig.addEventListener('mouseenter',()=>{
-    stimer=setTimeout(()=>smsg.classList.add('reveal-s'),3000);
+    stimer=setTimeout(()=>vmsg.classList.add('shown'),4000);
   });
   strig.addEventListener('mouseleave',()=>{
     clearTimeout(stimer);
-    setTimeout(()=>smsg.classList.remove('reveal-s'),2000);
+    setTimeout(()=>vmsg.classList.remove('shown'),2200);
   });
 }
 
-/* ═══ KONAMI CODE ═══ */
-const seq=[38,38,40,40,37,39,37,39,66,65];
-let kp=0;
+/* ─── KONAMI CODE — ↑↑↓↓←→←→BA ─── */
+const kseq=[38,38,40,40,37,39,37,39,66,65]; let kp=0;
 document.addEventListener('keydown',e=>{
-  if(e.keyCode===seq[kp])kp++;else kp=0;
-  if(kp===seq.length){
-    document.getElementById('konami-overlay').classList.add('show');
-    kp=0;
+  kp = e.keyCode===kseq[kp] ? kp+1 : 0;
+  if(kp===kseq.length){
+    document.getElementById('konami').classList.add('show'); kp=0;
   }
 });
+document.getElementById('ko-close').addEventListener('click',()=>document.getElementById('konami').classList.remove('show'));
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') document.getElementById('konami').classList.remove('show'); });
 
-/* ═══ TERMINAL ═══ */
+/* ─── TERMINAL ─── */
 const ti=document.getElementById('ti');
 const tout=document.getElementById('term-out');
 const tb=document.getElementById('tb');
 const tc=document.getElementById('tc');
+const cvc=document.createElement('canvas'), cvx=cvc.getContext('2d');
+const measure=t=>{ cvx.font='12.5px "IBM Plex Mono",monospace'; return cvx.measureText(t).width; };
+const updC=()=>{ tc.style.left=measure(ti.value.substring(0,ti.selectionStart??ti.value.length))+'px'; };
+ti.addEventListener('focus',updC);
+['input','keydown','keyup','click','select','paste','cut'].forEach(ev=>ti.addEventListener(ev,()=>requestAnimationFrame(updC)));
+requestAnimationFrame(updC);
 
-// Caret measurement canvas
-const cvc=document.createElement('canvas');
-const cvx=cvc.getContext('2d');
-const measure=t=>{cvx.font='13px "IBM Plex Mono",monospace';return cvx.measureText(t).width};
-const updateCaret=()=>{
-  const v=ti.value,p=ti.selectionStart??v.length;
-  tc.style.left=measure(v.substring(0,p))+'px';
-};
-ti.addEventListener('focus',updateCaret);
-['input','keydown','keyup','click','select','paste','cut'].forEach(ev=>ti.addEventListener(ev,()=>requestAnimationFrame(updateCaret)));
-requestAnimationFrame(updateCaret);
-
-function append(html){
-  const d=document.createElement('div');d.className='tout';d.innerHTML=html;
-  tout.appendChild(d);tb.scrollTop=tb.scrollHeight;
-}
-function addPrompt(cmd){
-  const d=document.createElement('div');d.className='tp';
-  d.innerHTML=`<span class="tpu">piyusha</span><span class="tpat">@</span><span class="tph">native-framework</span><span class="tpsep">:</span><span class="tppath">~</span><span class="tpsym">$ </span><span style="color:var(--bone2)">${cmd}</span>`;
-  tout.appendChild(d);
-}
+function app(html){ const d=document.createElement('div'); d.className='tout'; d.innerHTML=html; tout.appendChild(d); tb.scrollTop=tb.scrollHeight; }
+function prm(cmd){ const d=document.createElement('div'); d.className='tp'; d.innerHTML=`<span class="tpu">piyusha</span><span class="tpat">@</span><span class="tph">native-framework</span><span class="tpsp">:</span><span class="tppath">~</span><span class="tpsy">$ </span><span style="color:var(--bone2)">${cmd}</span>`; tout.appendChild(d); }
 
 const CMDS={
   help:()=>`<span class="tg">AVAILABLE COMMANDS:</span>
-  <span class="tb2">ls</span>            — List all project repositories
-  <span class="tb2">open</span> [name]   — Open a project on GitHub
-  <span class="tb2">whoami</span>        — Operator profile
-  <span class="tb2">skills</span>        — Technical skill set
-  <span class="tb2">artemis</span>       — Artemis framework details
-  <span class="tb2">certs</span>         — Certifications list
-  <span class="tb2">ctf</span>           — CTF platform profiles
-  <span class="tb2">blog</span>          — Open the blog
-  <span class="tb2">academy</span>       — Open the academy
-  <span class="tb2">cv</span>            — Open resume PDF
-  <span class="tb2">socials</span>       — Contact links
-  <span class="tb2">clear</span>         — Clear terminal
-  <span class="td2">Projects: ${Object.keys(PROJECTS).join(', ')}</span>`,
+  <span class="tb2">ls</span>              — List all repositories
+  <span class="tb2">open</span> [name]     — Open a project on GitHub
+  <span class="tb2">whoami</span>          — Operator profile
+  <span class="tb2">skills</span>          — Technical arsenal
+  <span class="tb2">artemis</span>         — Artemis framework details
+  <span class="tb2">research</span>        — Security research list
+  <span class="tb2">certs</span>           — Certifications
+  <span class="tb2">ctf</span>             — CTF platforms
+  <span class="tb2">blog</span>            — Open the blog
+  <span class="tb2">academy</span>         — Open the academy
+  <span class="tb2">cv</span>              — Open resume PDF
+  <span class="tb2">socials</span>         — Contact links
+  <span class="tb2">philosophy</span>      — ☸ ⛧
+  <span class="tb2">clear</span>           — Clear terminal
+<span class="td2">Repos: ${Object.keys(PROJECTS_T).join(', ')}</span>`,
 
-  ls:()=>Object.keys(PROJECTS).map((p,i)=>`<span class="tg">[${String(i+1).padStart(2,'0')}]</span> <span class="tb2">📁 ${p}</span>`).join('\n'),
+  ls:()=>Object.keys(PROJECTS_T).map((p,i)=>`<span class="tg">[${String(i+1).padStart(2,'0')}]</span> <span class="tb2">📁 ${p}</span>${p==='Artemis'?' <span class="tr">← FLAGSHIP v1.0.0</span>':''}`).join('\n'),
 
   whoami:()=>`<span class="tg">Piyusha Akash // 0x3xp</span>
-<span class="td2">─────────────────────────────────────────</span>
-Role     : Red Team Operator · Ethical Hacker
-Specialty: Syscall Forge · Malware Dev · EDR Evasion
-Status   : <span class="tg">AVAILABLE FOR ENGAGEMENTS</span>
-Kernel   : <span class="tb2">ring-0 access preferred</span>
-GitHub   : <span class="tb2">github.com/0x3xp</span>
-LinkedIn : <span class="tb2">linkedin.com/in/piyushaakash</span>`,
+<span class="td2">──────────────────────────────────────────</span>
+Role      : Low-Level Engineer · Red Team Operator
+Specialty : Syscall Forge · Malware Dev · EDR Bypass
+Language  : C, x86/x64 Assembly — NOT high-level
+Ring      : <span class="tb2">0 (preferred)</span>
+Status    : <span class="tg">AVAILABLE FOR ENGAGEMENTS</span>
+GitHub    : <span class="tb2">github.com/0x3xp</span>
+LinkedIn  : <span class="tb2">linkedin.com/in/piyushaakash</span>
+Hireable  : <span class="tg">YES — enterprise ready</span>`,
 
   artemis:()=>`<span class="tg">⚔ PROJECT ARTEMIS v1.0.0</span>
-<span class="td2">─────────────────────────────────────────</span>
+<span class="td2">──────────────────────────────────────────</span>
 <span class="tb2">Tagline  :</span> "Where the kernel has no secrets."
 <span class="tb2">Lang     :</span> C, x86/x64 Assembly (MASM)
-<span class="tb2">Platform :</span> Windows NT · x64 / x86
-<span class="tb2">DB Size  :</span> 14,869 syscall entries · Win10 build 10240 → 26100
+<span class="tb2">Platform :</span> Windows NT · x64 / x86 · Builds 10240–26100
+<span class="tb2">DB Size  :</span> 14,869 syscall entries
 
 <span class="tg">ENGINES:</span>
-  🎯 Hunter      — Dynamic SSN resolution from compiled database
-  ⚙  Blacksmith  — MASM-ready .asm stub generator (direct + indirect)
-  🔐 Crypto Vault— XOR · Rolling XOR · RC4 encryption of stubs
+  🎯 Hunter      → Dynamic SSN resolution (14,869-entry compiled DB)
+  ⚙  Blacksmith  → MASM .asm stub forge · Direct + Indirect modes
+  🔐 Crypto Vault→ XOR · Rolling XOR · RC4 encryption
 
-<span class="tg">USAGE EXAMPLE:</span>
+<span class="tg">USAGE:</span>
   Artemis> ssn -api NtOpenProcess -build 22621 -arch x64
-  [+] SUCCESS: SSN for NtOpenProcess is 0x0026
+  <span class="tg">[+]</span> SSN for NtOpenProcess is 0x0026
 
   Artemis> forge -api NtOpenProcess -mode indirect -enc rc4 -key S3cr3t
-  [+] Forge complete: output/NtOpenProcess_crypt.h
+  <span class="tg">[+]</span> Forge complete: output/NtOpenProcess_crypt.h
 
 <span class="td2">→ github.com/0x3xp/Artemis</span>`,
 
+  research:()=>`<span class="tg">SECURITY RESEARCH — 0x3xp:</span>
+<span class="td2">──────────────────────────────────────────</span>
+<span class="tr">[0x3XP-001]</span> <span class="tg">SetupAPI Callback Redirection</span>
+            Process injection via Windows Setup API callback abuse.
+            Bypasses EDR telemetry on standard injection primitives.
+            MITRE: T1055 · Platform: Windows NT · Status: <span class="tg">PUBLISHED</span>
+            → github.com/0x3xp/NAF/Malware-Dev/Injection/SetupAPI-Callback-Redirection
+
+<span class="td2">More research in progress — stay tuned.</span>`,
+
   skills:()=>`<span class="tg">TECHNICAL ARSENAL:</span>
-<span class="td2">─────────────────────────────────────────</span>
-Languages : C, C++, x64 Assembly, Bash
-Windows   : Internals, Win32, Kernel, NTAPI, Syscalls
-Offensive : Malware Dev, Exploit Dev, Evasion, Injection
+<span class="td2">──────────────────────────────────────────</span>
+Languages : C, C++, x64 Assembly (MASM), Bash
+Level     : <span class="tb2">LOW-LEVEL</span> — no abstraction layers, no frameworks
+Windows   : NT Internals, Win32, Kernel, NTAPI, Syscalls
+Offensive : Malware Dev, Exploit Dev, EDR Evasion, Injection
 Artemis   : Syscall Forge, SSN Discovery, Stub Gen, RC4
 RE Tools  : IDA Pro, Ghidra, x64dbg
 Network   : Pentesting, Recon, Red Team Infra
-OSINT     : Open Source Intel, Recon, Profiling`,
+OSINT     : Intelligence gathering, target profiling`,
 
   certs:()=>`<span class="tg">CERTIFICATIONS:</span>
-<span class="td2">─────────────────────────────────────────</span>
-<span class="tr">[NEW]</span> Hackviser         — CAPT (verify: HV-CAPT-HKXRNSLE)
-       Red Team Leaders  — COWA (Offensive Windows API)
+<span class="td2">──────────────────────────────────────────</span>
+<span class="tr">[NEW]</span> Hackviser         — CAPT  (verify: HV-CAPT-HKXRNSLE)
+       Red Team Leaders  — COWA  (Offensive Windows API)
        CISCO             — Introduction to Cybersecurity
        CISCO             — Computer Hardware Basics
        CISCO             — Packet Tracer
@@ -1803,30 +1892,51 @@ OSINT     : Open Source Intel, Recon, Profiling`,
        Linux Foundation  — Introduction to Linux (LFS101)`,
 
   ctf:()=>`<span class="tg">CTF PROFILES:</span>
-<span class="td2">─────────────────────────────────────────</span>
+<span class="td2">──────────────────────────────────────────</span>
 <span class="tr">[THM]</span> TryHackMe  → <span class="tb2">tryhackme.com/p/0x3xp</span>
 <span class="tr">[HTB]</span> HackTheBox → <span class="tb2">hackthebox.com/users/1981311</span>
 <span class="tr">[HV] </span> Hackviser  → <span class="tb2">hackviser.com/profile/0x3xp</span>`,
 
   cv:()=>{
-    setTimeout(()=>open('https://0x3xp.github.io/assets/PiyushaAkash-Resume.pdf','_blank'),500);
+    setTimeout(()=>open('https://0x3xp.github.io/assets/PiyushaAkash-Resume.pdf','_blank'),400);
     return`<span class="tg">Opening resume...</span> <span class="td2">→ PiyushaAkash-Resume.pdf</span>`;
   },
+  blog:()=>{ setTimeout(()=>open('./blog','_blank'),300); return`<span class="tg">Opening blog...</span>`; },
+  academy:()=>{ setTimeout(()=>open('./academy','_blank'),300); return`<span class="tg">Opening academy...</span>`; },
   socials:()=>`<span class="tg">CONTACT & SOCIALS:</span>
-<span class="td2">─────────────────────────────────────────</span>
+<span class="td2">──────────────────────────────────────────</span>
 GitHub    → <span class="tb2">https://github.com/0x3xp</span>
 LinkedIn  → <span class="tb2">https://linkedin.com/in/piyushaakash</span>
-Linktree  → <span class="tb2">https://linktr.ee/piyushaakash</span>
+Artemis   → <span class="tb2">https://github.com/0x3xp/Artemis</span>
 Resume    → <span class="tb2">https://0x3xp.github.io/assets/PiyushaAkash-Resume.pdf</span>`,
-  blog:()=>{
-    setTimeout(()=>open('./blog','_blank'),300);
-    return`<span class="tg">Opening blog...</span> <span class="td2">→ 0x3xp.github.io/blog</span>`;
-  },
-  academy:()=>{
-    setTimeout(()=>open('./academy','_blank'),300);
-    return`<span class="tg">Opening academy...</span> <span class="td2">→ 0x3xp.github.io/academy</span>`;
-  },
-  clear:()=>{tout.innerHTML='';return null},
+
+  philosophy:()=>`<span class="tg">☸ DHARMA:</span>
+<span class="td2">──────────────────────────────────────────</span>
+<span class="tb2">"Three things cannot be long hidden:</span>
+<span class="tb2"> the sun, the moon, and the truth."</span>
+                    — Siddhartha Gautama, Buddha
+
+<span class="td2">"In the sky, there is no distinction of east and west.</span>
+<span class="td2"> People create distinctions out of their own minds</span>
+<span class="td2"> and then believe them to be true."</span>
+                    — Attributed to the Buddha
+
+<span class="tr">⛧ VOID:</span>
+<span class="td2">──────────────────────────────────────────</span>
+<span class="td2">"The mind is its own place, and in itself</span>
+<span class="td2"> can make a Heav'n of Hell, a Hell of Heav'n."</span>
+                    — Satan · Paradise Lost, Book I, L.254 · Milton, 1667
+
+<span class="td2">"Better to reign in Hell, than serve in Heav'n."</span>
+                    — Satan · Paradise Lost, Book I, L.263 · Milton, 1667
+
+<span class="td2">"Long is the way and hard,</span>
+<span class="td2"> that out of Hell leads up to light."</span>
+                    — Satan · Paradise Lost, Book II, L.432 · Milton, 1667
+
+<span class="td2">// Hint: try the Konami code: ↑↑↓↓←→←→BA</span>`,
+
+  clear:()=>{ tout.innerHTML=''; return null; },
 };
 
 ti.addEventListener('keydown',e=>{
@@ -1835,25 +1945,24 @@ ti.addEventListener('keydown',e=>{
   const parts=raw.split(' ');
   const cmd=parts[0].toLowerCase();
   const arg=parts.slice(1).join(' ').trim();
-  addPrompt(raw);ti.value='';
-  requestAnimationFrame(updateCaret);
-  if(!raw){tb.scrollTop=tb.scrollHeight;return}
+  prm(raw); ti.value=''; requestAnimationFrame(updC);
+  if(!raw){ tb.scrollTop=tb.scrollHeight; return; }
   if(cmd==='open'){
-    if(PROJECTS[arg]){
-      setTimeout(()=>open(PROJECTS[arg],'_blank'),300);
-      append(`<span class="tg">Opening</span> <span class="tb2">${arg}</span><span class="td2"> ...</span>`);
-    }else{
-      append(`<span class="tr">Error:</span> <span class="td2">Project '${arg}' not found. Type 'ls' to list.</span>`);
+    if(PROJECTS_T[arg]){
+      setTimeout(()=>open(PROJECTS_T[arg],'_blank'),300);
+      app(`<span class="tg">Opening</span> <span class="tb2">${arg}</span><span class="td2"> ...</span>`);
+    } else {
+      app(`<span class="tr">Error:</span> <span class="td2">Project '${arg}' not found. Type 'ls' to list.</span>`);
     }
-  }else if(CMDS[cmd]){
+  } else if(CMDS[cmd]){
     const out=CMDS[cmd](arg);
-    if(out!==null&&out!==undefined)append(out);
-  }else{
-    append(`<span class="tr">command not found:</span> <span class="td2">${cmd}</span>`);
+    if(out!==null&&out!==undefined) app(out);
+  } else {
+    app(`<span class="tr">command not found:</span> <span class="td2">${cmd} — type 'help' for commands.</span>`);
   }
 });
-document.getElementById('tb').addEventListener('click',()=>{ti.focus();requestAnimationFrame(updateCaret)});
-addEventListener('load',()=>{ti.focus();requestAnimationFrame(updateCaret)});
+document.getElementById('tb').addEventListener('click',()=>{ ti.focus(); requestAnimationFrame(updC); });
+addEventListener('load',()=>{ ti.focus(); requestAnimationFrame(updC); });
 </script>
 </body>
 </html>
