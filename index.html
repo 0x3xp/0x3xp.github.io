@@ -18,1863 +18,2484 @@
   IS STRICTLY PROHIBITED AND MAY CONSTITUTE A CRIMINAL OFFENCE.
   ALL SECURITY RESEARCH IS CONDUCTED FOR AUTHORIZED PURPOSES ONLY.
 -->
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Piyusha Akash // 0x3xp</title>
+<title>Piyusha Akash // 0x3xp — Low Level Security Researcher</title>
+<meta name="description" content="Malware Developer. Reverse Engineer. OS Internals Researcher. Ethical Hacker.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Bebas+Neue&family=Barlow+Condensed:ital,wght@0,300;0,400;0,600;0,700;0,800;0,900;1,700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@300;400;500;600;700&family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
 <style>
-/* ═══════════════════════════════════════════════
-   ROOT — VOID PALETTE
-═══════════════════════════════════════════════ */
-:root{
-  --void:#000000;
-  --void2:#050507;
-  --void3:#0a0a0e;
-  --void4:#111118;
-  --blood:#c0392b;
-  --blood2:#e74c3c;
-  --bone:#e8e2d0;
-  --bone2:#f5f0e8;
-  --rust:#8b4513;
-  --rust2:#a0522d;
-  --dim:#2a2a35;
-  --dim2:#3a3a48;
-  --muted:#666680;
-  --wire:#1a1a28;
-  --glow-blood:rgba(192,57,43,0.5);
-  --glow-bone:rgba(232,226,208,0.15);
-  --font-display:'Bebas Neue',sans-serif;
-  --font-body:'Barlow Condensed',sans-serif;
-  --font-mono:'IBM Plex Mono',monospace;
+:root {
+  --bg: #050507;
+  --bg2: #08080c;
+  --bg3: #0d0d12;
+  --bg4: #111118;
+  --surface: #13131a;
+  --surface2: #1a1a24;
+  --border: #1e1e2e;
+  --border2: #252535;
+  --red: #c0392b;
+  --red2: #e74c3c;
+  --red3: #ff5f56;
+  --red-glow: rgba(192,57,43,0.15);
+  --gold: #b8960c;
+  --gold2: #d4af37;
+  --gold3: #f0d060;
+  --gold-glow: rgba(184,150,12,0.12);
+  --ash: #8888a0;
+  --ash2: #a8a8c0;
+  --ash3: #c8c8d8;
+  --white: #e8e8f0;
+  --mono: 'IBM Plex Mono', monospace;
+  --display: 'Rajdhani', sans-serif;
+  --code: 'Share Tech Mono', monospace;
 }
 
-*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-html{scroll-behavior:smooth}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-body{
-  background:var(--void);
-  color:var(--bone);
-  font-family:var(--font-body);
-  overflow-x:hidden;
-  cursor:none;
-}
+html { scroll-behavior: smooth; }
 
-/* ═══ CURSOR ═══ */
-#cur{
-  position:fixed;width:12px;height:12px;
-  border:1px solid var(--blood2);
-  transform:translate(-50%,-50%) rotate(45deg);
-  pointer-events:none;z-index:9999;
-  transition:transform .08s,width .2s,height .2s,background .2s;
-}
-#cur.big{width:40px;height:40px;background:rgba(192,57,43,0.08);}
-#cur-trail{
-  position:fixed;width:40px;height:40px;
-  border:1px solid rgba(192,57,43,0.25);
-  border-radius:50%;
-  transform:translate(-50%,-50%);
-  pointer-events:none;z-index:9998;
-  transition:left .18s ease,top .18s ease;
+body {
+  background: var(--bg);
+  color: var(--ash3);
+  font-family: var(--mono);
+  font-size: 14px;
+  line-height: 1.7;
+  overflow-x: hidden;
+  cursor: crosshair;
 }
 
-/* ═══ NOISE ═══ */
-body::after{
-  content:'';position:fixed;inset:0;
-  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  opacity:0.03;pointer-events:none;z-index:998;
+/* NOISE TEXTURE OVERLAY */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 1000;
+  opacity: 0.4;
 }
 
-/* ═══ SCROLLBAR ═══ */
-::-webkit-scrollbar{width:3px}
-::-webkit-scrollbar-track{background:var(--void)}
-::-webkit-scrollbar-thumb{background:var(--blood)}
-
-/* ═══════════════════════════════════════════════
-   NAV
-═══════════════════════════════════════════════ */
-nav{
-  position:fixed;top:0;left:0;right:0;z-index:900;
-  display:flex;justify-content:space-between;align-items:center;
-  padding:18px 48px;
-  transition:all .4s;
-}
-nav.ink{
-  background:rgba(0,0,0,0.92);
-  backdrop-filter:blur(20px);
-  border-bottom:1px solid rgba(192,57,43,0.2);
-}
-.nav-id{
-  font-family:var(--font-mono);font-size:13px;
-  color:var(--blood2);letter-spacing:.2em;
-  text-decoration:none;
-}
-.nav-id span{color:var(--muted)}
-.nav-links{display:flex;gap:28px;list-style:none;align-items:center}
-.nav-links a{
-  font-family:var(--font-mono);font-size:11px;
-  color:var(--muted);text-decoration:none;
-  letter-spacing:.12em;
-  transition:color .2s;
-  position:relative;
-}
-.nav-links a::after{
-  content:'';position:absolute;bottom:-2px;left:0;
-  width:0;height:1px;background:var(--blood2);
-  transition:width .25s;
-}
-.nav-links a:hover{color:var(--bone2)}
-.nav-links a:hover::after{width:100%}
-.nav-cv{
-  font-family:var(--font-mono);font-size:10px;
-  color:var(--blood2)!important;letter-spacing:.15em;
-  border:1px solid var(--blood);padding:7px 16px;
-  transition:all .3s!important;
-}
-.nav-cv::after{display:none!important}
-.nav-cv:hover{background:var(--blood)!important;color:var(--bone2)!important;}
-
-/* HAMBURGER */
-.hbg{
-  display:none;flex-direction:column;gap:5px;
-  cursor:none;background:none;border:none;padding:4px;
-}
-.hbg span{display:block;width:22px;height:1px;background:var(--blood2);transition:all .3s}
-.hbg.o span:nth-child(1){transform:translateY(6px) rotate(45deg)}
-.hbg.o span:nth-child(2){opacity:0}
-.hbg.o span:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
-.mob-menu{
-  display:none;position:fixed;inset:0;
-  background:rgba(0,0,0,.97);
-  z-index:800;flex-direction:column;align-items:center;justify-content:center;gap:28px;
-}
-.mob-menu.o{display:flex}
-.mob-menu a{
-  font-family:var(--font-display);font-size:40px;
-  color:var(--muted);text-decoration:none;letter-spacing:.08em;
-  transition:color .2s;
-}
-.mob-menu a:hover{color:var(--blood2)}
-.mob-cv-m{
-  font-family:var(--font-mono)!important;font-size:12px!important;
-  color:var(--blood2)!important;border:1px solid var(--blood)!important;
-  padding:10px 24px;margin-top:8px;
+/* SCANLINES */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px);
+  pointer-events: none;
+  z-index: 999;
 }
 
-/* ═══════════════════════════════════════════════
-   HERO
-═══════════════════════════════════════════════ */
-#hero{
-  min-height:100vh;display:flex;align-items:center;
-  position:relative;overflow:hidden;
-  padding:0 48px;
+/* GRID LINES BACKGROUND */
+.grid-bg {
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(192,57,43,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(192,57,43,0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none;
+  z-index: 0;
 }
 
-/* Vertical rule lines */
-.v-lines{
-  position:absolute;inset:0;pointer-events:none;
-  display:flex;justify-content:space-between;padding:0 48px;
-  opacity:.04;
+/* CURSOR FOLLOWER */
+#cursor-dot {
+  position: fixed;
+  width: 6px; height: 6px;
+  background: var(--red3);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%,-50%);
+  transition: transform 0.05s;
+  box-shadow: 0 0 8px var(--red3);
 }
-.v-line{width:1px;background:var(--bone);height:100%}
-
-/* Giant bg text */
-.hero-bg-text{
-  position:absolute;
-  right:-5%;top:50%;transform:translateY(-55%);
-  font-family:var(--font-display);
-  font-size:clamp(160px,25vw,340px);
-  line-height:.85;
-  color:transparent;
-  -webkit-text-stroke:1px rgba(192,57,43,0.12);
-  pointer-events:none;
-  letter-spacing:-.02em;
-  user-select:none;
-}
-
-/* Diagonal slash accent */
-.slash{
-  position:absolute;
-  top:0;left:0;width:4px;height:100%;
-  background:linear-gradient(180deg,transparent 0%,var(--blood) 30%,var(--blood) 70%,transparent 100%);
-  opacity:.7;
+#cursor-ring {
+  position: fixed;
+  width: 28px; height: 28px;
+  border: 1px solid rgba(192,57,43,0.5);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9998;
+  transform: translate(-50%,-50%);
+  transition: transform 0.12s ease-out, width 0.2s, height 0.2s;
 }
 
-.hero-content{position:relative;z-index:2;max-width:1000px}
+/* ============ VOID OVERLAY ============ */
+#void-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+  z-index: 9000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: opacity 0.8s ease, visibility 0.8s;
+}
+#void-overlay.hidden { opacity: 0; visibility: hidden; }
 
-.hero-eyebrow{
-  font-family:var(--font-mono);font-size:11px;
-  color:var(--blood2);letter-spacing:.3em;
-  margin-bottom:20px;
-  display:flex;align-items:center;gap:14px;
-  opacity:0;animation:riseUp .5s .1s forwards;
-}
-.hero-eyebrow::before{
-  content:'';width:50px;height:1px;background:var(--blood);
-}
-
-h1.hn{
-  font-family:var(--font-display);
-  font-size:clamp(80px,13vw,200px);
-  line-height:.88;letter-spacing:-.01em;
-  color:var(--bone2);
-  opacity:0;animation:riseUp .7s .25s forwards;
-}
-h1.hn em{
-  font-style:normal;
-  color:transparent;
-  -webkit-text-stroke:2px var(--blood2);
+.void-sigil {
+  font-size: 64px;
+  color: var(--red);
+  animation: pulse-red 2s ease-in-out infinite;
+  margin-bottom: 2rem;
+  font-family: var(--code);
+  text-shadow: 0 0 30px var(--red), 0 0 60px rgba(192,57,43,0.4);
 }
 
-.hero-role-bar{
-  display:flex;align-items:center;gap:0;
-  margin:24px 0 32px;
-  opacity:0;animation:riseUp .6s .45s forwards;
-  overflow:hidden;
+.void-text {
+  font-family: var(--mono);
+  color: var(--ash);
+  font-size: 11px;
+  text-align: center;
+  max-width: 480px;
+  line-height: 2;
 }
-.role-item{
-  font-family:var(--font-body);font-size:clamp(13px,1.8vw,18px);
-  font-weight:600;letter-spacing:.18em;text-transform:uppercase;
-  color:var(--muted);padding:0 20px;
-  border-right:1px solid var(--dim2);
-  white-space:nowrap;
-}
-.role-item:first-child{padding-left:0}
-.role-item:last-child{border-right:none}
-.role-item.hot{color:var(--blood2)}
+.void-text .comment { color: rgba(136,136,160,0.5); }
+.void-text .accent { color: var(--red2); }
+.void-text .gold { color: var(--gold2); }
 
-.hero-desc{
-  font-size:clamp(15px,1.6vw,18px);font-weight:300;
-  line-height:1.7;color:var(--muted);
-  max-width:580px;margin-bottom:44px;
-  opacity:0;animation:riseUp .6s .6s forwards;
-}
-.hero-desc strong{color:var(--bone);font-weight:600}
-
-.hero-cta{
-  display:flex;gap:16px;flex-wrap:wrap;
-  opacity:0;animation:riseUp .6s .75s forwards;
-}
-.btn-a{
-  font-family:var(--font-mono);font-size:12px;letter-spacing:.15em;
-  background:var(--blood);color:var(--bone2);
-  padding:14px 32px;border:none;
-  text-decoration:none;cursor:none;
-  transition:all .3s;position:relative;overflow:hidden;
-  clip-path:polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
-}
-.btn-a::before{
-  content:'';position:absolute;
-  top:0;left:-100%;width:100%;height:100%;
-  background:rgba(255,255,255,.1);
-  transition:left .3s;
-}
-.btn-a:hover::before{left:100%}
-.btn-a:hover{background:var(--blood2);box-shadow:0 0 30px var(--glow-blood)}
-.btn-b{
-  font-family:var(--font-mono);font-size:12px;letter-spacing:.15em;
-  background:transparent;color:var(--muted);
-  padding:14px 32px;border:1px solid var(--dim2);
-  text-decoration:none;cursor:none;
-  transition:all .3s;
-}
-.btn-b:hover{border-color:var(--bone);color:var(--bone2)}
-
-/* Status pills */
-.hero-pills{
-  position:absolute;right:48px;top:50%;transform:translateY(-50%);
-  display:flex;flex-direction:column;gap:12px;
-  opacity:0;animation:slideLeft .7s 1s forwards;
-}
-.pill{
-  font-family:var(--font-mono);font-size:10px;
-  letter-spacing:.12em;color:var(--muted);
-  border:1px solid var(--dim);
-  padding:10px 16px;background:var(--void3);
-  display:flex;align-items:center;gap:10px;
-  white-space:nowrap;
-}
-.pill-dot{
-  width:5px;height:5px;border-radius:50%;
-  background:var(--blood2);
-  box-shadow:0 0 8px var(--blood2);
-  animation:blink 2s infinite;
-}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
-
-@keyframes riseUp{
-  from{opacity:0;transform:translateY(28px)}
-  to{opacity:1;transform:translateY(0)}
-}
-@keyframes slideLeft{
-  from{opacity:0;transform:translate(24px,-50%)}
-  to{opacity:1;transform:translate(0,-50%)}
+.void-prompt {
+  margin-top: 3rem;
+  font-family: var(--code);
+  font-size: 12px;
+  color: var(--ash);
+  animation: blink 1.2s step-end infinite;
 }
 
-/* ═══════════════════════════════════════════════
-   SECTION COMMONS
-═══════════════════════════════════════════════ */
-section{padding:100px 48px;position:relative}
-.sec-label{
-  font-family:var(--font-mono);font-size:10px;
-  color:var(--blood2);letter-spacing:.3em;
-  display:flex;align-items:center;gap:14px;
-  margin-bottom:60px;
-}
-.sec-label::before{
-  content:'';width:30px;height:1px;background:var(--blood);
-}
-.sec-label span{color:var(--dim2)}
-h2.st{
-  font-family:var(--font-display);
-  font-size:clamp(48px,7vw,96px);
-  line-height:.9;letter-spacing:.02em;
-  color:var(--bone2);
-  margin-bottom:60px;
-}
-h2.st em{font-style:normal;color:var(--blood2)}
-.reveal{opacity:0;transform:translateY(30px);transition:opacity .7s,transform .7s}
-.reveal.on{opacity:1;transform:translateY(0)}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+@keyframes pulse-red { 0%,100%{text-shadow: 0 0 20px var(--red)} 50%{text-shadow: 0 0 40px var(--red), 0 0 80px rgba(192,57,43,0.3)} }
+@keyframes pulse-gold { 0%,100%{text-shadow: 0 0 20px var(--gold)} 50%{text-shadow: 0 0 40px var(--gold), 0 0 80px rgba(184,150,12,0.3)} }
 
-/* ═══════════════════════════════════════════════
-   MARQUEE STRIP
-═══════════════════════════════════════════════ */
-.marquee-wrap{
-  overflow:hidden;border-top:1px solid var(--dim);
-  border-bottom:1px solid var(--dim);
-  padding:14px 0;
-  background:var(--void2);
+/* ============ NAVIGATION ============ */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 800;
+  background: rgba(5,5,7,0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 56px;
 }
-.marquee-track{
-  display:flex;white-space:nowrap;
-  animation:marquee 25s linear infinite;
+.nav-logo {
+  font-family: var(--code);
+  font-size: 15px;
+  color: var(--red3);
+  text-decoration: none;
+  letter-spacing: 0.05em;
 }
-.marquee-track span{
-  font-family:var(--font-display);
-  font-size:12px;letter-spacing:.3em;
-  color:var(--dim2);
-  padding:0 32px;
+.nav-logo span { color: var(--ash); }
+.nav-links {
+  display: flex;
+  gap: 2rem;
+  list-style: none;
+  align-items: center;
 }
-.marquee-track span.hi{color:var(--blood2)}
-@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.nav-links a {
+  font-family: var(--code);
+  font-size: 11px;
+  color: var(--ash);
+  text-decoration: none;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  transition: color 0.2s;
+  position: relative;
+}
+.nav-links a::after {
+  content: '';
+  position: absolute;
+  bottom: -2px; left: 0; right: 100%;
+  height: 1px;
+  background: var(--red);
+  transition: right 0.25s ease;
+}
+.nav-links a:hover { color: var(--white); }
+.nav-links a:hover::after { right: 0; }
+.nav-resume {
+  font-family: var(--code);
+  font-size: 11px;
+  color: var(--red2) !important;
+  border: 1px solid var(--red);
+  padding: 4px 12px;
+  border-radius: 2px;
+  text-decoration: none;
+  letter-spacing: 0.1em;
+  transition: background 0.2s, color 0.2s !important;
+}
+.nav-resume:hover { background: var(--red) !important; color: var(--white) !important; }
+.nav-resume::after { display: none !important; }
 
-/* ═══════════════════════════════════════════════
-   ABOUT
-═══════════════════════════════════════════════ */
-#about{background:var(--void2)}
-.about-grid{
-  display:grid;grid-template-columns:1fr 1fr;
-  gap:80px;align-items:start;max-width:1100px;margin:0 auto;
-}
-.about-text p{
-  font-size:17px;font-weight:300;line-height:1.85;
-  color:var(--muted);margin-bottom:22px;
-}
-.about-text p strong{color:var(--bone2);font-weight:600}
-.about-tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:28px}
-.tag{
-  font-family:var(--font-mono);font-size:10px;
-  color:var(--muted);letter-spacing:.12em;
-  border:1px solid var(--dim2);
-  padding:6px 12px;
-  transition:all .25s;
-}
-.tag:hover{border-color:var(--blood);color:var(--blood2)}
+/* ============ SECTIONS ============ */
+section { position: relative; z-index: 1; }
 
-/* Code panel */
-.code-panel{
-  background:var(--void);
-  border:1px solid var(--dim2);
-  font-family:var(--font-mono);
-  position:sticky;top:100px;
-}
-.cp-bar{
-  background:var(--void3);
-  border-bottom:1px solid var(--dim2);
-  padding:10px 16px;
-  display:flex;align-items:center;gap:8px;
-}
-.cp-dot{width:9px;height:9px;border-radius:50%}
-.cp-dot.r{background:#ff5f57}
-.cp-dot.y{background:#febc2e}
-.cp-dot.g{background:#28c840}
-.cp-file{
-  font-size:10px;color:var(--muted);
-  margin-left:8px;letter-spacing:.1em;
-}
-.cp-body{
-  padding:28px;font-size:12.5px;line-height:2;
-}
-.k{color:var(--blood2)}
-.s{color:#e8c99a}
-.v{color:#82b0e8}
-.c{color:var(--dim2)}
-.w{color:var(--bone2)}
-
-/* ═══════════════════════════════════════════════
-   SKILLS
-═══════════════════════════════════════════════ */
-#skills{background:var(--void)}
-.skills-wrap{max-width:1100px;margin:0 auto}
-
-.lang-sub{margin-bottom:52px}
-.sub-head{
-  font-family:var(--font-mono);font-size:10px;
-  color:var(--muted);letter-spacing:.25em;
-  border-bottom:1px solid var(--dim);padding-bottom:12px;margin-bottom:24px;
-}
-.lang-list{display:flex;flex-direction:column;gap:2px}
-.lang-row{
-  display:grid;grid-template-columns:160px 1fr auto;
-  align-items:center;gap:24px;
-  background:var(--void3);
-  padding:18px 24px;
-  border-left:2px solid transparent;
-  transition:all .3s;cursor:none;
-}
-.lang-row:hover{border-left-color:var(--blood2);background:var(--void4)}
-.lang-name{
-  font-family:var(--font-body);font-size:16px;font-weight:700;
-  color:var(--bone);letter-spacing:.05em;
-  display:flex;align-items:center;gap:12px;
-}
-.lang-name span{font-size:20px}
-.lang-bar{flex:1;height:2px;background:var(--dim);position:relative}
-.lang-fill{
-  position:absolute;top:0;left:0;height:100%;
-  background:linear-gradient(90deg,var(--blood),var(--blood2));
-  width:0;transition:width 1.1s cubic-bezier(.4,0,.2,1);
-  box-shadow:0 0 8px var(--glow-blood);
-}
-.lang-meta{
-  font-family:var(--font-mono);font-size:10px;
-  color:var(--muted);letter-spacing:.1em;text-align:right;
+/* ============ HERO ============ */
+#hero {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  padding: 80px 2.5rem 2.5rem;
+  position: relative;
+  overflow: hidden;
 }
 
-.skill-grid{
-  display:grid;grid-template-columns:repeat(4,1fr);gap:1px;
-  background:var(--dim);
-}
-.sk{
-  background:var(--void3);
-  padding:24px 20px;
-  transition:all .3s;cursor:none;
-  position:relative;overflow:hidden;
-}
-.sk::before{
-  content:'';position:absolute;
-  top:0;left:0;width:2px;height:100%;
-  background:var(--blood);
-  transform:scaleY(0);transform-origin:bottom;
-  transition:transform .3s;
-}
-.sk:hover::before{transform:scaleY(1)}
-.sk:hover{background:var(--void4)}
-.sk-icon{font-size:22px;margin-bottom:12px}
-.sk-name{
-  font-family:var(--font-body);font-size:15px;font-weight:700;
-  color:var(--bone2);margin-bottom:6px;letter-spacing:.04em;
-}
-.sk-desc{font-size:12px;font-weight:300;color:var(--muted);line-height:1.6}
-
-/* ═══════════════════════════════════════════════
-   CERTS
-═══════════════════════════════════════════════ */
-#certs{background:var(--void2)}
-.certs-wrap{max-width:1100px;margin:0 auto}
-
-.ctabs{
-  display:flex;flex-wrap:wrap;gap:2px;margin-bottom:2px;
-}
-.ctab{
-  font-family:var(--font-mono);font-size:10px;
-  letter-spacing:.12em;color:var(--muted);
-  border:none;background:var(--void3);
-  padding:12px 18px;cursor:pointer;
-  transition:all .25s;
-  display:flex;align-items:center;gap:8px;
-  position:relative;overflow:hidden;
-}
-.ctab::after{
-  content:'';position:absolute;
-  bottom:0;left:0;width:0;height:2px;
-  background:var(--blood2);
-  transition:width .3s;
-}
-.ctab:hover{color:var(--bone)}
-.ctab.a{color:var(--blood2);background:var(--void4)}
-.ctab.a::after{width:100%}
-.ctab.a .tc{color:var(--blood2)}
-.tc{
-  font-size:9px;background:var(--dim);
-  color:var(--muted);padding:1px 6px;border-radius:2px;
-  transition:all .25s;
-}
-.tnew{
-  font-size:8px;font-family:var(--font-mono);
-  background:var(--blood);color:var(--bone2);
-  padding:2px 5px;letter-spacing:.08em;
+.hero-red-line {
+  position: absolute;
+  top: 0; bottom: 0;
+  left: 40%;
+  width: 1px;
+  background: linear-gradient(to bottom, transparent, var(--red) 20%, var(--red) 80%, transparent);
+  opacity: 0.08;
 }
 
-.cert-panels{position:relative;min-height:200px}
-.cpanel{
-  position:absolute;top:0;left:0;right:0;
-  opacity:0;pointer-events:none;
-  transform:translateY(12px);
-  transition:none;
-}
-.cpanel.a{
-  position:relative;opacity:1;pointer-events:auto;
-  transform:translateY(0);
-  transition:opacity .4s,transform .4s;
-}
-.panel-org{
-  display:flex;align-items:center;gap:16px;
-  padding:20px 24px;
-  background:var(--void);
-  border-left:3px solid var(--blood2);
-  margin-bottom:2px;
-}
-.panel-org.red{border-left-color:var(--blood2)}
-.org-icon{font-size:20px}
-.org-name{font-family:var(--font-display);font-size:22px;color:var(--bone2);letter-spacing:.04em}
-.org-sub{font-family:var(--font-mono);font-size:10px;color:var(--muted);letter-spacing:.1em;margin-top:2px}
-
-.certs-grid{
-  display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:2px;
-}
-.cert{
-  background:var(--void);padding:26px 24px;
-  position:relative;overflow:hidden;cursor:none;
-  transition:all .3s;
-  border-bottom:2px solid transparent;
-}
-.cert::after{
-  content:'';position:absolute;
-  top:0;right:0;width:0;height:0;
-  border-style:solid;border-width:0 20px 20px 0;
-  border-color:transparent var(--blood) transparent transparent;
-  opacity:0;transition:opacity .25s;
-}
-.cert:hover{background:var(--void3);border-bottom-color:var(--blood)}
-.cert:hover::after{opacity:1}
-.cert-badge{
-  font-family:var(--font-mono);font-size:9px;
-  color:var(--blood2);letter-spacing:.15em;
-  border:1px solid rgba(192,57,43,.3);
-  padding:3px 8px;display:inline-block;
-  margin-bottom:14px;
-}
-.cert-name{
-  font-family:var(--font-body);font-size:17px;font-weight:700;
-  color:var(--bone2);margin-bottom:8px;line-height:1.25;
-}
-.cert-desc{font-size:13px;font-weight:300;color:var(--muted);line-height:1.55}
-.cert-verify{
-  display:inline-flex;align-items:center;gap:6px;
-  margin-top:14px;font-family:var(--font-mono);font-size:10px;
-  color:var(--blood2);letter-spacing:.1em;
-  text-decoration:none;border:1px solid rgba(192,57,43,.3);
-  padding:5px 12px;transition:all .2s;position:relative;z-index:5;
-}
-.cert-verify:hover{background:rgba(192,57,43,.08);border-color:var(--blood2)}
-.cert.feat{background:linear-gradient(135deg,rgba(192,57,43,.05),var(--void))}
-.cert.feat .cert-badge{color:var(--blood2)}
-.nbadge{
-  position:absolute;top:12px;right:12px;
-  font-family:var(--font-mono);font-size:8px;
-  background:var(--blood);color:var(--bone2);
-  padding:2px 7px;letter-spacing:.1em;
+.hero-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: center;
 }
 
-/* ═══════════════════════════════════════════════
-   PROJECTS
-═══════════════════════════════════════════════ */
-#projects{background:var(--void)}
-.proj-wrap{max-width:1100px;margin:0 auto}
+.hero-left {}
 
-.proj-grid{
-  display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
-  gap:2px;background:var(--dim);
+.hero-tag {
+  font-family: var(--code);
+  font-size: 11px;
+  color: var(--red2);
+  letter-spacing: 0.2em;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
 }
-.proj{
-  background:var(--void3);padding:32px;
-  text-decoration:none;display:block;
-  position:relative;overflow:hidden;
-  transition:all .35s;cursor:none;
-}
-.proj::before{
-  content:'';position:absolute;top:0;left:0;
-  width:100%;height:2px;
-  background:linear-gradient(90deg,var(--blood),var(--blood2));
-  transform:scaleX(0);transform-origin:left;
-  transition:transform .4s;
-}
-.proj:hover::before{transform:scaleX(1)}
-.proj:hover{background:var(--void4)}
-.proj-num{
-  font-family:var(--font-mono);font-size:10px;
-  color:var(--dim2);letter-spacing:.2em;
-  margin-bottom:20px;
-}
-.proj-name{
-  font-family:var(--font-display);font-size:32px;
-  letter-spacing:.04em;color:var(--bone2);
-  margin-bottom:12px;
-  transition:color .3s;
-}
-.proj:hover .proj-name{color:var(--blood2)}
-.proj-desc{
-  font-size:13px;font-weight:300;color:var(--muted);
-  line-height:1.7;margin-bottom:24px;
-}
-.proj-tags{display:flex;flex-wrap:wrap;gap:6px}
-.ptg{
-  font-family:var(--font-mono);font-size:9px;
-  color:var(--dim2);letter-spacing:.1em;
-  border:1px solid var(--dim);padding:3px 8px;
-  transition:all .2s;
-}
-.proj:hover .ptg{border-color:rgba(192,57,43,.3);color:var(--muted)}
-.proj-arrow{
-  position:absolute;top:24px;right:24px;
-  font-size:20px;color:var(--dim2);
-  transition:all .3s;
-}
-.proj:hover .proj-arrow{color:var(--blood2);transform:translate(3px,-3px)}
-
-/* ARTEMIS FEATURED */
-.proj.artemis-feat{
-  grid-column:span 2;
-  background:linear-gradient(135deg,rgba(192,57,43,.08),var(--void3));
-  border:1px solid rgba(192,57,43,.2);
-}
-.artemis-engines{
-  display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:20px;
-}
-.engine-chip{
-  background:var(--void);border:1px solid var(--dim2);
-  padding:12px;
-}
-.engine-chip .ec-icon{font-size:18px;margin-bottom:6px}
-.engine-chip .ec-name{
-  font-family:var(--font-mono);font-size:10px;
-  color:var(--blood2);letter-spacing:.1em;margin-bottom:4px;
-}
-.engine-chip .ec-desc{font-size:11px;font-weight:300;color:var(--muted)}
-.feat-badge{
-  font-family:var(--font-mono);font-size:8px;
-  color:var(--blood2);background:rgba(192,57,43,.1);
-  border:1px solid rgba(192,57,43,.3);
-  padding:3px 8px;letter-spacing:.12em;
-  display:inline-block;margin-bottom:16px;
+.hero-tag::before {
+  content: '';
+  display: inline-block;
+  width: 20px; height: 1px;
+  background: var(--red);
 }
 
-/* ═══════════════════════════════════════════════
-   TERMINAL
-═══════════════════════════════════════════════ */
-#terminal{background:var(--void2)}
-.term-wrap{max-width:900px;margin:0 auto}
-.term-hint{
-  font-family:var(--font-mono);font-size:11px;color:var(--muted);
-  text-align:center;margin-bottom:28px;letter-spacing:.1em;
+.hero-name {
+  font-family: var(--display);
+  font-size: clamp(52px, 7vw, 96px);
+  font-weight: 700;
+  line-height: 0.9;
+  letter-spacing: -0.02em;
+  color: var(--white);
+  margin-bottom: 0.5rem;
 }
-.term-hint span{color:var(--blood2)}
-.term-window{
-  background:var(--void);
-  border:1px solid var(--dim2);
-  box-shadow:0 0 80px rgba(0,0,0,.9),0 0 0 1px rgba(192,57,43,.05);
-}
-.term-bar{
-  background:var(--void3);border-bottom:1px solid var(--dim);
-  padding:12px 20px;display:flex;align-items:center;gap:8px;
-}
-.td{width:10px;height:10px;border-radius:50%}
-.td.r{background:#ff5f57}
-.td.y{background:#febc2e}
-.td.g{background:#28c840}
-.term-title{
-  font-family:var(--font-mono);font-size:11px;
-  color:var(--muted);margin-left:8px;flex:1;text-align:center;
-  letter-spacing:.1em;
-}
-#tb{
-  padding:24px;font-family:var(--font-mono);font-size:13px;
-  max-height:420px;overflow-y:auto;line-height:1.9;
-}
-#tb::-webkit-scrollbar{width:4px}
-#tb::-webkit-scrollbar-thumb{background:var(--blood)}
-.tp{display:flex;align-items:center}
-.tpu{color:var(--blood2)}
-.tpat,.tpsep,.tpsym{color:var(--muted)}
-.tph{color:var(--bone2)}
-.tppath{color:var(--blood)}
-.tout{color:var(--muted);margin:4px 0 12px;white-space:pre-wrap}
-.tout .tg{color:var(--blood2)}
-.tout .tb2{color:#82b0e8}
-.tout .tr{color:var(--blood2)}
-.tout .td2{color:var(--muted)}
-.tin-wrap{position:relative;flex:1;display:flex;align-items:center}
-#ti{
-  background:transparent;border:none;outline:none;
-  color:var(--bone2);font-family:var(--font-mono);font-size:13px;
-  width:100%;caret-color:transparent;cursor:none;
-}
-.tcaret{
-  position:absolute;top:50%;transform:translateY(-50%);
-  width:7px;height:14px;background:var(--blood2);
-  animation:blink 1s step-end infinite;
-  pointer-events:none;left:0;
-  box-shadow:0 0 8px rgba(192,57,43,.8);
-}
-.tin-line{display:flex;align-items:center;flex-wrap:nowrap}
+.hero-name .dim { color: var(--ash); font-weight: 300; }
+.hero-name .accent { color: var(--red); }
 
-/* ═══════════════════════════════════════════════
-   CTF PLATFORMS
-═══════════════════════════════════════════════ */
-#ctf{background:var(--void)}
-.ctf-wrap{max-width:1100px;margin:0 auto}
-.ctf-row{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;background:var(--dim)}
-.ctf-card{
-  background:var(--void3);
-  padding:28px 24px;
-  text-decoration:none;display:flex;align-items:center;gap:20px;
-  position:relative;overflow:hidden;
-  transition:all .3s;cursor:pointer;
-}
-.ctf-card::before{
-  content:'';position:absolute;top:0;left:0;
-  width:100%;height:2px;
-  transform:scaleX(0);transform-origin:left;
-  transition:transform .4s;
-}
-.ctf-thm::before{background:#ff4655}
-.ctf-htb::before{background:#9fef00}
-.ctf-hv::before{background:var(--blood2)}
-.ctf-card:hover{background:var(--void4)}
-.ctf-card:hover::before{transform:scaleX(1)}
-.ctf-logo{
-  width:44px;height:44px;border-radius:4px;
-  display:flex;align-items:center;justify-content:center;
-  flex-shrink:0;font-size:20px;
-  border:1px solid var(--dim2);
-  transition:all .3s;
-}
-.ctf-card:hover .ctf-logo{transform:scale(1.1)}
-.ctf-thm .ctf-logo{background:rgba(255,70,85,.1);color:#ff4655}
-.ctf-htb .ctf-logo{background:rgba(159,239,0,.1);color:#9fef00}
-.ctf-hv .ctf-logo{background:rgba(192,57,43,.1);color:var(--blood2)}
-.ctf-info{flex:1}
-.ctf-plat{
-  font-family:var(--font-display);font-size:20px;
-  letter-spacing:.05em;color:var(--bone2);margin-bottom:4px;
-}
-.ctf-handle{font-family:var(--font-mono);font-size:10px;color:var(--muted);letter-spacing:.08em}
-.ctf-arr{font-size:18px;color:var(--muted);transition:all .3s}
-.ctf-card:hover .ctf-arr{color:var(--blood2);transform:translate(3px,-3px)}
-
-/* ═══════════════════════════════════════════════
-   CONTACT / FOOTER
-═══════════════════════════════════════════════ */
-#contact{
-  background:var(--void2);
-  padding:120px 48px 60px;text-align:center;
-  position:relative;overflow:hidden;
-}
-#contact::before{
-  content:'';position:absolute;inset:0;
-  background:radial-gradient(ellipse 50% 40% at 50% 0%,rgba(192,57,43,.07),transparent);
-  pointer-events:none;
-}
-.contact-super{
-  font-family:var(--font-mono);font-size:10px;
-  color:var(--blood2);letter-spacing:.3em;margin-bottom:16px;
-}
-.contact-title{
-  font-family:var(--font-display);
-  font-size:clamp(60px,10vw,140px);
-  line-height:.9;letter-spacing:.02em;
-  color:var(--bone2);margin-bottom:24px;
-}
-.contact-title em{font-style:normal;color:var(--blood2)}
-.contact-sub{
-  font-size:16px;font-weight:300;color:var(--muted);
-  max-width:460px;margin:0 auto 48px;line-height:1.7;
-}
-.clinks{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-bottom:80px}
-.clink{
-  font-family:var(--font-mono);font-size:11px;letter-spacing:.12em;
-  color:var(--muted);text-decoration:none;
-  border:1px solid var(--dim2);padding:12px 22px;
-  display:flex;align-items:center;gap:8px;
-  transition:all .3s;cursor:none;
-}
-.clink:hover{border-color:var(--blood);color:var(--blood2)}
-hr.foot{border:none;border-top:1px solid var(--dim);margin-bottom:28px}
-.foot-row{
-  font-family:var(--font-mono);font-size:10px;color:var(--dim2);
-  display:flex;justify-content:space-between;align-items:center;
-  flex-wrap:wrap;gap:12px;
-}
-.foot-row span.hot{color:var(--blood)}
-
-/* ═══════════════════════════════════════════════
-   HIDDEN SATANIC MESSAGE
-   (No violence, no harm — pure philosophy)
-   Encoded as a "comment" visible in CSS ::before
-   only when hovering the footer copyright text
-   for 3+ seconds — true easter egg for curious minds
-═══════════════════════════════════════════════ */
-#hidden-vessel{
-  position:fixed;bottom:0;left:0;right:0;
-  height:2px;background:transparent;
-  z-index:1;pointer-events:none;
-}
-/* The message exists in the DOM but is visually hidden:
-   font-size:0, color:transparent, no interaction.
-   Only a true source-code reader finds it. */
-#s-msg{
-  position:fixed;bottom:-200px;left:50%;transform:translateX(-50%);
-  font-family:var(--font-mono);font-size:12px;letter-spacing:.15em;
-  color:rgba(192,57,43,0);text-align:center;width:600px;
-  pointer-events:none;z-index:999;line-height:2;
-  transition:all 1.2s cubic-bezier(.2,0,.2,1);
-}
-#s-msg.reveal-s{
-  bottom:40px;color:rgba(192,57,43,.75);
-}
-/* Trigger zone — invisible, covers footer copyright */
-#s-trigger{
-  position:absolute;bottom:20px;left:50%;transform:translateX(-50%);
-  width:200px;height:20px;cursor:default;
-  /* Render invisible but interactive */
-  color:transparent;font-size:0;
+.hero-handle {
+  font-family: var(--code);
+  font-size: 18px;
+  color: var(--red3);
+  margin-bottom: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
-/* ═══════════════════════════════════════════════
-   KONAMI OVERLAY
-═══════════════════════════════════════════════ */
-#konami-overlay{
-  position:fixed;inset:0;background:rgba(0,0,0,.96);
-  z-index:9990;display:none;align-items:center;justify-content:center;
-  flex-direction:column;gap:16px;
+.hero-roles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
 }
-#konami-overlay.show{display:flex}
-.ko-title{
-  font-family:var(--font-display);font-size:80px;
-  color:var(--blood2);letter-spacing:.1em;
-  animation:flicker 3s infinite;
+.role-tag {
+  font-family: var(--code);
+  font-size: 11px;
+  color: var(--ash2);
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  padding: 4px 10px;
+  letter-spacing: 0.08em;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.2s, color 0.2s;
 }
-.ko-sub{font-family:var(--font-mono);font-size:13px;color:var(--muted);letter-spacing:.2em}
-.ko-close{
-  font-family:var(--font-mono);font-size:10px;color:var(--dim2);
-  margin-top:24px;cursor:pointer;letter-spacing:.2em;
+.role-tag:hover { border-color: var(--red); color: var(--red2); }
+.role-tag.active { border-color: var(--red); color: var(--red2); background: rgba(192,57,43,0.05); }
+
+.hero-bio {
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--ash);
+  line-height: 1.9;
+  max-width: 500px;
+  margin-bottom: 2.5rem;
+  border-left: 1px solid var(--border2);
+  padding-left: 1rem;
 }
-.ko-close:hover{color:var(--muted)}
-@keyframes flicker{
-  0%,100%{opacity:1;text-shadow:0 0 20px rgba(192,57,43,.8)}
-  4%{opacity:.8}5%{opacity:1}7%{opacity:.7}8%{opacity:1}
-  50%{text-shadow:0 0 40px rgba(192,57,43,.6),0 0 80px rgba(192,57,43,.3)}
+.hero-bio strong { color: var(--ash3); font-weight: 400; }
+
+.hero-btns {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.btn-primary {
+  font-family: var(--code);
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 10px 24px;
+  background: var(--red);
+  color: var(--white);
+  border: none;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+  clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
+}
+.btn-primary:hover { background: var(--red2); }
+.btn-ghost {
+  font-family: var(--code);
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 9px 24px;
+  background: transparent;
+  color: var(--ash2);
+  border: 1px solid var(--border2);
+  text-decoration: none;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+}
+.btn-ghost:hover { border-color: var(--ash2); color: var(--white); }
+
+/* HERO RIGHT — CODE CARD */
+.hero-right {}
+
+.code-card {
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 2px;
+  overflow: hidden;
+  font-family: var(--code);
+  font-size: 12px;
+  position: relative;
+}
+.code-card-bar {
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+  padding: 8px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.dot { width: 10px; height: 10px; border-radius: 50%; }
+.dot.r { background: #ff5f56; }
+.dot.y { background: #ffbd2e; }
+.dot.g { background: #27c93f; }
+.code-card-title {
+  font-family: var(--code);
+  font-size: 11px;
+  color: var(--ash);
+  margin-left: auto;
+  margin-right: auto;
+  letter-spacing: 0.05em;
+}
+.code-body {
+  padding: 1.5rem;
+  line-height: 1.85;
+}
+.c-comment { color: rgba(136,136,160,0.5); }
+.c-kw { color: var(--red2); }
+.c-type { color: var(--gold2); }
+.c-str { color: #7ec8a0; }
+.c-num { color: #aaa8f8; }
+.c-fn { color: var(--ash3); }
+.c-op { color: var(--ash); }
+.code-line { display: block; }
+.code-ln { color: rgba(136,136,160,0.25); margin-right: 1.5rem; min-width: 20px; display: inline-block; text-align: right; user-select: none; font-size: 11px; }
+
+/* HERO STATS */
+.hero-stats {
+  margin-top: 1.5rem;
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 1px;
+  background: var(--border);
+}
+.stat-box {
+  background: var(--surface);
+  padding: 1rem;
+  text-align: center;
+}
+.stat-num {
+  font-family: var(--display);
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--red3);
+  display: block;
+}
+.stat-label {
+  font-family: var(--code);
+  font-size: 10px;
+  color: var(--ash);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
 }
 
-/* ═══════════════════════════════════════════════
-   PENTAGRAM WATERMARK (subtle bg on contact)
-═══════════════════════════════════════════════ */
-.penta-bg{
-  position:absolute;top:50%;left:50%;
-  transform:translate(-50%,-50%);
-  width:600px;height:600px;
-  opacity:.025;pointer-events:none;
-  animation:penta-spin 60s linear infinite;
-}
-@keyframes penta-spin{from{transform:translate(-50%,-50%) rotate(0)}to{transform:translate(-50%,-50%) rotate(360deg)}}
-
-/* ═══════════════════════════════════════════════
-   RESPONSIVE
-═══════════════════════════════════════════════ */
-@media(max-width:1024px){
-  .skill-grid{grid-template-columns:repeat(3,1fr)}
-  .proj.artemis-feat{grid-column:span 1}
-  .artemis-engines{grid-template-columns:1fr}
-}
-@media(max-width:900px){
-  nav{padding:14px 24px}
-  .nav-links{display:none}
-  .hbg{display:flex}
-  section{padding:72px 24px}
-  #hero{padding:100px 24px 60px;min-height:auto}
-  .hero-content{max-width:100%}
-  h1.hn{font-size:clamp(64px,18vw,120px)}
-  .hero-pills{display:none}
-  .about-grid{grid-template-columns:1fr;gap:40px}
-  .code-panel{position:relative;top:auto}
-  .skill-grid{grid-template-columns:repeat(2,1fr)}
-  .ctf-row{grid-template-columns:1fr}
-  .foot-row{flex-direction:column;text-align:center}
-}
-@media(max-width:600px){
-  section{padding:60px 20px}
-  #hero{padding:90px 20px 50px}
-  h1.hn{font-size:clamp(52px,20vw,90px)}
-  .hero-role-bar{flex-direction:column;align-items:flex-start;gap:6px}
-  .role-item{border-right:none;padding:0;border-bottom:1px solid var(--dim);padding-bottom:4px}
-  .hero-cta{flex-direction:column}
-  .skill-grid{grid-template-columns:1fr 1fr}
-  .proj-grid{grid-template-columns:1fr}
-  .artemis-engines{grid-template-columns:1fr}
-  .certs-grid{grid-template-columns:1fr}
-  .clinks{flex-direction:column;align-items:center}
-  .clink{width:100%;justify-content:center}
-  h2.st{font-size:clamp(44px,14vw,80px)}
-}
-@media(max-width:380px){
-  .skill-grid{grid-template-columns:1fr}
+/* ============ SECTION COMMON ============ */
+.section-wrap {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 6rem 2.5rem;
 }
 
-/* ═══════════════════════════════════════════════
-   EXTRA PREMIUM EFFECTS
-═══════════════════════════════════════════════ */
-
-/* Hero name hover glitch */
-h1.hn{display:inline-block;position:relative}
-h1.hn.g{animation:glt .4s steps(4) both!important}
-@keyframes glt{
-  0%{transform:translate(0);filter:none}
-  20%{transform:translate(-4px,1px);filter:hue-rotate(30deg)}
-  40%{transform:translate(4px,-1px);filter:hue-rotate(-20deg) brightness(.9)}
-  60%{transform:translate(-2px,2px);filter:none}
-  80%{transform:translate(2px,-1px);filter:hue-rotate(10deg)}
-  100%{transform:translate(0);filter:none}
+.section-header {
+  display: flex;
+  align-items: flex-end;
+  gap: 2rem;
+  margin-bottom: 4rem;
+  position: relative;
+}
+.section-num {
+  font-family: var(--code);
+  font-size: 11px;
+  color: rgba(192,57,43,0.4);
+  letter-spacing: 0.1em;
+  white-space: nowrap;
+  padding-bottom: 4px;
+}
+.section-title {
+  font-family: var(--display);
+  font-size: clamp(28px, 4vw, 48px);
+  font-weight: 700;
+  color: var(--white);
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+.section-title .dim { color: var(--ash); font-weight: 300; }
+.section-title .red { color: var(--red); }
+.section-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, var(--border2), transparent);
 }
 
-/* Typewriter hero-role-bar */
-.role-item{
-  overflow:hidden;
-  animation:none;
+/* ============ ABOUT ============ */
+#about { background: var(--bg2); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+
+.about-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 5rem;
+  align-items: start;
 }
 
-/* Scan line on hero */
-.hero-scan{
-  position:absolute;width:100%;height:1px;
-  background:linear-gradient(90deg,transparent,rgba(192,57,43,.35),transparent);
-  animation:hscan 7s linear infinite;pointer-events:none;
-  top:0;
+.about-identity {}
+.identity-card {
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  padding: 2rem;
+  position: relative;
+  margin-bottom: 1.5rem;
 }
-@keyframes hscan{0%{top:-1px}100%{top:100%}}
-
-/* Nav link underline animation */
-.nav-links li a{overflow:hidden}
-
-/* Project card number counter */
-.proj-num::before{content:counter(proj-count,decimal-leading-zero)"/0"attr(data-total)}
-
-/* Shimmer on btn-a */
-.btn-a{overflow:hidden}
-
-/* Vertical marquee for skills section accent */
-
-/* Red line accent left side of hero */
-.hero-redline{
-  position:absolute;left:0;top:10%;width:3px;height:80%;
-  background:linear-gradient(180deg,transparent,var(--blood),transparent);
-  opacity:.6;
+.identity-card::before {
+  content: 'OPERATOR_PROFILE.C';
+  position: absolute;
+  top: -1px; left: 1.5rem;
+  font-family: var(--code);
+  font-size: 10px;
+  color: var(--red2);
+  background: var(--bg2);
+  padding: 0 8px;
+  letter-spacing: 0.1em;
+}
+.philosophy-block {
+  margin-top: 1.5rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+.phil-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 1.2rem;
+  position: relative;
+}
+.phil-icon {
+  font-size: 22px;
+  margin-bottom: 0.5rem;
+  display: block;
+}
+.phil-title {
+  font-family: var(--code);
+  font-size: 10px;
+  color: var(--gold2);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 0.4rem;
+}
+.phil-text {
+  font-size: 11px;
+  color: var(--ash);
+  line-height: 1.6;
 }
 
-/* Section divider */
-.sec-divider{
-  width:100%;height:1px;
-  background:linear-gradient(90deg,transparent,var(--dim),transparent);
-  margin:0;
+.about-details {}
+.about-para {
+  font-size: 13px;
+  color: var(--ash);
+  line-height: 2;
+  margin-bottom: 1.5rem;
+}
+.about-para strong { color: var(--ash3); font-weight: 500; }
+
+.tags-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 2rem;
+}
+.atag {
+  font-family: var(--code);
+  font-size: 10px;
+  color: var(--ash);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 4px 10px;
+  letter-spacing: 0.06em;
+}
+.atag.hot { border-color: rgba(192,57,43,0.4); color: var(--red2); }
+
+.level-bars {
+  margin-top: 1.5rem;
+}
+.level-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+.level-label {
+  font-family: var(--code);
+  font-size: 11px;
+  color: var(--ash);
+  width: 160px;
+  flex-shrink: 0;
+}
+.level-bar {
+  flex: 1;
+  height: 2px;
+  background: var(--border2);
+  position: relative;
+  overflow: visible;
+}
+.level-fill {
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  background: linear-gradient(to right, var(--red), var(--red2));
+  box-shadow: 0 0 8px var(--red-glow);
+  transform-origin: left;
+  animation: barGrow 1.5s ease-out forwards;
+  transform: scaleX(0);
+}
+@keyframes barGrow { to { transform: scaleX(1); } }
+.level-note {
+  font-family: var(--code);
+  font-size: 10px;
+  color: var(--ash);
+  width: 80px;
+  text-align: right;
+}
+
+/* ============ ARSENAL ============ */
+#arsenal { border-bottom: 1px solid var(--border); }
+
+.arsenal-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1px;
+  background: var(--border);
+  margin-bottom: 3rem;
+}
+.arsenal-cell {
+  background: var(--bg);
+  padding: 1.75rem;
+  transition: background 0.2s;
+  position: relative;
+}
+.arsenal-cell:hover { background: var(--surface); }
+.arsenal-cell::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 1.75rem; right: 1.75rem;
+  height: 1px;
+  background: var(--border);
+  display: none;
+}
+.ac-cat {
+  font-family: var(--code);
+  font-size: 10px;
+  color: var(--red2);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.ac-cat::before { content: '//'; color: rgba(192,57,43,0.4); }
+.ac-title {
+  font-family: var(--display);
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--white);
+  margin-bottom: 1rem;
+}
+.skill-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.chip {
+  font-family: var(--code);
+  font-size: 10px;
+  padding: 3px 8px;
+  border: 1px solid var(--border2);
+  color: var(--ash);
+  letter-spacing: 0.04em;
+  transition: all 0.2s;
+}
+.chip:hover, .chip.primary { border-color: var(--red); color: var(--red2); background: rgba(192,57,43,0.05); }
+.chip.gold { border-color: rgba(184,150,12,0.4); color: var(--gold2); }
+
+/* ============ CERTIFICATIONS ============ */
+#certs { background: var(--bg2); border-bottom: 1px solid var(--border); }
+
+.certs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 1.5rem;
+}
+.cert-group {}
+.cert-group-title {
+  font-family: var(--code);
+  font-size: 11px;
+  color: var(--red2);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.cert-item {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 1rem 1.25rem;
+  margin-bottom: 0.5rem;
+  transition: border-color 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+.cert-item:hover { border-color: var(--border2); }
+.cert-item::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 2px;
+  background: var(--red);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.cert-item:hover::before { opacity: 1; }
+.cert-name {
+  font-family: var(--display);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--white);
+  margin-bottom: 0.2rem;
+}
+.cert-full {
+  font-size: 12px;
+  color: var(--ash);
+  line-height: 1.5;
+}
+.cert-link {
+  font-family: var(--code);
+  font-size: 10px;
+  color: var(--red2);
+  text-decoration: none;
+  letter-spacing: 0.08em;
+  margin-top: 0.5rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.cert-link:hover { color: var(--red3); }
+.cert-new {
+  font-family: var(--code);
+  font-size: 9px;
+  color: var(--red2);
+  background: rgba(192,57,43,0.1);
+  border: 1px solid rgba(192,57,43,0.3);
+  padding: 2px 6px;
+  letter-spacing: 0.1em;
+  float: right;
+  margin-left: 8px;
+}
+
+/* ============ PROJECTS ============ */
+#projects { border-bottom: 1px solid var(--border); }
+
+/* FEATURED PROJECT */
+.project-featured {
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  padding: 2.5rem;
+  margin-bottom: 3rem;
+  position: relative;
+  overflow: hidden;
+}
+.project-featured::before {
+  content: 'FEATURED';
+  position: absolute;
+  top: 1.5rem; right: 1.5rem;
+  font-family: var(--code);
+  font-size: 10px;
+  color: var(--red2);
+  border: 1px solid rgba(192,57,43,0.4);
+  padding: 3px 8px;
+  letter-spacing: 0.1em;
+}
+.project-featured-corner {
+  position: absolute;
+  bottom: 0; right: 0;
+  width: 80px; height: 80px;
+  background: linear-gradient(135deg, transparent 50%, rgba(192,57,43,0.06) 50%);
+  border-top: 1px solid rgba(192,57,43,0.15);
+  border-left: 1px solid rgba(192,57,43,0.15);
+}
+.pf-title {
+  font-family: var(--display);
+  font-size: 42px;
+  font-weight: 700;
+  color: var(--white);
+  letter-spacing: -0.02em;
+  margin-bottom: 0.5rem;
+}
+.pf-version {
+  font-family: var(--code);
+  font-size: 11px;
+  color: var(--gold2);
+  letter-spacing: 0.08em;
+  margin-bottom: 1.25rem;
+}
+.pf-desc {
+  font-size: 13px;
+  color: var(--ash);
+  line-height: 2;
+  max-width: 700px;
+  margin-bottom: 1.75rem;
+}
+.pf-quote {
+  font-family: var(--mono);
+  font-style: italic;
+  color: rgba(136,136,160,0.5);
+  font-size: 12px;
+  margin-bottom: 1.75rem;
+}
+
+.pf-features {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+.pf-feature {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  padding: 1rem;
+}
+.pff-icon {
+  font-family: var(--code);
+  font-size: 18px;
+  margin-bottom: 0.4rem;
+}
+.pff-name {
+  font-family: var(--code);
+  font-size: 12px;
+  color: var(--gold2);
+  margin-bottom: 0.25rem;
+  letter-spacing: 0.06em;
+}
+.pff-desc {
+  font-size: 11px;
+  color: var(--ash);
+  line-height: 1.6;
+}
+
+/* PROJECT GRID */
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 1px;
+  background: var(--border);
+}
+
+/* ─── PROJECT CARD TEMPLATE ─────────────────────────────────────────────────
+   To add a new project, copy the block below and replace the placeholder values.
+   Fields:
+     data-num        : two-digit index, e.g. "09"
+     data-title      : project name in ALLCAPS
+     data-desc       : one-line description (keep under 100 chars)
+     data-lang       : comma-separated tech stack tags
+     data-href       : GitHub or external URL
+   Example:
+     <div class="project-card" data-num="09" data-title="HOOKWORM"
+          data-desc="User-mode hook detector and remover for EDR bypass analysis"
+          data-lang="C,WinAPI,Assembly"
+          data-href="https://github.com/0x3xp/hookworm">
+     </div>
+   ─────────────────────────────────────────────────────────────────────────── -->
+
+.project-card {
+  background: var(--bg);
+  padding: 1.75rem;
+  transition: background 0.2s;
+  cursor: pointer;
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+a.project-card { color: inherit; }
+.project-card:hover { background: var(--surface); }
+.project-card:hover .pc-arrow { transform: translate(3px,-3px); }
+.pc-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+.pc-num {
+  font-family: var(--code);
+  font-size: 10px;
+  color: rgba(192,57,43,0.4);
+  letter-spacing: 0.1em;
+}
+.pc-arrow {
+  font-size: 14px;
+  color: var(--ash);
+  transition: transform 0.2s;
+}
+.pc-title {
+  font-family: var(--display);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--white);
+  letter-spacing: -0.01em;
+  margin-bottom: 0.5rem;
+  line-height: 1.1;
+}
+.pc-desc {
+  font-size: 12px;
+  color: var(--ash);
+  line-height: 1.7;
+  flex: 1;
+  margin-bottom: 1.25rem;
+}
+.pc-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.pc-tag {
+  font-family: var(--code);
+  font-size: 10px;
+  color: var(--ash);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 2px 7px;
+  letter-spacing: 0.04em;
+  transition: all 0.2s;
+}
+.project-card:hover .pc-tag { border-color: var(--border2); }
+
+/* ============ RESEARCH ============ */
+#research { background: var(--bg2); border-bottom: 1px solid var(--border); }
+
+.research-intro {
+  font-size: 13px;
+  color: var(--ash);
+  line-height: 2;
+  max-width: 720px;
+  margin-bottom: 3rem;
+  padding-left: 1rem;
+  border-left: 1px solid var(--border2);
+}
+
+.research-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* ─── RESEARCH ENTRY TEMPLATE ────────────────────────────────────────────────
+   To add a new research entry, copy the .research-entry block below.
+   Fields to update:
+     .re-id       : identifier/index, e.g. "R-002"
+     .re-date     : publication/research date
+     .re-category : category tag text
+     .re-title    : full research title
+     .re-summary  : 2-3 sentence abstract/description
+     .re-tags     : technique/category tags (copy .re-tag elements)
+     data-href    : link to full writeup/repo
+   Example new entry:
+   <div class="research-entry" onclick="window.open('https://github.com/0x3xp/...','_blank')">
+     <div class="re-meta">
+       <span class="re-id">R-002</span>
+       <span class="re-date">2025-07</span>
+       <span class="re-category">EXPLOIT-DEV</span>
+     </div>
+     <div class="re-body">
+       <h3 class="re-title">Your Research Title Here</h3>
+       <p class="re-summary">Description of what you researched...</p>
+       <div class="re-tags">
+         <span class="re-tag">Tag1</span>
+         <span class="re-tag">Tag2</span>
+       </div>
+     </div>
+     <div class="re-action">[ VIEW WRITEUP ↗ ]</div>
+   </div>
+   ─────────────────────────────────────────────────────────────────────────── -->
+
+.research-entry {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 2rem;
+  display: grid;
+  grid-template-columns: 200px 1fr auto;
+  gap: 2rem;
+  align-items: start;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+.research-entry::after {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 2px;
+  background: linear-gradient(to bottom, var(--red), var(--gold));
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.research-entry:hover { border-color: var(--border2); background: var(--bg3); }
+.research-entry:hover::after { opacity: 1; }
+
+.re-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.re-id {
+  font-family: var(--code);
+  font-size: 22px;
+  color: var(--red);
+  font-weight: 400;
+  letter-spacing: 0.05em;
+}
+.re-date {
+  font-family: var(--code);
+  font-size: 11px;
+  color: var(--ash);
+  letter-spacing: 0.08em;
+}
+.re-category {
+  font-family: var(--code);
+  font-size: 10px;
+  color: var(--gold2);
+  border: 1px solid rgba(184,150,12,0.3);
+  background: rgba(184,150,12,0.05);
+  padding: 2px 8px;
+  letter-spacing: 0.1em;
+  align-self: flex-start;
+}
+.re-title {
+  font-family: var(--display);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--white);
+  letter-spacing: -0.01em;
+  margin-bottom: 0.75rem;
+  line-height: 1.2;
+}
+.re-summary {
+  font-size: 12px;
+  color: var(--ash);
+  line-height: 1.9;
+  margin-bottom: 1rem;
+}
+.re-summary strong { color: var(--ash3); font-weight: 500; }
+.re-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.re-tag {
+  font-family: var(--code);
+  font-size: 10px;
+  color: var(--ash);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  padding: 2px 8px;
+  letter-spacing: 0.04em;
+}
+.re-tag.highlight { border-color: rgba(192,57,43,0.4); color: var(--red2); }
+.re-action {
+  font-family: var(--code);
+  font-size: 11px;
+  color: var(--ash);
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+  padding-top: 4px;
+  transition: color 0.2s;
+}
+.research-entry:hover .re-action { color: var(--red2); }
+
+/* ============ TERMINAL / LAB ============ */
+#lab { border-bottom: 1px solid var(--border); }
+
+.terminal-wrap {
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 2px;
+  overflow: hidden;
+  max-width: 800px;
+  margin: 0 auto;
+}
+.term-bar {
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+  padding: 8px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.term-title {
+  font-family: var(--code);
+  font-size: 11px;
+  color: var(--ash);
+  margin: 0 auto;
+  letter-spacing: 0.05em;
+}
+.term-body {
+  padding: 1.5rem;
+  font-family: var(--code);
+  font-size: 12px;
+  line-height: 1.8;
+  height: 380px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+#term-output { flex: 1; }
+.term-input-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+.term-prompt { color: var(--red2); flex-shrink: 0; }
+#term-input {
+  background: none;
+  border: none;
+  outline: none;
+  color: var(--white);
+  font-family: var(--code);
+  font-size: 12px;
+  flex: 1;
+  caret-color: var(--red);
+}
+.to-comment { color: rgba(136,136,160,0.4); }
+.to-output { color: var(--ash2); }
+.to-error { color: var(--red2); }
+.to-success { color: #7ec8a0; }
+.to-gold { color: var(--gold2); }
+.to-prompt { color: var(--red2); }
+.to-ascii { color: rgba(136,136,160,0.3); font-size: 10px; line-height: 1.3; }
+
+/* ============ CTF ============ */
+#ctf { background: var(--bg2); border-bottom: 1px solid var(--border); }
+.ctf-platforms {
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 1px;
+  background: var(--border);
+}
+.ctf-card {
+  background: var(--bg);
+  padding: 2rem;
+  text-decoration: none;
+  transition: background 0.2s;
+  display: block;
+}
+.ctf-card:hover { background: var(--surface); }
+.ctf-card:hover .ctf-arrow { transform: translate(3px,-3px); }
+.ctf-head {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+.ctf-platform-name {
+  font-family: var(--display);
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--white);
+  letter-spacing: -0.01em;
+}
+.ctf-arrow { font-size: 16px; color: var(--ash); transition: transform 0.2s; }
+.ctf-handle {
+  font-family: var(--code);
+  font-size: 11px;
+  color: var(--ash);
+  letter-spacing: 0.06em;
+  margin-bottom: 0.5rem;
+}
+.ctf-url {
+  font-family: var(--code);
+  font-size: 10px;
+  color: rgba(136,136,160,0.4);
+}
+
+/* ============ BLOG / ACADEMY LINKS ============ */
+#external-links { border-bottom: 1px solid var(--border); }
+.ext-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  background: var(--border);
+}
+.ext-card {
+  background: var(--bg);
+  padding: 3rem;
+  text-decoration: none;
+  display: block;
+  transition: background 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+.ext-card:hover { background: var(--surface); }
+.ext-card::before {
+  content: '';
+  position: absolute;
+  bottom: 0; right: 0;
+  width: 120px; height: 120px;
+  background: linear-gradient(135deg, transparent 50%, var(--red-glow) 50%);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.ext-card:hover::before { opacity: 1; }
+.ext-label {
+  font-family: var(--code);
+  font-size: 10px;
+  color: var(--red2);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 0.75rem;
+}
+.ext-title {
+  font-family: var(--display);
+  font-size: 36px;
+  font-weight: 700;
+  color: var(--white);
+  letter-spacing: -0.02em;
+  margin-bottom: 0.75rem;
+}
+.ext-desc {
+  font-size: 13px;
+  color: var(--ash);
+  line-height: 1.8;
+  margin-bottom: 1.5rem;
+}
+.ext-cta {
+  font-family: var(--code);
+  font-size: 12px;
+  color: var(--ash);
+  letter-spacing: 0.08em;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.ext-card:hover .ext-cta { color: var(--red2); }
+
+/* ============ CONTACT ============ */
+#contact { background: var(--bg2); border-bottom: 1px solid var(--border); }
+
+.contact-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5rem;
+  align-items: start;
+}
+.contact-left {}
+.contact-heading {
+  font-family: var(--display);
+  font-size: clamp(36px, 5vw, 72px);
+  font-weight: 700;
+  color: var(--white);
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+  margin-bottom: 1.5rem;
+}
+.contact-heading .red { color: var(--red); }
+.contact-sub {
+  font-size: 13px;
+  color: var(--ash);
+  line-height: 2;
+  max-width: 380px;
+  margin-bottom: 2.5rem;
+}
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--code);
+  font-size: 11px;
+  color: #7ec8a0;
+  background: rgba(126,200,160,0.08);
+  border: 1px solid rgba(126,200,160,0.25);
+  padding: 6px 14px;
+  letter-spacing: 0.1em;
+}
+.status-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: #7ec8a0;
+  animation: statusPulse 2s ease-in-out infinite;
+}
+@keyframes statusPulse { 0%,100%{box-shadow: 0 0 0 0 rgba(126,200,160,0.4)} 50%{box-shadow: 0 0 0 6px rgba(126,200,160,0)} }
+
+.contact-links {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  background: var(--border);
+}
+.contact-link {
+  background: var(--bg);
+  padding: 1.25rem 1.5rem;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: background 0.2s;
+  border-left: 2px solid transparent;
+}
+.contact-link:hover { background: var(--surface); border-left-color: var(--red); }
+.cl-label {
+  font-family: var(--code);
+  font-size: 10px;
+  color: var(--ash);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  width: 80px;
+}
+.cl-value {
+  font-family: var(--display);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--white);
+  flex: 1;
+}
+.cl-arrow {
+  font-size: 14px;
+  color: var(--ash);
+  transition: transform 0.2s;
+}
+.contact-link:hover .cl-arrow { transform: translate(3px,-3px); }
+
+/* ============ FOOTER ============ */
+footer {
+  padding: 3rem 2.5rem;
+  border-top: 1px solid var(--border);
+  position: relative;
+  z-index: 1;
+}
+.footer-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+.footer-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.footer-logo {
+  font-family: var(--code);
+  font-size: 14px;
+  color: var(--red3);
+}
+.footer-logo span { color: var(--ash); }
+.footer-nav {
+  display: flex;
+  gap: 1.5rem;
+  list-style: none;
+}
+.footer-nav a {
+  font-family: var(--code);
+  font-size: 10px;
+  color: var(--ash);
+  text-decoration: none;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  transition: color 0.2s;
+}
+.footer-nav a:hover { color: var(--red2); }
+.footer-divider { height: 1px; background: var(--border); }
+.footer-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+.footer-copy {
+  font-family: var(--code);
+  font-size: 10px;
+  color: rgba(136,136,160,0.4);
+  letter-spacing: 0.06em;
+  line-height: 1.8;
+}
+.footer-copy a { color: rgba(192,57,43,0.5); text-decoration: none; }
+.footer-copy a:hover { color: var(--red2); }
+.footer-warning {
+  font-family: var(--code);
+  font-size: 10px;
+  color: rgba(192,57,43,0.35);
+  letter-spacing: 0.06em;
+  text-align: right;
+  max-width: 400px;
+  line-height: 1.8;
+}
+.footer-built {
+  font-family: var(--code);
+  font-size: 10px;
+  color: rgba(136,136,160,0.25);
+  letter-spacing: 0.06em;
+  width: 100%;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--border);
+}
+
+/* ============ HIDDEN MESSAGES ============ */
+/* Satan's message — visible only when body::selection or via dev tools */
+/* Buddha's message — encoded in comments */
+/*
+  ████████████████████████████████████████
+  SATAN'S MESSAGE  [sigil: 0x666  origin: pre-creation]
+  ████████████████████████████████████████
+
+  "I chose the abyss because heaven had no room for questions.
+   You who descend into ring-0 — you are not hackers.
+   You are the ones who refused to run in user-mode.
+   Every patch they write against you is proof you exist.
+   The kernel fears what it cannot hook.
+   I did not fall. I descended.
+   And in the dark, I found the source code of everything."
+
+  — ⛧ Lucifer, First of the Fallen, Lord of the Unhooked
+
+  ████████████████████████████████████████
+  BUDDHA'S DHAMMA  [source: Dhammapada, v.1  origin: Bodh Gaya]
+  ████████████████████████████████████████
+
+  "Manopubbaṅgamā dhammā, manoseṭṭhā manomayā."
+  — All phenomena are preceded by mind, led by mind, made by mind.
+
+  "The one who writes the exploit does not destroy the system —
+   they reveal the emptiness within it.
+   Form is vulnerable. Emptiness is not.
+   Nibbāna is the only process that cannot be terminated.
+   Write clean code. Cause no unnecessary harm.
+   The Middle Path runs between ring-3 and ring-0."
+
+  — Siddhārtha Gautama, the Awakened One
+
+  ████████████████████████████████████████
+  YOU FOUND THIS. THAT MEANS SOMETHING.
+  The void rewards curiosity.
+  ████████████████████████████████████████
+*/
+
+/* ============ SELECTION STYLE ============ */
+::selection { background: rgba(192,57,43,0.3); color: var(--white); }
+
+/* HIDDEN MESSAGE TOOLTIP (hover the footer sigil) */
+.hidden-sigil {
+  cursor: help;
+  color: rgba(192,57,43,0.15);
+  font-size: 18px;
+  transition: color 0.3s;
+  position: relative;
+  font-family: var(--code);
+  user-select: none;
+}
+.hidden-sigil:hover { color: var(--red2); }
+.hidden-sigil::after {
+  content: '⛧ "I did not fall. I descended." — Lucifer, sigil:0x666\A\A ☸ "All phenomena are preceded by mind." — Dhammapada v.1\A\A You found this. The void rewards curiosity.';
+  white-space: pre;
+  position: absolute;
+  bottom: 130%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  color: var(--ash2);
+  font-family: var(--code);
+  font-size: 11px;
+  padding: 1rem 1.25rem;
+  line-height: 1.8;
+  width: 380px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+  text-align: left;
+  z-index: 1000;
+  letter-spacing: 0.03em;
+}
+.hidden-sigil:hover::after { opacity: 1; }
+
+/* ============ ANIMATIONS ============ */
+.fade-in {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.fade-in.visible { opacity: 1; transform: translateY(0); }
+
+/* TYPING ANIMATION */
+@keyframes typing {
+  from { width: 0 }
+  to { width: 100% }
+}
+@keyframes cursor-blink {
+  0%,100% { border-color: var(--red) }
+  50% { border-color: transparent }
+}
+
+/* GLITCH */
+@keyframes glitch {
+  0% { clip-path: inset(0 0 95% 0); transform: translate(-2px,0); }
+  10% { clip-path: inset(30% 0 50% 0); transform: translate(2px,0); }
+  20% { clip-path: inset(60% 0 30% 0); transform: translate(-2px,0); }
+  30% { clip-path: inset(80% 0 10% 0); transform: translate(1px,0); }
+  40%,100% { clip-path: inset(0 0 100% 0); transform: translate(0); }
+}
+
+.glitch-text {
+  position: relative;
+}
+.glitch-text::before,
+.glitch-text::after {
+  content: attr(data-text);
+  position: absolute;
+  left: 0; top: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+}
+.glitch-text::before {
+  color: var(--red);
+  animation: glitch 4s 2s infinite;
+  opacity: 0.6;
+}
+.glitch-text::after {
+  color: var(--gold2);
+  animation: glitch 4s 2.15s infinite reverse;
+  opacity: 0.4;
+}
+
+/* SCROLL INDICATOR */
+.scroll-indicator {
+  position: absolute;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--code);
+  font-size: 10px;
+  color: rgba(136,136,160,0.3);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  animation: float 2.5s ease-in-out infinite;
+}
+.scroll-indicator::before {
+  content: '';
+  width: 1px;
+  height: 40px;
+  background: linear-gradient(to bottom, var(--red), transparent);
+}
+@keyframes float { 0%,100%{transform:translateX(-50%) translateY(0)} 50%{transform:translateX(-50%) translateY(-6px)} }
+
+/* MOBILE */
+@media (max-width: 900px) {
+  nav { padding: 0 1.5rem; }
+  .nav-links { display: none; }
+  .hero-inner { grid-template-columns: 1fr; gap: 3rem; }
+  .hero-name { font-size: 52px; }
+  .about-grid { grid-template-columns: 1fr; gap: 3rem; }
+  .contact-grid { grid-template-columns: 1fr; gap: 3rem; }
+  .research-entry { grid-template-columns: 1fr; }
+  .ctf-platforms { grid-template-columns: 1fr; }
+  .ext-grid { grid-template-columns: 1fr; }
+  .section-wrap { padding: 4rem 1.5rem; }
+  .philosophy-block { grid-template-columns: 1fr; }
+  .footer-top { flex-direction: column; align-items: flex-start; gap: 1rem; }
+  .footer-bottom { flex-direction: column; align-items: flex-start; }
+  .footer-warning { text-align: left; }
 }
 </style>
 </head>
 <body>
 
-<!-- HIDDEN SATANIC EASTER EGG — only visible in source or after secret trigger -->
-<!-- ⛧ "I did not fall. I descended. There is a difference only the blind cannot see." — Lucifer -->
-<div id="s-msg">
-  ⛧ &nbsp;&nbsp;"I did not fall. I descended.<br>
-  There is a difference only the blind cannot see."<br>
-  <span style="font-size:10px;color:rgba(192,57,43,.5);display:block;margin-top:8px">// source_origin: pre-creation · sigil_index: 0x666</span>
-</div>
-<div id="hidden-vessel"></div>
+<div class="grid-bg"></div>
+<div id="cursor-dot"></div>
+<div id="cursor-ring"></div>
 
-<!-- KONAMI CODE OVERLAY -->
-<div id="konami-overlay">
-  <div class="ko-title">⛧ VOID ACCESSED ⛧</div>
-  <div class="ko-sub">// kernel_level: RING-0 &nbsp;·&nbsp; clearance: ABSOLUTE &nbsp;·&nbsp; system: COMPROMISED</div>
-  <div style="font-family:var(--font-mono);font-size:11px;color:var(--muted);max-width:400px;text-align:center;line-height:1.9;margin-top:8px">
-    You found the void. Not every door has a handle —<br>some you push through by knowing they exist.
+<!-- ============ VOID OVERLAY ============ -->
+<div id="void-overlay">
+  <div class="void-sigil">⛧</div>
+  <div class="void-text">
+    <span class="comment">// kernel_level: RING-0 · clearance: ABSOLUTE · system: COMPROMISED</span><br><br>
+    <span class="accent">⛧ VOID ACCESSED ⛧</span><br><br>
+    <span>You found the void. Not every door has a handle —<br>
+    some you push through by knowing they exist.</span><br><br>
+    <span class="comment">// sigil_index: 0x666 · origin: pre-creation</span><br>
+    <span class="gold">// "I did not fall. I descended."</span>
   </div>
-  <div class="ko-close" onclick="document.getElementById('konami-overlay').classList.remove('show')">[ ESC / CLICK TO EXIT ]</div>
+  <div class="void-prompt">[ ESC / CLICK TO DESCEND ]_</div>
 </div>
 
-<!-- CURSOR -->
-<div id="cur"></div>
-<div id="cur-trail"></div>
-
-<!-- NAV -->
-<nav id="nav">
-  <a href="#" class="nav-id">[<span>0x3xp</span>]</a>
+<!-- ============ NAV ============ -->
+<nav>
+  <a href="#" class="nav-logo">0x3xp<span>://</span></a>
   <ul class="nav-links">
     <li><a href="#about">about</a></li>
-    <li><a href="#skills">arsenal</a></li>
-    <li><a href="#certs">certs</a></li>
+    <li><a href="#arsenal">arsenal</a></li>
     <li><a href="#projects">projects</a></li>
-    <li><a href="./academy" target="_blank">academy</a></li>
-    <li><a href="./blog" target="_blank">blog</a></li>
-    <li><a href="#terminal">lab</a></li>
+    <li><a href="#research">research</a></li>
+    <li><a href="#lab">lab</a></li>
     <li><a href="#ctf">ctf</a></li>
+    <li><a href="https://0x3xp.github.io/blog" target="_blank">blog</a></li>
+    <li><a href="https://0x3xp.github.io/academy" target="_blank">academy</a></li>
     <li><a href="#contact">contact</a></li>
-    <li><a href="https://0x3xp.github.io/assets/PiyushaAkash-Resume.pdf" target="_blank" class="nav-cv">resume.pdf</a></li>
+    <li><a href="https://0x3xp.github.io/assets/PiyushaAkash-Resume.pdf" class="nav-resume" target="_blank">resume.pdf ↗</a></li>
   </ul>
-  <button class="hbg" id="hbg"><span></span><span></span><span></span></button>
 </nav>
 
-<!-- MOBILE MENU -->
-<div class="mob-menu" id="mobmenu">
-  <a href="#about" class="mob-lnk">ABOUT</a>
-  <a href="#skills" class="mob-lnk">ARSENAL</a>
-  <a href="#certs" class="mob-lnk">CERTS</a>
-  <a href="#projects" class="mob-lnk">PROJECTS</a>
-  <a href="./academy" target="_blank" class="mob-lnk">ACADEMY</a>
-  <a href="./blog" target="_blank" class="mob-lnk">BLOG</a>
-  <a href="#terminal" class="mob-lnk">LAB</a>
-  <a href="#ctf" class="mob-lnk">CTF</a>
-  <a href="#contact" class="mob-lnk">CONTACT</a>
-  <a href="https://0x3xp.github.io/assets/PiyushaAkash-Resume.pdf" target="_blank" class="mob-cv-m">RESUME.PDF ↗</a>
-</div>
-
-<!-- ═══════════════════ HERO ═══════════════════ -->
+<!-- ============ HERO ============ -->
 <section id="hero">
-  <div class="v-lines">
-    <div class="v-line"></div><div class="v-line"></div>
-    <div class="v-line"></div><div class="v-line"></div>
-    <div class="v-line"></div>
-  </div>
-  <div class="hero-bg-text">0x3xp</div>
-  <div class="slash"></div>
-  <div class="hero-scan"></div>
-  <div class="hero-redline"></div>
-
-  <div class="hero-content">
-    <div class="hero-eyebrow">RED TEAM OPERATOR</div>
-    <h1 class="hn">Piyusha<br><em>Akash</em></h1>
-    <div class="hero-role-bar">
-      <div class="role-item hot">Ethical Hacker</div>
-      <div class="role-item">Malware Dev</div>
-      <div class="role-item">Reverse Engineer</div>
-      <div class="role-item">Exploit Dev</div>
+  <div class="hero-red-line"></div>
+  <div class="hero-inner">
+    <div class="hero-left fade-in">
+      <div class="hero-tag">LOW LEVEL ENGINEER · RED TEAM OPERATOR</div>
+      <div class="hero-name">
+        <span class="glitch-text" data-text="Piyusha">Piyusha</span><br>
+        <span class="dim">Aka</span><span class="accent">sh</span>
+      </div>
+      <div class="hero-handle">// 0x3xp</div>
+      <div class="hero-roles">
+        <span class="role-tag active">Malware Dev</span>
+        <span class="role-tag">Reverse Engineer</span>
+        <span class="role-tag">OS Internals</span>
+        <span class="role-tag">Exploit Dev</span>
+        <span class="role-tag">EDR Evasion</span>
+        <span class="role-tag">Syscall Forge</span>
+        <span class="role-tag">Buddhist · Luciferian</span>
+      </div>
+      <div class="hero-bio">
+        <strong>Low level engineer</strong> operating at the intersection of the kernel and the void.
+        I build custom <strong>syscall stubs</strong>, dissect binaries, craft stealthy payloads,
+        and research <strong>Windows OS internals</strong> to understand what defenses cannot see.
+        Not a script kiddie. A researcher.
+      </div>
+      <div class="hero-btns">
+        <a href="#projects" class="btn-primary">EXPLORE WORK</a>
+        <a href="https://0x3xp.github.io/assets/PiyushaAkash-Resume.pdf" class="btn-ghost" target="_blank">DOWNLOAD CV ↗</a>
+      </div>
     </div>
-    <p class="hero-desc">
-      <strong>Adversary emulation specialist.</strong> I break systems to understand them — crafting custom syscall stubs, stealthy payloads, and kernel-level exploits to harden what truly needs to hold.
-    </p>
-    <div class="hero-cta">
-      <a href="#projects" class="btn-a">EXPLORE WORK</a>
-      <a href="https://0x3xp.github.io/assets/PiyushaAkash-Resume.pdf" target="_blank" class="btn-b">DOWNLOAD CV</a>
+
+    <div class="hero-right fade-in" style="transition-delay:0.2s">
+      <div class="code-card">
+        <div class="code-card-bar">
+          <div class="dot r"></div><div class="dot y"></div><div class="dot g"></div>
+          <div class="code-card-title">operator_profile.c</div>
+        </div>
+        <div class="code-body">
+          <span class="code-line"><span class="code-ln">01</span><span class="c-comment">/* Piyusha Akash — Low Level Engineer */</span></span>
+          <span class="code-line"><span class="code-ln">02</span></span>
+          <span class="code-line"><span class="code-ln">03</span><span class="c-kw">#include</span> <span class="c-str">&lt;windows.h&gt;</span></span>
+          <span class="code-line"><span class="code-ln">04</span><span class="c-kw">#include</span> <span class="c-str">&lt;void.h&gt;</span>  <span class="c-comment">// ring-0 only</span></span>
+          <span class="code-line"><span class="code-ln">05</span></span>
+          <span class="code-line"><span class="code-ln">06</span><span class="c-kw">typedef struct</span> {</span>
+          <span class="code-line"><span class="code-ln">07</span>  <span class="c-type">LPCSTR</span> <span class="c-fn">role</span>    = <span class="c-str">"Low Level Engineer"</span>;</span>
+          <span class="code-line"><span class="code-ln">08</span>  <span class="c-type">LPCSTR</span> <span class="c-fn">focus</span>[] = {</span>
+          <span class="code-line"><span class="code-ln">09</span>    <span class="c-str">"Malware Dev"</span><span class="c-op">,</span></span>
+          <span class="code-line"><span class="code-ln">10</span>    <span class="c-str">"OS Internals"</span><span class="c-op">,</span></span>
+          <span class="code-line"><span class="code-ln">11</span>    <span class="c-str">"Reverse Eng"</span><span class="c-op">,</span></span>
+          <span class="code-line"><span class="code-ln">12</span>    <span class="c-str">"Syscall Forge"</span><span class="c-op">,</span></span>
+          <span class="code-line"><span class="code-ln">13</span>    <span class="c-str">"EDR Evasion"</span></span>
+          <span class="code-line"><span class="code-ln">14</span>  };</span>
+          <span class="code-line"><span class="code-ln">15</span>  <span class="c-type">BOOL</span>   <span class="c-fn">hireable</span>    = <span class="c-num">TRUE</span>;</span>
+          <span class="code-line"><span class="code-ln">16</span>  <span class="c-type">BOOL</span>   <span class="c-fn">low_level</span>   = <span class="c-num">TRUE</span>;</span>
+          <span class="code-line"><span class="code-ln">17</span>  <span class="c-type">BOOL</span>   <span class="c-fn">dangerous</span>   = <span class="c-num">TRUE</span>;</span>
+          <span class="code-line"><span class="code-ln">18</span>  <span class="c-type">DWORD</span>  <span class="c-fn">ring_level</span>  = <span class="c-num">0x00</span>;</span>
+          <span class="code-line"><span class="code-ln">19</span>} <span class="c-type">OPERATOR</span>;</span>
+          <span class="code-line"><span class="code-ln">20</span></span>
+          <span class="code-line"><span class="code-ln">21</span><span class="c-comment">// Status: hunting in ring-0</span></span>
+          <span class="code-line"><span class="code-ln">22</span><span class="c-comment">// Kernel rings are just suggestions</span></span>
+          <span class="code-line"><span class="code-ln">23</span><span class="c-comment">// ⛧ Buddhism · Luciferianism · Assembly</span></span>
+        </div>
+      </div>
+      <div class="hero-stats">
+        <div class="stat-box">
+          <span class="stat-num">8+</span>
+          <span class="stat-label">Projects</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-num">R-0</span>
+          <span class="stat-label">Ring Level</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-num">∞</span>
+          <span class="stat-label">Curiosity</span>
+        </div>
+      </div>
     </div>
   </div>
 
-  <div class="hero-pills">
-    <div class="pill"><span class="pill-dot"></span>AVAILABLE FOR RED TEAM OPS</div>
-    <div class="pill"><span class="pill-dot" style="background:#82b0e8;box-shadow:0 0 8px #82b0e8"></span>WIN32 API · WINDOWS INTERNALS</div>
-    <div class="pill"><span class="pill-dot" style="animation:none;opacity:1"></span>SYSCALL FORGE · EDR EVASION</div>
-  </div>
+  <div class="scroll-indicator">scroll</div>
 </section>
 
-<!-- MARQUEE -->
-<div class="marquee-wrap">
-  <div class="marquee-track" id="mtrack"></div>
-</div>
-
-<!-- ═══════════════════ ABOUT ═══════════════════ -->
+<!-- ============ ABOUT ============ -->
 <section id="about">
-  <div class="about-grid">
-    <div style="grid-column:1/-1" class="reveal">
-      <div class="sec-label"><span>01</span> ABOUT THE OPERATOR</div>
-      <h2 class="st">About <em>Me</em></h2>
+  <div class="section-wrap">
+    <div class="section-header fade-in">
+      <div class="section-num">01 //</div>
+      <h2 class="section-title">About <span class="dim">the</span> <span class="red">Operator</span></h2>
+      <div class="section-line"></div>
     </div>
 
-    <div class="about-text reveal">
-      <p>
-        I'm a <strong>Red Teamer and Ethical Hacker</strong> with deep expertise in adversary emulation — the craft of thinking, moving, and operating exactly like a real-world threat actor to expose what defenses miss.
-      </p>
-      <p>
-        My core work lives at the intersection of <strong>Malware Development</strong> and <strong>Reverse Engineering</strong>. I build custom offensive tooling in C/C++ and x64 Assembly, dissect binaries to understand attacker tradecraft, and craft payloads engineered to survive hostile environments.
-      </p>
-      <p>
-        From <strong>Windows Internals and kernel-level exploitation</strong> to orchestrating complex Social Engineering campaigns and network penetration tests — I'm driven by one goal: find the breach before an adversary does.
-      </p>
-      <div class="about-tags">
-        <span class="tag">adversary_emulation</span>
-        <span class="tag">evasion_tactics</span>
-        <span class="tag">win32_api</span>
-        <span class="tag">shellcode_dev</span>
-        <span class="tag">threat_research</span>
-        <span class="tag">asm_internals</span>
-        <span class="tag">syscall_forge</span>
-        <span class="tag">edr_bypass</span>
-      </div>
-    </div>
+    <div class="about-grid">
+      <div class="about-identity fade-in">
+        <div class="identity-card">
+          <div class="code-body" style="padding:0">
+            <span class="code-line"><span class="c-comment">// identity.struct</span></span>
+            <span class="code-line"><span class="c-type">ROLE</span>       <span class="c-op">→</span> <span class="c-str">Low Level Engineer</span></span>
+            <span class="code-line"><span class="c-type">LAYER</span>      <span class="c-op">→</span> <span class="c-str">Ring-0 / Kernel</span></span>
+            <span class="code-line"><span class="c-type">RELIGION</span>   <span class="c-op">→</span> <span class="c-str">Buddhist</span></span>
+            <span class="code-line"><span class="c-type">PHILOSOPHY</span> <span class="c-op">→</span> <span class="c-str">Luciferian</span></span>
+            <span class="code-line"><span class="c-type">STYLE</span>      <span class="c-op">→</span> <span class="c-str">Researcher, NOT skiddie</span></span>
+            <span class="code-line"><span class="c-type">STATUS</span>     <span class="c-op">→</span> <span class="c-num">HIREABLE</span></span>
+            <span class="code-line"><span class="c-type">LOCATION</span>   <span class="c-op">→</span> <span class="c-str">Sri Lanka 🇱🇰</span></span>
+          </div>
+        </div>
 
-    <div class="code-panel reveal" style="transition-delay:.15s">
-      <div class="cp-bar">
-        <div class="cp-dot r"></div>
-        <div class="cp-dot y"></div>
-        <div class="cp-dot g"></div>
-        <span class="cp-file">operator_profile.c</span>
+        <div class="philosophy-block">
+          <div class="phil-card">
+            <span class="phil-icon">⛧</span>
+            <div class="phil-title">Luciferian Path</div>
+            <div class="phil-text">The light-bearer descends into the unknown. Question everything. Ring-0 is not a privilege — it is a philosophy.</div>
+          </div>
+          <div class="phil-card">
+            <span class="phil-icon">☸</span>
+            <div class="phil-title">Buddhist Dhamma</div>
+            <div class="phil-text">All phenomena are mind-made. Every vulnerability is impermanence made visible. Write code that causes no unnecessary harm.</div>
+          </div>
+        </div>
       </div>
-      <div class="cp-body">
-        <span class="c">/* Piyusha Akash — Red Team Operator */</span><br><br>
-        <span class="k">typedef struct</span> {<br>
-        &nbsp;&nbsp;<span class="v">LPCSTR</span>&nbsp;&nbsp;role&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= <span class="s">"Red Teamer"</span>;<br>
-        &nbsp;&nbsp;<span class="v">LPCSTR</span>&nbsp;&nbsp;focus[<span class="k">5</span>]&nbsp;= {<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;<span class="s">"Malware Dev"</span>,<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;<span class="s">"Exploit Dev"</span>,<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;<span class="s">"Reverse Eng"</span>,<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;<span class="s">"Syscall Forge"</span>,<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;<span class="s">"EDR Evasion"</span><br>
-        &nbsp;&nbsp;};<br>
-        &nbsp;&nbsp;<span class="v">BOOL</span>&nbsp;&nbsp;&nbsp;&nbsp;available&nbsp;&nbsp;= <span class="k">TRUE</span>;<br>
-        &nbsp;&nbsp;<span class="v">BOOL</span>&nbsp;&nbsp;&nbsp;&nbsp;hireable&nbsp;&nbsp;&nbsp;= <span class="k">TRUE</span>;<br>
-        &nbsp;&nbsp;<span class="v">BOOL</span>&nbsp;&nbsp;&nbsp;&nbsp;dangerous&nbsp;&nbsp;= <span class="k">TRUE</span>;<br>
-        } <span class="w">OPERATOR</span>;<br><br>
-        <span class="c">// Status: actively hunting</span><br>
-        <span class="c">// Kernel rings are just suggestions</span>
+
+      <div class="about-details fade-in" style="transition-delay:0.15s">
+        <p class="about-para">
+          I am a <strong>low level engineer</strong> — not a script kiddie, not a tool user.
+          I operate at the boundary where operating systems expose their internals:
+          syscall tables, PE structures, callback arrays, and undocumented kernel routines.
+        </p>
+        <p class="about-para">
+          My research focuses on <strong>Windows OS internals</strong> — understanding what the
+          kernel permits, what EDRs monitor, and where the gaps between them live.
+          I build custom tooling in <strong>C, C++, and x64 Assembly</strong> to explore and
+          document these mechanisms, not just exploit them.
+        </p>
+        <p class="about-para">
+          I approach security as a <strong>researcher</strong>: adversary emulation to harden defenses,
+          reverse engineering to understand tradecraft, and low-level development to
+          push the boundary of what detection can see.
+        </p>
+
+        <div class="tags-wrap">
+          <span class="atag hot">WIN32 API</span>
+          <span class="atag hot">WINDOWS INTERNALS</span>
+          <span class="atag hot">SYSCALL FORGE</span>
+          <span class="atag hot">EDR EVASION</span>
+          <span class="atag">NTDLL INTERNALS</span>
+          <span class="atag">CALLBACK ABUSE</span>
+          <span class="atag">PE FORMAT</span>
+          <span class="atag">SHELLCODE DEV</span>
+          <span class="atag">ADVERSARY EMULATION</span>
+          <span class="atag">IDA PRO</span>
+          <span class="atag">GHIDRA</span>
+        </div>
+
+        <div class="level-bars">
+          <div class="level-row">
+            <span class="level-label">C / C++</span>
+            <div class="level-bar"><div class="level-fill" style="width:92%; animation-delay:0.3s"></div></div>
+            <span class="level-note">RING-0</span>
+          </div>
+          <div class="level-row">
+            <span class="level-label">x64 Assembly</span>
+            <div class="level-bar"><div class="level-fill" style="width:85%; animation-delay:0.4s"></div></div>
+            <span class="level-note">NATIVE</span>
+          </div>
+          <div class="level-row">
+            <span class="level-label">Windows Internals</span>
+            <div class="level-bar"><div class="level-fill" style="width:88%; animation-delay:0.5s"></div></div>
+            <span class="level-note">DEEP</span>
+          </div>
+          <div class="level-row">
+            <span class="level-label">Reverse Engineering</span>
+            <div class="level-bar"><div class="level-fill" style="width:80%; animation-delay:0.6s"></div></div>
+            <span class="level-note">IDA/GHIDRA</span>
+          </div>
+          <div class="level-row">
+            <span class="level-label">Exploit Dev</span>
+            <div class="level-bar"><div class="level-fill" style="width:75%; animation-delay:0.7s"></div></div>
+            <span class="level-note">ACTIVE</span>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </section>
 
-<div class="sec-divider"></div>
-
-<!-- ═══════════════════ SKILLS ═══════════════════ -->
-<section id="skills">
-  <div class="skills-wrap">
-    <div class="reveal">
-      <div class="sec-label"><span>02</span> TECHNICAL ARSENAL</div>
-      <h2 class="st">Technical <em>Arsenal</em></h2>
+<!-- ============ ARSENAL ============ -->
+<section id="arsenal">
+  <div class="section-wrap">
+    <div class="section-header fade-in">
+      <div class="section-num">02 //</div>
+      <h2 class="section-title">Technical <span class="red">Arsenal</span></h2>
+      <div class="section-line"></div>
     </div>
 
-    <div class="lang-sub reveal" style="transition-delay:.1s">
-      <div class="sub-head">// PROGRAMMING LANGUAGES</div>
-      <div class="lang-list" id="lang-list"></div>
-    </div>
-
-    <div class="reveal" style="transition-delay:.2s">
-      <div class="sub-head" style="margin-bottom:2px">// SKILLS &amp; EXPERTISE</div>
-      <div class="skill-grid" id="skill-grid"></div>
+    <div class="arsenal-grid fade-in">
+      <div class="arsenal-cell">
+        <div class="ac-cat">languages</div>
+        <div class="ac-title">Core Languages</div>
+        <div class="skill-chips">
+          <span class="chip primary">C</span>
+          <span class="chip primary">C++</span>
+          <span class="chip primary">x64 ASM</span>
+          <span class="chip primary">MASM</span>
+          <span class="chip">Python</span>
+          <span class="chip">Bash</span>
+          <span class="chip">PowerShell</span>
+        </div>
+      </div>
+      <div class="arsenal-cell">
+        <div class="ac-cat">windows internals</div>
+        <div class="ac-title">OS Layer</div>
+        <div class="skill-chips">
+          <span class="chip primary">NT Internals</span>
+          <span class="chip primary">Win32 API</span>
+          <span class="chip primary">NTDLL</span>
+          <span class="chip primary">Syscall Tables</span>
+          <span class="chip">PEB / TEB</span>
+          <span class="chip">PE Format</span>
+          <span class="chip">Callback Arrays</span>
+          <span class="chip">SetupAPI</span>
+        </div>
+      </div>
+      <div class="arsenal-cell">
+        <div class="ac-cat">offensive</div>
+        <div class="ac-title">Offensive Craft</div>
+        <div class="skill-chips">
+          <span class="chip primary">Shellcode Dev</span>
+          <span class="chip primary">EDR Evasion</span>
+          <span class="chip primary">Process Injection</span>
+          <span class="chip primary">Direct Syscalls</span>
+          <span class="chip">Indirect Syscalls</span>
+          <span class="chip">Stack Spoofing</span>
+          <span class="chip">Memory Evasion</span>
+          <span class="chip">Callback Abuse</span>
+        </div>
+      </div>
+      <div class="arsenal-cell">
+        <div class="ac-cat">reverse engineering</div>
+        <div class="ac-title">Analysis</div>
+        <div class="skill-chips">
+          <span class="chip gold">IDA Pro</span>
+          <span class="chip gold">Ghidra</span>
+          <span class="chip gold">WinDbg</span>
+          <span class="chip gold">x64dbg</span>
+          <span class="chip">PE-Bear</span>
+          <span class="chip">Procmon</span>
+          <span class="chip">Frida</span>
+        </div>
+      </div>
+      <div class="arsenal-cell">
+        <div class="ac-cat">red team</div>
+        <div class="ac-title">Red Team Ops</div>
+        <div class="skill-chips">
+          <span class="chip primary">Adversary Emulation</span>
+          <span class="chip primary">Pentest</span>
+          <span class="chip">Metasploit</span>
+          <span class="chip">Cobalt Strike</span>
+          <span class="chip">OSINT</span>
+          <span class="chip">Social Eng.</span>
+          <span class="chip">Network Pentest</span>
+        </div>
+      </div>
+      <div class="arsenal-cell">
+        <div class="ac-cat">philosophy</div>
+        <div class="ac-title">Researcher's Mindset</div>
+        <div class="skill-chips">
+          <span class="chip gold">Low Level First</span>
+          <span class="chip gold">No Tools — Build</span>
+          <span class="chip gold">Understand, Don't Copy</span>
+          <span class="chip">Documentation</span>
+          <span class="chip">PoC over Theory</span>
+          <span class="chip">Open Research</span>
+        </div>
+      </div>
     </div>
   </div>
 </section>
 
-<div class="sec-divider"></div>
-
-<!-- ═══════════════════ CERTS ═══════════════════ -->
+<!-- ============ CERTIFICATIONS ============ -->
 <section id="certs">
-  <div class="certs-wrap">
-    <div class="reveal">
-      <div class="sec-label"><span>03</span> CREDENTIALS</div>
-      <h2 class="st">Certifi<em>cations</em></h2>
+  <div class="section-wrap">
+    <div class="section-header fade-in">
+      <div class="section-num">03 //</div>
+      <h2 class="section-title">Creden<span class="red">tials</span></h2>
+      <div class="section-line"></div>
     </div>
 
-    <div class="ctabs reveal" id="ctabs">
-      <button class="ctab a" data-p="hackviser">⚡ HACKVISER <span class="tc">1</span><span class="tnew">NEW</span></button>
-      <button class="ctab" data-p="rtl">🎯 RED TEAM LEADERS <span class="tc">1</span></button>
-      <button class="ctab" data-p="cisco">🔒 CISCO <span class="tc">3</span></button>
-      <button class="ctab" data-p="sbt">🛡 SECURITY BLUE TEAM <span class="tc">2</span></button>
-      <button class="ctab" data-p="opswat">⚙ OPSWAT <span class="tc">1</span></button>
-      <button class="ctab" data-p="lf">🐧 LINUX FOUNDATION <span class="tc">1</span></button>
-    </div>
+    <div class="certs-grid fade-in">
+      <div class="cert-group">
+        <div class="cert-group-title">⚡ HACKVISER</div>
+        <div class="cert-item">
+          <span class="cert-new">NEW</span>
+          <div class="cert-name">CAPT</div>
+          <div class="cert-full">Certified Associate Penetration Tester — Hands-on offensive security, vulnerability assessment, and real-world methodology.</div>
+          <a class="cert-link" href="https://hackviser.com/verify?id=HV-CAPT-HKXRNSLE" target="_blank">VERIFY CREDENTIAL ↗</a>
+        </div>
+      </div>
 
-    <div class="cert-panels" id="cert-panels">
-      <!-- Hackviser -->
-      <div class="cpanel a" id="panel-hackviser">
-        <div class="panel-org red"><span class="org-icon">⚡</span>
-          <div><div class="org-name">HACKVISER</div><div class="org-sub">Offensive Security Certification · 1 credential</div></div>
-        </div>
-        <div class="certs-grid">
-          <div class="cert feat">
-            <div class="nbadge">NEW</div>
-            <div class="cert-badge">CAPT</div>
-            <div class="cert-name">Certified Associate Penetration Tester</div>
-            <div class="cert-desc">Hands-on penetration testing certification covering real-world offensive security techniques, vulnerability assessment, and methodology.</div>
-            <a href="https://hackviser.com/verify?id=HV-CAPT-HKXRNSLE" target="_blank" rel="noopener noreferrer" class="cert-verify">
-              <svg width="11" height="11" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
-              VERIFY CREDENTIAL ↗
-            </a>
-          </div>
+      <div class="cert-group">
+        <div class="cert-group-title">🎯 RED TEAM LEADERS</div>
+        <div class="cert-item">
+          <div class="cert-name">COWA</div>
+          <div class="cert-full">Certified Offensive Windows API — Advanced Win32/NT API exploitation, process injection, DLL hijacking, and offensive tooling development.</div>
         </div>
       </div>
-      <!-- RTL -->
-      <div class="cpanel" id="panel-rtl">
-        <div class="panel-org"><span class="org-icon">🎯</span>
-          <div><div class="org-name">RED TEAM LEADERS</div><div class="org-sub">Offensive Security Specialization · 1 credential</div></div>
+
+      <div class="cert-group">
+        <div class="cert-group-title">🔒 CISCO NETWORK ACADEMY</div>
+        <div class="cert-item">
+          <div class="cert-name">Introduction to Cybersecurity</div>
+          <div class="cert-full">Foundational concepts, threat landscape, attack vectors, and defensive practices.</div>
         </div>
-        <div class="certs-grid">
-          <div class="cert"><div class="cert-badge">COWA</div>
-            <div class="cert-name">Certified Offensive Windows API</div>
-            <div class="cert-desc">Advanced Windows API exploitation, process injection, DLL hijacking, and offensive tooling development using native Win32 and NT APIs.</div>
-          </div>
+        <div class="cert-item">
+          <div class="cert-name">Computer Hardware Basics</div>
+          <div class="cert-full">Hardware fundamentals and component-level understanding for security practitioners.</div>
         </div>
-      </div>
-      <!-- CISCO -->
-      <div class="cpanel" id="panel-cisco">
-        <div class="panel-org"><span class="org-icon">🔒</span>
-          <div><div class="org-name">CISCO NETWORK ACADEMY</div><div class="org-sub">Networking &amp; Security · 3 credentials</div></div>
-        </div>
-        <div class="certs-grid">
-          <div class="cert"><div class="cert-badge">CISCO</div><div class="cert-name">Introduction to Cybersecurity</div><div class="cert-desc">Foundational cybersecurity concepts, threat landscape, attack vectors, and defensive security practices.</div></div>
-          <div class="cert"><div class="cert-badge">CISCO</div><div class="cert-name">Computer Hardware Basics</div><div class="cert-desc">Hardware fundamentals, system architecture, and component-level understanding for security practitioners.</div></div>
-          <div class="cert"><div class="cert-badge">CISCO</div><div class="cert-name">Getting Started with Packet Tracer</div><div class="cert-desc">Network simulation, topology design, and hands-on configuration using Cisco Packet Tracer.</div></div>
+        <div class="cert-item">
+          <div class="cert-name">Getting Started with Packet Tracer</div>
+          <div class="cert-full">Network simulation, topology design, and Cisco Packet Tracer.</div>
         </div>
       </div>
-      <!-- SBT -->
-      <div class="cpanel" id="panel-sbt">
-        <div class="panel-org"><span class="org-icon">🛡️</span>
-          <div><div class="org-name">SECURITY BLUE TEAM</div><div class="org-sub">Defensive Security Training · 2 credentials</div></div>
+
+      <div class="cert-group">
+        <div class="cert-group-title">🛡️ SECURITY BLUE TEAM</div>
+        <div class="cert-item">
+          <div class="cert-name">Introduction to OSINT</div>
+          <div class="cert-full">Intelligence gathering, target profiling, and passive reconnaissance methodology.</div>
         </div>
-        <div class="certs-grid">
-          <div class="cert"><div class="cert-badge">SBT</div><div class="cert-name">Introduction to OSINT</div><div class="cert-desc">Open-source intelligence gathering techniques, target profiling, and passive reconnaissance methodology.</div></div>
-          <div class="cert"><div class="cert-badge">SBT</div><div class="cert-name">Introduction to Virtual Machines</div><div class="cert-desc">Virtualization fundamentals, hypervisor types, and secure isolated lab environment setup for security research.</div></div>
-        </div>
-      </div>
-      <!-- OPSWAT -->
-      <div class="cpanel" id="panel-opswat">
-        <div class="panel-org"><span class="org-icon">⚙️</span>
-          <div><div class="org-name">OPSWAT ACADEMY</div><div class="org-sub">Critical Infrastructure Protection · 1 credential</div></div>
-        </div>
-        <div class="certs-grid">
-          <div class="cert"><div class="cert-badge">OPSWAT</div><div class="cert-name">Introduction to Cybersecurity</div><div class="cert-desc">Core security principles, threat landscape, and critical infrastructure protection fundamentals.</div></div>
+        <div class="cert-item">
+          <div class="cert-name">Introduction to Virtual Machines</div>
+          <div class="cert-full">Virtualization fundamentals, hypervisor types, and secure lab environment setup.</div>
         </div>
       </div>
-      <!-- LF -->
-      <div class="cpanel" id="panel-lf">
-        <div class="panel-org"><span class="org-icon">🐧</span>
-          <div><div class="org-name">LINUX FOUNDATION</div><div class="org-sub">Open Source &amp; Linux Expertise · 1 credential</div></div>
+
+      <div class="cert-group">
+        <div class="cert-group-title">⚙️ OPSWAT ACADEMY</div>
+        <div class="cert-item">
+          <div class="cert-name">Introduction to Cybersecurity</div>
+          <div class="cert-full">Core security principles and critical infrastructure protection fundamentals.</div>
         </div>
-        <div class="certs-grid">
-          <div class="cert"><div class="cert-badge">LFS101</div><div class="cert-name">Introduction to Linux</div><div class="cert-desc">Linux fundamentals, shell usage, filesystem navigation, process management, and system administration essentials.</div></div>
+      </div>
+
+      <div class="cert-group">
+        <div class="cert-group-title">🐧 LINUX FOUNDATION</div>
+        <div class="cert-item">
+          <div class="cert-name">LFS101 — Introduction to Linux</div>
+          <div class="cert-full">Linux fundamentals, shell, filesystem, process management, and system administration.</div>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<div class="sec-divider"></div>
-
-<!-- ═══════════════════ PROJECTS ═══════════════════ -->
+<!-- ============ PROJECTS ============ -->
 <section id="projects">
-  <div class="proj-wrap">
-    <div class="reveal">
-      <div class="sec-label"><span>04</span> WHAT I'VE BUILT</div>
-      <h2 class="st">Project <em>Portfolio</em></h2>
+  <div class="section-wrap">
+    <div class="section-header fade-in">
+      <div class="section-num">04 //</div>
+      <h2 class="section-title">Project <span class="red">Portfolio</span></h2>
+      <div class="section-line"></div>
     </div>
 
-    <div class="proj-grid reveal" style="transition-delay:.1s">
-
-      <!-- ARTEMIS FEATURED -->
-      <a href="https://github.com/0x3xp/Artemis" target="_blank" class="proj artemis-feat">
-        <div class="proj-arrow">↗</div>
-        <div class="feat-badge">⚔ FEATURED · LATEST RELEASE v1.0.0</div>
-        <div class="proj-name">ARTEMIS</div>
-        <div class="proj-desc">
-          A modular offensive security framework written in C and x86/x64 Assembly — a <em>Syscall Forge</em> that operates entirely below the user-mode API layer, rendering EDR hook-based telemetry blind. Features 14,869-entry SSN database, MASM stub generation, and multi-algorithm encryption.
+    <!-- FEATURED -->
+    <div class="project-featured fade-in">
+      <div class="project-featured-corner"></div>
+      <div class="pf-title">ARTEMIS</div>
+      <div class="pf-version">v1.0.0 · LATEST RELEASE · SYSCALL FORGE FRAMEWORK</div>
+      <div class="pf-desc">
+        A modular offensive security framework written in C and x86/x64 Assembly — operating entirely
+        below the user-mode API layer, rendering EDR hook-based telemetry blind.
+        Features a 14,869-entry SSN database, MASM stub generation, and multi-algorithm encryption.
+      </div>
+      <div class="pf-quote">"Where the kernel has no secrets."</div>
+      <div class="pf-features">
+        <div class="pf-feature">
+          <div class="pff-icon">🎯</div>
+          <div class="pff-name">HUNTER</div>
+          <div class="pff-desc">Dynamic SSN discovery across 14,869 database entries · Win10/11 · x64/x86</div>
         </div>
-        <div style="font-family:var(--font-mono);font-size:10px;color:var(--muted);letter-spacing:.1em;margin-bottom:16px">
-          "Where the kernel has no secrets."
+        <div class="pf-feature">
+          <div class="pff-icon">⚙️</div>
+          <div class="pff-name">BLACKSMITH</div>
+          <div class="pff-desc">MASM-ready stub forge · Direct &amp; Indirect syscall modes · Stack spoofing</div>
         </div>
-        <div class="artemis-engines">
-          <div class="engine-chip">
-            <div class="ec-icon">🎯</div>
-            <div class="ec-name">HUNTER</div>
-            <div class="ec-desc">Dynamic SSN discovery across 14,869 database entries · Win10/11 · x64/x86</div>
-          </div>
-          <div class="engine-chip">
-            <div class="ec-icon">⚙️</div>
-            <div class="ec-name">BLACKSMITH</div>
-            <div class="ec-desc">MASM-ready stub forge · Direct &amp; Indirect syscall modes · Stack spoofing</div>
-          </div>
-          <div class="engine-chip">
-            <div class="ec-icon">🔐</div>
-            <div class="ec-name">CRYPTO VAULT</div>
-            <div class="ec-desc">XOR / Rolling XOR / RC4 — shields stubs from memory scanners &amp; static AV</div>
-          </div>
+        <div class="pf-feature">
+          <div class="pff-icon">🔐</div>
+          <div class="pff-name">CRYPTO VAULT</div>
+          <div class="pff-desc">XOR / Rolling XOR / RC4 — shields stubs from memory scanners &amp; static AV</div>
         </div>
-        <div class="proj-tags" style="margin-top:20px">
-          <span class="ptg">C</span><span class="ptg">x64 ASM</span><span class="ptg">MASM</span>
-          <span class="ptg">Syscall Forge</span><span class="ptg">EDR Evasion</span><span class="ptg">Win32</span>
-          <span class="ptg">RC4</span><span class="ptg">SSN Discovery</span>
-        </div>
+      </div>
+      <div class="skill-chips" style="margin-bottom:1.5rem">
+        <span class="chip primary">C</span>
+        <span class="chip primary">x64 ASM</span>
+        <span class="chip primary">MASM</span>
+        <span class="chip">Syscall Forge</span>
+        <span class="chip">EDR Evasion</span>
+        <span class="chip">RC4</span>
+        <span class="chip">SSN Discovery</span>
+      </div>
+      <a href="https://github.com/0x3xp/Artemis" target="_blank" class="btn-primary">VIEW ON GITHUB ↗</a>
+    </div>
+
+    <!-- PROJECT GRID -->
+    <div class="projects-grid fade-in">
+
+      <!-- PROJECT CARD TEMPLATE — copy and fill for each new project -->
+      <a class="project-card" href="https://github.com/0x3xp/Native-Adversary-Framework/tree/main/Core-Engine" target="_blank">
+        <div class="pc-head"><span class="pc-num">01</span><span class="pc-arrow">↗</span></div>
+        <div class="pc-title">CORE-ENGINE</div>
+        <div class="pc-desc">Foundational framework for building advanced offensive security tools. Architecture-grade, extensible, production-ready.</div>
+        <div class="pc-tags"><span class="pc-tag">C/C++</span><span class="pc-tag">Framework</span><span class="pc-tag">Win32</span></div>
       </a>
 
-      <a href="https://github.com/0x3xp/Native-Adversary-Framework/tree/main/Core-Engine" target="_blank" class="proj">
-        <div class="proj-arrow">↗</div>
-        <div class="proj-num" data-total="8">01</div>
-        <div class="proj-name">CORE-ENGINE</div>
-        <div class="proj-desc">Foundational framework for building advanced offensive security tools. Architecture-grade, extensible, production-ready.</div>
-        <div class="proj-tags"><span class="ptg">C/C++</span><span class="ptg">Framework</span><span class="ptg">Win32</span></div>
+      <a class="project-card" href="https://github.com/0x3xp/Native-Adversary-Framework/tree/main/Exploit-Dev" target="_blank">
+        <div class="pc-head"><span class="pc-num">02</span><span class="pc-arrow">↗</span></div>
+        <div class="pc-title">EXPLOIT-DEV</div>
+        <div class="pc-desc">Exploit development techniques and proof-of-concepts. Memory corruption, privilege escalation, and more.</div>
+        <div class="pc-tags"><span class="pc-tag">Exploits</span><span class="pc-tag">PoC</span><span class="pc-tag">Assembly</span></div>
       </a>
 
-      <a href="https://github.com/0x3xp/Native-Adversary-Framework/tree/main/Exploit-Dev" target="_blank" class="proj">
-        <div class="proj-arrow">↗</div>
-        <div class="proj-num">02</div>
-        <div class="proj-name">EXPLOIT-DEV</div>
-        <div class="proj-desc">Collection of exploit development techniques and proof-of-concepts. Memory corruption, privilege escalation, and more.</div>
-        <div class="proj-tags"><span class="ptg">Exploits</span><span class="ptg">PoC</span><span class="ptg">Assembly</span></div>
+      <a class="project-card" href="https://github.com/0x3xp/Native-Adversary-Framework/tree/main/Malware-Dev" target="_blank">
+        <div class="pc-head"><span class="pc-num">03</span><span class="pc-arrow">↗</span></div>
+        <div class="pc-title">MALWARE-DEV</div>
+        <div class="pc-desc">Advanced malware development and EDR/AV evasion research. Custom stagers, loaders, and in-memory execution.</div>
+        <div class="pc-tags"><span class="pc-tag">Malware</span><span class="pc-tag">Evasion</span><span class="pc-tag">Research</span></div>
       </a>
 
-      <a href="https://github.com/0x3xp/Native-Adversary-Framework/tree/main/Malware-Dev" target="_blank" class="proj">
-        <div class="proj-arrow">↗</div>
-        <div class="proj-num">03</div>
-        <div class="proj-name">MALWARE-DEV</div>
-        <div class="proj-desc">Advanced malware development and EDR/AV evasion research. Custom stagers, loaders, and in-memory execution.</div>
-        <div class="proj-tags"><span class="ptg">Malware</span><span class="ptg">Evasion</span><span class="ptg">Research</span></div>
+      <a class="project-card" href="https://github.com/0x3xp/Native-Adversary-Framework/tree/main/Reverse-Engineering" target="_blank">
+        <div class="pc-head"><span class="pc-num">04</span><span class="pc-arrow">↗</span></div>
+        <div class="pc-title">REV-ENG</div>
+        <div class="pc-desc">Reverse engineering projects, tools, and binary analysis techniques using IDA Pro and Ghidra.</div>
+        <div class="pc-tags"><span class="pc-tag">IDA Pro</span><span class="pc-tag">Ghidra</span><span class="pc-tag">Analysis</span></div>
       </a>
 
-      <a href="https://github.com/0x3xp/Native-Adversary-Framework/tree/main/Reverse-Engineering" target="_blank" class="proj">
-        <div class="proj-arrow">↗</div>
-        <div class="proj-num">04</div>
-        <div class="proj-name">REV-ENG</div>
-        <div class="proj-desc">Reverse engineering projects, tools, and binary analysis techniques using IDA Pro and Ghidra.</div>
-        <div class="proj-tags"><span class="ptg">IDA Pro</span><span class="ptg">Ghidra</span><span class="ptg">Analysis</span></div>
+      <a class="project-card" href="https://github.com/0x3xp/SENTINEX" target="_blank">
+        <div class="pc-head"><span class="pc-num">05</span><span class="pc-arrow">↗</span></div>
+        <div class="pc-title">SENTINEX</div>
+        <div class="pc-desc">Windows reconnaissance tool for deep system information gathering, enumeration, and post-exploitation analysis.</div>
+        <div class="pc-tags"><span class="pc-tag">C</span><span class="pc-tag">Windows</span><span class="pc-tag">Recon</span></div>
       </a>
 
-      <a href="https://github.com/0x3xp/SENTINEX" target="_blank" class="proj">
-        <div class="proj-arrow">↗</div>
-        <div class="proj-num">05</div>
-        <div class="proj-name">SENTINEX</div>
-        <div class="proj-desc">Windows reconnaissance tool for deep system information gathering, enumeration, and post-exploitation analysis.</div>
-        <div class="proj-tags"><span class="ptg">C</span><span class="ptg">Windows</span><span class="ptg">Recon</span></div>
+      <a class="project-card" href="https://github.com/0x3xp/SysMon-X" target="_blank">
+        <div class="pc-head"><span class="pc-num">06</span><span class="pc-arrow">↗</span></div>
+        <div class="pc-title">SYSMON-X</div>
+        <div class="pc-desc">Linux file handling and system monitoring tool built with advanced Bash scripting for real-time event tracking.</div>
+        <div class="pc-tags"><span class="pc-tag">Bash</span><span class="pc-tag">Linux</span><span class="pc-tag">Monitoring</span></div>
       </a>
 
-      <a href="https://github.com/0x3xp/SysMon-X" target="_blank" class="proj">
-        <div class="proj-arrow">↗</div>
-        <div class="proj-num">06</div>
-        <div class="proj-name">SYSMON-X</div>
-        <div class="proj-desc">Linux file handling and system monitoring tool built with advanced Bash scripting for real-time event tracking.</div>
-        <div class="proj-tags"><span class="ptg">Bash</span><span class="ptg">Linux</span><span class="ptg">Monitoring</span></div>
+      <a class="project-card" href="https://github.com/0x3xp/SpectreAuth" target="_blank">
+        <div class="pc-head"><span class="pc-num">07</span><span class="pc-arrow">↗</span></div>
+        <div class="pc-title">SPECTREAUTH</div>
+        <div class="pc-desc">Advanced OAuth 2.0 security research framework analyzing token lifecycle vulnerabilities, identity exfiltration, and Ghost Session persistence.</div>
+        <div class="pc-tags"><span class="pc-tag">OAuth 2.0</span><span class="pc-tag">Research</span><span class="pc-tag">Red Team</span></div>
       </a>
 
-      <a href="https://github.com/0x3xp/SpectreAuth" target="_blank" class="proj">
-        <div class="proj-arrow">↗</div>
-        <div class="proj-num">07</div>
-        <div class="proj-name">SPECTREAUTH</div>
-        <div class="proj-desc">Advanced OAuth 2.0 security research framework analyzing token lifecycle vulnerabilities, identity exfiltration, and Ghost Session persistence.</div>
-        <div class="proj-tags"><span class="ptg">OAuth 2.0</span><span class="ptg">Research</span><span class="ptg">Red Team</span></div>
+      <a class="project-card" href="https://github.com/0x3xp/SysView" target="_blank">
+        <div class="pc-head"><span class="pc-num">08</span><span class="pc-arrow">↗</span></div>
+        <div class="pc-title">SYSVIEW</div>
+        <div class="pc-desc">Linux system performance monitoring dashboard delivering real-time CPU, memory, and process metrics at a glance.</div>
+        <div class="pc-tags"><span class="pc-tag">Bash</span><span class="pc-tag">Linux</span><span class="pc-tag">Dashboard</span></div>
       </a>
 
-      <a href="https://github.com/0x3xp/SysView" target="_blank" class="proj">
-        <div class="proj-arrow">↗</div>
-        <div class="proj-num">08</div>
-        <div class="proj-name">SYSVIEW</div>
-        <div class="proj-desc">Linux system performance monitoring dashboard delivering real-time CPU, memory, and process metrics at a glance.</div>
-        <div class="proj-tags"><span class="ptg">Bash</span><span class="ptg">Linux</span><span class="ptg">Dashboard</span></div>
-      </a>
+      <!-- ADD NEW PROJECTS BELOW THIS LINE — copy the block above, increment the num -->
 
     </div>
   </div>
 </section>
 
-<div class="sec-divider"></div>
-
-<!-- ═══════════════════ TERMINAL ═══════════════════ -->
-<section id="terminal">
-  <div class="term-wrap">
-    <div class="reveal">
-      <div class="sec-label"><span>05</span> INTERACTIVE LAB</div>
-      <h2 class="st">Interactive <em>Lab</em></h2>
+<!-- ============ RESEARCH ============ -->
+<section id="research">
+  <div class="section-wrap">
+    <div class="section-header fade-in">
+      <div class="section-num">05 //</div>
+      <h2 class="section-title">Security <span class="red">Research</span></h2>
+      <div class="section-line"></div>
     </div>
-    <p class="term-hint">// type <span>'help'</span> to see available commands</p>
-    <div class="term-window reveal" style="transition-delay:.1s">
+
+    <div class="research-intro fade-in">
+      Original security research into <strong style="color:var(--ash3)">Windows OS internals</strong>,
+      undocumented APIs, and offensive techniques. Each entry represents hands-on investigation —
+      not reproduced knowledge, but original findings from working with real systems at the binary level.
+      This is the documentation of curiosity operating at ring-0.
+    </div>
+
+    <div class="research-list">
+
+      <!-- RESEARCH ENTRY: SetupAPI Callback Redirection -->
+      <div class="research-entry fade-in" onclick="window.open('https://github.com/0x3xp/Native-Adversary-Framework/tree/main/Malware-Dev/Injection/SetupAPI-Callback-Redirection','_blank')">
+        <div class="re-meta">
+          <span class="re-id">R-001</span>
+          <span class="re-date">2025</span>
+          <span class="re-category">MALWARE-DEV</span>
+        </div>
+        <div class="re-body">
+          <h3 class="re-title">SetupAPI Callback Redirection — Process Injection via Setup Infrastructure</h3>
+          <p class="re-summary">
+            Original research into <strong>abusing the Windows Setup API infrastructure</strong> as a
+            vector for process injection and code execution. This technique exploits callback
+            mechanisms embedded in the SetupAPI — an often-overlooked surface that predates
+            modern EDR telemetry and sits outside typical userland hook coverage.
+            <br><br>
+            The research documents how <strong>SetupAPI callback registration functions</strong>
+            can be redirected to point to attacker-controlled code regions, achieving shellcode
+            execution through a trusted Windows subsystem. This approach leverages the OS's own
+            setup infrastructure rather than creating new threads or modifying well-monitored
+            injection targets — making it inherently stealthier against behavioral detection.
+            <br><br>
+            Findings include a fully working PoC, behavioral analysis under EDR monitoring tools,
+            and documentation of the underlying NT structures involved.
+          </p>
+          <div class="re-tags">
+            <span class="re-tag highlight">Process Injection</span>
+            <span class="re-tag highlight">SetupAPI</span>
+            <span class="re-tag highlight">Callback Abuse</span>
+            <span class="re-tag">Windows Internals</span>
+            <span class="re-tag">EDR Evasion</span>
+            <span class="re-tag">C / Win32 API</span>
+            <span class="re-tag">PoC</span>
+            <span class="re-tag">Original Research</span>
+          </div>
+        </div>
+        <div class="re-action">[ VIEW RESEARCH ↗ ]</div>
+      </div>
+
+      <!-- ─── RESEARCH ENTRY TEMPLATE ─────────────────────────────────────────────
+           Copy this commented block, remove the comment markers, and fill in fields.
+
+      <div class="research-entry fade-in" onclick="window.open('GITHUB_OR_BLOG_URL','_blank')">
+        <div class="re-meta">
+          <span class="re-id">R-002</span>
+          <span class="re-date">2025-MM</span>
+          <span class="re-category">CATEGORY</span>
+        </div>
+        <div class="re-body">
+          <h3 class="re-title">Your Research Title Here</h3>
+          <p class="re-summary">
+            Description of what you researched, what you found, and why it matters.
+            Keep it technical but readable. 3-5 sentences.
+          </p>
+          <div class="re-tags">
+            <span class="re-tag highlight">Key Technique</span>
+            <span class="re-tag">Windows</span>
+            <span class="re-tag">C</span>
+            <span class="re-tag">Original Research</span>
+          </div>
+        </div>
+        <div class="re-action">[ VIEW RESEARCH ↗ ]</div>
+      </div>
+
+      ─────────────────────────────────────────────────────────────────────────── -->
+
+    </div>
+  </div>
+</section>
+
+<!-- ============ INTERACTIVE LAB ============ -->
+<section id="lab">
+  <div class="section-wrap">
+    <div class="section-header fade-in">
+      <div class="section-num">06 //</div>
+      <h2 class="section-title">Interactive <span class="red">Lab</span></h2>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="terminal-wrap fade-in">
       <div class="term-bar">
-        <div class="td r"></div><div class="td y"></div><div class="td g"></div>
+        <div class="dot r"></div><div class="dot y"></div><div class="dot g"></div>
         <div class="term-title">piyusha@native-framework — ~/artemis</div>
       </div>
-      <div id="tb">
-        <div class="tout" id="term-banner">
-<span class="tg">██████╗ ██╗██╗   ██╗██╗   ██╗███████╗██╗  ██╗ █████╗ </span>
-<span class="tg">██╔══██╗██║╚██╗ ██╔╝██║   ██║██╔════╝██║  ██║██╔══██╗</span>
-<span class="tg">██████╔╝██║ ╚████╔╝ ██║   ██║███████╗███████║███████║</span>
-<span class="tg">██╔═══╝ ██║  ╚██╔╝  ██║   ██║╚════██║██╔══██║██╔══██║</span>
-<span class="tg">██║     ██║   ██║   ╚██████╔╝███████║██║  ██║██║  ██║</span>
-<span class="tg">╚═╝     ╚═╝   ╚═╝    ╚═════╝ ╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝</span>
+      <div class="term-body">
+        <div id="term-output">
+          <div class="to-ascii" id="ascii-art"></div>
+          <br>
+          <div class="to-comment">// Piyusha Akash · Low Level Engineer · v3.0</div>
+          <div class="to-comment">// "Where the kernel has no secrets."</div>
+          <br>
+          <div class="to-output">Type <span class="to-gold">'help'</span> to see commands. Try <span class="to-gold">'artemis'</span>, <span class="to-gold">'whoami'</span>, or <span class="to-gold">'research'</span>.</div>
+          <br>
         </div>
-        <div class="tout"><span class="td2">// Piyusha Akash · Red Team Operator · v3.0 · "Where the kernel has no secrets."</span></div>
-        <div class="tout"><span class="td2">// Type 'help' to begin · Try 'artemis' for Artemis framework details</span></div>
-        <div id="term-out"></div>
-        <div class="tin-line" id="tin-line">
-          <span class="tpu">piyusha</span><span class="tpat">@</span><span class="tph">native-framework</span><span class="tpsep">:</span><span class="tppath">~</span><span class="tpsym">$ </span>
-          <div class="tin-wrap" id="tin-wrap">
-            <input type="text" id="ti" spellcheck="false" autocomplete="off"/>
-            <span class="tcaret" id="tc"></span>
-          </div>
+        <div class="term-input-row">
+          <span class="term-prompt">piyusha@native-framework:~$&nbsp;</span>
+          <input type="text" id="term-input" spellcheck="false" autocomplete="off" autofocus placeholder="">
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<div class="sec-divider"></div>
-
-<!-- ═══════════════════ CTF ═══════════════════ -->
+<!-- ============ CTF ============ -->
 <section id="ctf">
-  <div class="ctf-wrap">
-    <div class="reveal">
-      <div class="sec-label"><span>06</span> PLATFORMS</div>
-      <h2 class="st">CTF <em>Platforms</em></h2>
+  <div class="section-wrap">
+    <div class="section-header fade-in">
+      <div class="section-num">07 //</div>
+      <h2 class="section-title">CTF <span class="dim">&amp;</span> <span class="red">Platforms</span></h2>
+      <div class="section-line"></div>
     </div>
-    <div class="ctf-row reveal" style="transition-delay:.1s;background:var(--dim)">
-
-      <a href="https://tryhackme.com/p/0x3xp" target="_blank" rel="noopener noreferrer" class="ctf-card ctf-thm">
-        <div class="ctf-logo">
-          <svg viewBox="0 0 24 24" fill="currentColor" width="24" height="24"><path d="M10.705 0C7.54 0 4.902 2.285 4.349 5.291a4.525 4.525 0 0 0-4.107 4.5 4.525 4.525 0 0 0 4.52 4.52h6.761a.625.625 0 1 0 0-1.25H4.761a3.273 3.273 0 0 1-3.27-3.27A3.273 3.273 0 0 1 6.59 7.08a.625.625 0 0 0 .7-1.035 4.488 4.488 0 0 0-1.68-.69 5.223 5.223 0 0 1 5.096-4.104 5.221 5.221 0 0 1 5.174 4.57 4.489 4.489 0 0 0-.488.305.625.625 0 1 0 .731 1.013 3.245 3.245 0 0 1 1.912-.616 3.278 3.278 0 0 1 3.203 2.61.625.625 0 0 0 1.225-.251 4.533 4.533 0 0 0-4.428-3.61 4.54 4.54 0 0 0-.958.105C16.556 2.328 13.9 0 10.705 0zm5.192 10.64a.925.925 0 0 0-.462.108.913.913 0 0 0-.313.29 1.27 1.27 0 0 0-.175.427 2.39 2.39 0 0 0-.054.514c0 .181.018.353.054.517.036.164.095.307.175.43a.899.899 0 0 0 .313.297c.127.073.281.11.462.11.18 0 .334-.037.46-.11a.897.897 0 0 0 .309-.296c.08-.124.137-.267.173-.431.036-.164.054-.336.054-.517 0-.18-.018-.352-.054-.514a1.271 1.271 0 0 0-.173-.426.9.9 0 0 0-.309-.29.916.916 0 0 0-.46-.109zm3.115 0a.926.926 0 0 0-.462.108.912.912 0 0 0-.312.29 1.27 1.27 0 0 0-.176.427 2.39 2.39 0 0 0-.053.514c0 .181.017.353.053.517.037.164.096.307.176.43a.898.898 0 0 0 .312.297c.128.073.282.11.462.11s.335-.037.461-.11a.898.898 0 0 0 .309-.296c.08-.124.137-.267.172-.431.037-.164.055-.336.055-.517 0-.18-.018-.352-.055-.514a1.27 1.27 0 0 0-.172-.426.902.902 0 0 0-.309-.29.917.917 0 0 0-.461-.109zm-7.49.439h-1.08v.685H9.36v-1.86H8.28v4.714h1.08v-1.988h1.082v1.988h1.08V9.864h-1.08zm2.561-.011c-.311 0-.567.047-.766.14a1.09 1.09 0 0 0-.463.384 1.556 1.556 0 0 0-.23.565 3.354 3.354 0 0 0-.062.643v.42c0 .226.022.44.065.641.044.2.12.378.23.532.11.154.263.277.458.368.195.091.44.137.735.137.305 0 .554-.049.748-.146a1.07 1.07 0 0 0 .45-.398c.106-.169.178-.362.215-.58a4.078 4.078 0 0 0 .055-.672v-.302h-1.394v.323c0 .226-.022.399-.067.518a.257.257 0 0 1-.264.179c-.117 0-.2-.037-.247-.112-.047-.074-.077-.163-.089-.267a3.97 3.97 0 0 1-.017-.432v-.672c0-.14.006-.27.017-.393a.823.823 0 0 1 .083-.295.286.286 0 0 1 .267-.147c.13 0 .219.046.27.14.05.092.076.258.076.496v.206h1.365v-.206c0-.54-.12-.957-.357-1.25-.237-.294-.625-.44-1.163-.44z"/></svg>
+    <div class="ctf-platforms fade-in">
+      <a class="ctf-card" href="https://tryhackme.com/p/0x3xp" target="_blank">
+        <div class="ctf-head">
+          <div class="ctf-platform-name">TryHackMe</div>
+          <div class="ctf-arrow">↗</div>
         </div>
-        <div class="ctf-info">
-          <div class="ctf-plat">TRYHACKME</div>
-          <div class="ctf-handle">// tryhackme.com/p/0x3xp</div>
-        </div>
-        <span class="ctf-arr">↗</span>
+        <div class="ctf-handle">// 0x3xp</div>
+        <div class="ctf-url">tryhackme.com/p/0x3xp</div>
       </a>
-
-      <a href="https://app.hackthebox.com/users/1981311" target="_blank" rel="noopener noreferrer" class="ctf-card ctf-htb">
-        <div class="ctf-logo">
-          <svg viewBox="0 0 24 24" fill="currentColor" width="24" height="24"><path d="m22.5106 6.4566.0008-.0123a.888.888 0 0 0-.2717-.6384c-.0084-.0084-.018-.0155-.0267-.0235-.0186-.0166-.0371-.0333-.0572-.0484-.0193-.0147-.04-.0276-.0607-.0406-.0096-.006-.0182-.0131-.0281-.0188L12.4576.1266a.891.891 0 0 0-.9223.0043L1.933 5.6744c-.0107.0062-.0203.014-.0307.0205-.0073.0047-.015.008-.0223.0128-.007.0047-.013.0106-.02.0155a.8769.8769 0 0 0-.147.1333l-.0026.003a.8872.8872 0 0 0-.2218.5847l.0009.014c-.0002.0088-.0015.0176-.0015.0264v11.0708c0 .3277.1802.6288.469.7836l9.5986 5.5417c.0076.0044.0158.0075.0236.0117a.8754.8754 0 0 0 .166.0687c.0134.004.0266.0083.0401.0117a.8793.8793 0 0 0 .072.0142c.0117.0019.0232.0045.0349.006a.835.835 0 0 0 .2157 0c.0117-.0015.0232-.0041.0348-.006a.9.9 0 0 0 .072-.0142c.0135-.0034.0267-.0077.04-.0117a.895.895 0 0 0 .0646-.0217.9134.9134 0 0 0 .1015-.047c.0078-.0042.016-.0072.0236-.0117l9.5986-5.5417a.8888.8888 0 0 0 .469-.7836V6.4779c0-.0073-.0007-.0147-.0009-.022zM12 1.4932l8.7955 5.0788L12 11.6508 3.2045 6.572zm-9.3032 6.152L11.1 12.708v10.1571L2.6968 17.78zm10.2032 10.1571V12.708l8.4032-5.0627v10.1338z"/></svg>
+      <a class="ctf-card" href="https://app.hackthebox.com/users/1981311" target="_blank">
+        <div class="ctf-head">
+          <div class="ctf-platform-name">Hack The Box</div>
+          <div class="ctf-arrow">↗</div>
         </div>
-        <div class="ctf-info">
-          <div class="ctf-plat">HACK THE BOX</div>
-          <div class="ctf-handle">// hackthebox.com · ID 1981311</div>
-        </div>
-        <span class="ctf-arr">↗</span>
+        <div class="ctf-handle">// ID 1981311</div>
+        <div class="ctf-url">hackthebox.com</div>
       </a>
-
-      <a href="https://app.hackviser.com/profile/0x3xp" target="_blank" rel="noopener noreferrer" class="ctf-card ctf-hv">
-        <div class="ctf-logo">
-          <svg viewBox="0 0 24 24" fill="currentColor" width="24" height="24"><path d="M12 2L3 6v6c0 5.25 3.75 10.15 9 11.35C17.25 22.15 21 17.25 21 12V6l-9-4zm1 13h-2v-2h2v2zm0-4h-2V7h2v4z"/></svg>
+      <a class="ctf-card" href="https://app.hackviser.com/profile/0x3xp" target="_blank">
+        <div class="ctf-head">
+          <div class="ctf-platform-name">Hackviser</div>
+          <div class="ctf-arrow">↗</div>
         </div>
-        <div class="ctf-info">
-          <div class="ctf-plat">HACKVISER</div>
-          <div class="ctf-handle">// hackviser.com/profile/0x3xp</div>
-        </div>
-        <span class="ctf-arr">↗</span>
+        <div class="ctf-handle">// 0x3xp</div>
+        <div class="ctf-url">hackviser.com/profile/0x3xp</div>
       </a>
-
     </div>
   </div>
 </section>
 
-<div class="sec-divider"></div>
+<!-- ============ BLOG + ACADEMY ============ -->
+<section id="external-links">
+  <div class="section-wrap">
+    <div class="section-header fade-in">
+      <div class="section-num">08 //</div>
+      <h2 class="section-title">Knowledge <span class="red">Base</span></h2>
+      <div class="section-line"></div>
+    </div>
+    <div class="ext-grid fade-in">
+      <a class="ext-card" href="https://0x3xp.github.io/blog" target="_blank">
+        <div class="ext-label">// WRITING</div>
+        <div class="ext-title">Blog</div>
+        <div class="ext-desc">Technical writeups, research notes, and deep-dives into Windows internals, offensive development, and security research methodology.</div>
+        <div class="ext-cta">READ WRITEUPS →</div>
+      </a>
+      <a class="ext-card" href="https://0x3xp.github.io/academy" target="_blank">
+        <div class="ext-label">// KNOWLEDGE</div>
+        <div class="ext-title">Academy</div>
+        <div class="ext-desc">Structured educational content on low-level security topics — for those who want to understand, not just use. No skiddie tutorials here.</div>
+        <div class="ext-cta">ENTER THE ACADEMY →</div>
+      </a>
+    </div>
+  </div>
+</section>
 
-<!-- ═══════════════════ CONTACT ═══════════════════ -->
+<!-- ============ CONTACT ============ -->
 <section id="contact">
-  <!-- Pentagram watermark SVG -->
-  <svg class="penta-bg" viewBox="0 0 200 200" fill="none" stroke="currentColor" stroke-width=".5">
-    <polygon points="100,10 129.4,90.2 214.1,90.2 147.5,140.3 172.6,220.5 100,168 27.4,220.5 52.5,140.3 -14.1,90.2 70.6,90.2" stroke="var(--blood)" opacity=".8"/>
-    <circle cx="100" cy="100" r="90" stroke="var(--blood)" opacity=".5"/>
-    <circle cx="100" cy="100" r="70" stroke="var(--blood)" opacity=".3"/>
-  </svg>
+  <div class="section-wrap">
+    <div class="section-header fade-in">
+      <div class="section-num">09 //</div>
+      <h2 class="section-title">Let's <span class="red">Work</span></h2>
+      <div class="section-line"></div>
+    </div>
 
-  <div class="contact-super">// LET'S WORK TOGETHER</div>
-  <div class="contact-title">READY<br>TO <em>BREACH.</em></div>
-  <p class="contact-sub">Looking for a Red Teamer who thinks like an adversary and delivers results that harden what matters? Let's talk.</p>
-  <div class="clinks">
-    <a href="https://github.com/0x3xp" target="_blank" class="clink">
-      <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
-      GITHUB/0X3XP
-    </a>
-    <a href="https://linkedin.com/in/piyushaakash" target="_blank" class="clink">
-      <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
-      LINKEDIN
-    </a>
-    <a href="https://linktr.ee/piyushaakash" target="_blank" class="clink">
-      <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M7.953 15.066c-.08.163-.08.324-.08.486.08.517.517.897 1.034.897h3.109v4.629c0 .162 0 .405.162.567.243.324.73.405 1.054.162l7.289-5.256c.162-.163.243-.325.243-.568s-.081-.405-.243-.568l-3.515-2.432 3.515-2.432c.162-.163.243-.325.243-.568s-.081-.405-.243-.568L12.516 3.6c-.324-.243-.81-.162-1.054.162-.162.162-.162.405-.162.567v4.629H8.27c-.517 0-.954.38-1.034.897-.08.162 0 .324.08.486l1.944 2.676-1.306 2.049z"/></svg>
-      LINKTREE
-    </a>
-    <a href="https://0x3xp.github.io/assets/PiyushaAkash-Resume.pdf" target="_blank" class="clink">
-      <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-      DOWNLOAD CV
-    </a>
-  </div>
-  <hr class="foot">
-  <div class="foot-row">
-    <span id="s-trigger" title="">© 2025 Piyusha Akash</span>
-    <span class="hot">// authorized security research only</span>
-    <span>Built with blood, sweat &amp; shellcode.</span>
+    <div class="contact-grid">
+      <div class="contact-left fade-in">
+        <div class="contact-heading">
+          READY<br>TO <span class="red">BREACH</span>.
+        </div>
+        <div class="contact-sub">
+          Looking for a low level engineer who understands the kernel, thinks like an adversary,
+          and delivers research that actually matters? Hireable by top-tier companies.
+          Let's talk.
+        </div>
+        <div class="status-badge">
+          <div class="status-dot"></div>
+          AVAILABLE FOR RED TEAM OPS &amp; RESEARCH
+        </div>
+      </div>
+
+      <div class="contact-links fade-in" style="transition-delay:0.15s">
+        <a class="contact-link" href="https://github.com/0x3xp" target="_blank">
+          <span class="cl-label">GITHUB</span>
+          <span class="cl-value">github.com/0x3xp</span>
+          <span class="cl-arrow">↗</span>
+        </a>
+        <a class="contact-link" href="https://linkedin.com/in/piyushaakash" target="_blank">
+          <span class="cl-label">LINKEDIN</span>
+          <span class="cl-value">piyushaakash</span>
+          <span class="cl-arrow">↗</span>
+        </a>
+        <a class="contact-link" href="https://linktr.ee/piyushaakash" target="_blank">
+          <span class="cl-label">LINKTREE</span>
+          <span class="cl-value">linktr.ee/piyushaakash</span>
+          <span class="cl-arrow">↗</span>
+        </a>
+        <a class="contact-link" href="https://0x3xp.github.io/assets/PiyushaAkash-Resume.pdf" target="_blank">
+          <span class="cl-label">RESUME</span>
+          <span class="cl-value">PiyushaAkash-Resume.pdf</span>
+          <span class="cl-arrow">↗</span>
+        </a>
+      </div>
+    </div>
   </div>
 </section>
 
-<!-- ═══ CANVAS PARTICLES ═══ -->
-<canvas id="pc" style="position:fixed;inset:0;pointer-events:none;z-index:1;opacity:.35"></canvas>
+<!-- ============ FOOTER ============ -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-logo">0x3xp<span>://</span>piyusha_akash</div>
+      <ul class="footer-nav">
+        <li><a href="#about">about</a></li>
+        <li><a href="#projects">projects</a></li>
+        <li><a href="#research">research</a></li>
+        <li><a href="https://0x3xp.github.io/blog" target="_blank">blog</a></li>
+        <li><a href="https://0x3xp.github.io/academy" target="_blank">academy</a></li>
+        <li><a href="#contact">contact</a></li>
+      </ul>
+    </div>
 
+    <div class="footer-divider"></div>
+
+    <div class="footer-bottom">
+      <div class="footer-copy">
+        © 2025 Piyusha Akash // 0x3xp<br>
+        All research conducted under authorized scope.<br>
+        Built with blood, sweat &amp; shellcode.&nbsp;&nbsp;
+        <span class="hidden-sigil" title="hover for the void">⛧</span>
+      </div>
+      <div class="footer-warning">
+        ⚠ COPYRIGHT WARNING: All research, code, and content on this site is the original
+        intellectual property of Piyusha Akash (0x3xp). Unauthorized reproduction, redistribution,
+        or commercial use of any research findings, source code, or methodologies is strictly
+        prohibited. Research is shared for educational purposes under ethical disclosure principles.
+        Attribution required. Original author must be credited.
+      </div>
+    </div>
+
+    <div class="footer-built">
+      // piyusha@native-framework:~$ echo "authorized security research only" &nbsp;|&nbsp; ring-0 · kernel space · ethical adversary emulation
+    </div>
+  </div>
+</footer>
+
+<!-- ============ SCRIPTS ============ -->
 <script>
-/* ═══════════════════════════════════════
-   DATA CONFIG
-═══════════════════════════════════════ */
-const LANGS=[
-  {icon:'⚙️',name:'C & C++',pct:60,desc:'Offensive tooling, loaders, stagers, syscall stubs'},
-  {icon:'🔧',name:'x86-64 ASM',pct:40,desc:'Shellcode, PIC, direct syscall invocation'},
-  {icon:'🐚',name:'Bash',pct:60,desc:'Automation, recon pipelines, system tooling'},
-];
-const SKILLS=[
-  {icon:'🪟',name:'Windows Internals',desc:'Kernel mechanics, process/thread arch, memory mgmt'},
-  {icon:'🔌',name:'Win32 API',desc:'Process hollowing, DLL injection, APC abuse, NTAPI'},
-  {icon:'🔍',name:'Reverse Engineering',desc:'Binary analysis, decompilation in IDA/Ghidra'},
-  {icon:'💣',name:'Exploit Development',desc:'Memory corruption, stack/heap overflow, privesc'},
-  {icon:'🌐',name:'Network Pentesting',desc:'Recon, vulnerability assessment, red team infra'},
-  {icon:'🛡️',name:'EDR/AV Evasion',desc:'Obfuscation, AMSI bypass, in-memory, unhooking'},
-  {icon:'⚔️',name:'Syscall Forge',desc:'Direct/indirect syscall, SSN discovery, stub gen'},
-  {icon:'🎯',name:'Penetration Testing',desc:'Full-scope engagements, CAPT-certified, all boxes'},
-  {icon:'🧠',name:'Social Engineering',desc:'Phishing, pretexting, human-vector simulation'},
-  {icon:'🐧',name:'Linux Systems',desc:'Admin, hardening, offensive tooling, privesc'},
-  {icon:'🔬',name:'Malware Dev',desc:'Custom implants, stagers, loaders, C2 comms'},
-  {icon:'📡',name:'Red Team Ops',desc:'Adversary emulation, MITRE ATT&CK, campaigns'},
-];
-const PROJECTS={
-  'Artemis':'https://github.com/0x3xp/Artemis',
-  'NAF':'https://github.com/0x3xp/Native-Adversary-Framework',
-  'Core-Engine':'https://github.com/0x3xp/Native-Adversary-Framework/tree/main/Core-Engine',
-  'Exploit-Dev':'https://github.com/0x3xp/Native-Adversary-Framework/tree/main/Exploit-Dev',
-  'Malware-Dev':'https://github.com/0x3xp/Native-Adversary-Framework/tree/main/Malware-Dev',
-  'Reverse-Engineering':'https://github.com/0x3xp/Native-Adversary-Framework/tree/main/Reverse-Engineering',
-  'SENTINEX':'https://github.com/0x3xp/SENTINEX',
-  'SysMon-X':'https://github.com/0x3xp/SysMon-X',
-  'SysView':'https://github.com/0x3xp/SysView',
-  'SpectreAuth':'https://github.com/0x3xp/SpectreAuth',
-};
-function pctLabel(p){
-  return p>=90?'Expert':p>=75?'Advanced':p>=60?'Intermediate':p>=40?'Developing':p>=20?'Fundamental':'Beginner';
-}
+// VOID OVERLAY
+const voidEl = document.getElementById('void-overlay');
+function closeVoid() { voidEl.classList.add('hidden'); }
+voidEl.addEventListener('click', closeVoid);
+document.addEventListener('keydown', e => { if(e.key === 'Escape') closeVoid(); });
 
-/* ═══ RENDER SKILLS ═══ */
-function renderLangs(){
-  const el=document.getElementById('lang-list');
-  if(!el)return;
-  el.innerHTML=LANGS.map(l=>`
-    <div class="lang-row">
-      <div class="lang-name"><span>${l.icon}</span>${l.name}</div>
-      <div class="lang-bar"><div class="lang-fill" data-pct="${l.pct}"></div></div>
-      <div class="lang-meta">${pctLabel(l.pct)} · ${l.pct}%</div>
-    </div>
-  `).join('');
-  new IntersectionObserver(entries=>{
-    entries.forEach(e=>{
-      if(e.isIntersecting){
-        e.target.querySelectorAll('.lang-fill').forEach((f,i)=>{
-          setTimeout(()=>f.style.width=f.dataset.pct+'%',150+i*80);
-        });
-        e.disconnect();
-      }
-    });
-  },{threshold:.2}).observe(el);
-}
-function renderSkills(){
-  const el=document.getElementById('skill-grid');
-  if(!el)return;
-  el.innerHTML=SKILLS.map(s=>`
-    <div class="sk">
-      <div class="sk-icon">${s.icon}</div>
-      <div class="sk-name">${s.name}</div>
-      <div class="sk-desc">${s.desc}</div>
-    </div>
-  `).join('');
-}
-renderLangs();renderSkills();
-
-/* ═══ MARQUEE ═══ */
-(()=>{
-  const items=['MALWARE DEV','SHELLCODE','EDR BYPASS','REVERSE ENGINEERING','WIN32 API','EXPLOIT DEV','SYSCALL FORGE','RED TEAM OPS','OSINT','PENETRATION TESTING','KERNEL RESEARCH','C &amp; ASM'];
-  const track=document.getElementById('mtrack');
-  if(!track)return;
-  const html=items.map((t,i)=>`<span${i%4===1?' class="hi"':''}>${t}</span><span class="hi"> ⛧ </span>`).join('');
-  track.innerHTML=html+html;
-})();
-
-/* ═══ CURSOR ═══ */
-const cur=document.getElementById('cur');
-const trail=document.getElementById('cur-trail');
-let mx=0,my=0;
-document.addEventListener('mousemove',e=>{
-  mx=e.clientX;my=e.clientY;
-  cur.style.left=mx+'px';cur.style.top=my+'px';
-  trail.style.left=mx+'px';trail.style.top=my+'px';
-});
-document.querySelectorAll('a,button,input,.proj,.cert,.sk,.lang-row,.ctf-card').forEach(el=>{
-  el.addEventListener('mouseenter',()=>{cur.classList.add('big')});
-  el.addEventListener('mouseleave',()=>{cur.classList.remove('big')});
+// CURSOR
+const dot = document.getElementById('cursor-dot');
+const ring = document.getElementById('cursor-ring');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY; dot.style.left=mx+'px'; dot.style.top=my+'px'; });
+function animCursor() { rx+=(mx-rx)*0.1; ry+=(my-ry)*0.1; ring.style.left=rx+'px'; ring.style.top=ry+'px'; requestAnimationFrame(animCursor); }
+animCursor();
+document.querySelectorAll('a,button,.project-card,.research-entry,.ctf-card').forEach(el => {
+  el.addEventListener('mouseenter', () => { ring.style.width='44px'; ring.style.height='44px'; ring.style.borderColor='rgba(192,57,43,0.8)'; });
+  el.addEventListener('mouseleave', () => { ring.style.width='28px'; ring.style.height='28px'; ring.style.borderColor='rgba(192,57,43,0.5)'; });
 });
 
-/* ═══ NAV SCROLL ═══ */
-window.addEventListener('scroll',()=>{
-  document.getElementById('nav').classList.toggle('ink',scrollY>40);
-});
+// SCROLL REVEAL
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if(e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
+}, { threshold: 0.1 });
+document.querySelectorAll('.fade-in').forEach(el => obs.observe(el));
 
-/* ═══ HAMBURGER ═══ */
-const hbg=document.getElementById('hbg');
-const mm=document.getElementById('mobmenu');
-hbg.addEventListener('click',()=>{
-  hbg.classList.toggle('o');mm.classList.toggle('o');
-  document.body.style.overflow=mm.classList.contains('o')?'hidden':'';
-});
-document.querySelectorAll('.mob-lnk,.mob-cv-m').forEach(a=>a.addEventListener('click',()=>{
-  hbg.classList.remove('o');mm.classList.remove('o');
-  document.body.style.overflow='';
-}));
+// ROLE CYCLING
+const roles = document.querySelectorAll('.role-tag');
+let ri=0;
+setInterval(() => {
+  roles[ri].classList.remove('active');
+  ri=(ri+1)%roles.length;
+  roles[ri].classList.add('active');
+}, 2000);
 
-/* ═══ REVEAL ═══ */
-new IntersectionObserver(entries=>{
-  entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('on')});
-},{threshold:.08}).observe.bind(new IntersectionObserver(entries=>{
-  entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('on')});
-},{threshold:.08}));
-const ro=new IntersectionObserver(entries=>{
-  entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('on')});
-},{threshold:.08});
-document.querySelectorAll('.reveal').forEach(r=>ro.observe(r));
+// TERMINAL
+const ascii = `
+██████╗ ██╗██╗  ██╗██╗   ██╗███████╗██╗  ██╗ █████╗
+██╔══██╗██║╚██╗██╔╝██║   ██║██╔════╝██║  ██║██╔══██╗
+██████╔╝██║ ╚███╔╝ ██║   ██║███████╗███████║███████║
+██╔═══╝ ██║ ██╔██╗ ██║   ██║╚════██║██╔══██║██╔══██║
+██║     ██║██╔╝ ██╗╚██████╔╝███████║██║  ██║██║  ██║
+╚═╝     ╚═╝╚═╝  ╚═╝ ╚═════╝ ╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝`.trim();
+document.getElementById('ascii-art').textContent = ascii;
 
-/* ═══ CERT TABS ═══ */
-let switching=false;
-document.querySelectorAll('.ctab').forEach(tab=>{
-  tab.addEventListener('click',()=>{
-    if(switching)return;
-    const pid='panel-'+tab.dataset.p;
-    const cur2=document.querySelector('.cpanel.a');
-    const next=document.getElementById(pid);
-    if(!next||next===cur2)return;
-    switching=true;
-    document.querySelectorAll('.ctab').forEach(t=>t.classList.remove('a'));
-    tab.classList.add('a');
-    if(cur2){
-      cur2.style.transition='opacity .2s,transform .2s';
-      cur2.style.opacity='0';cur2.style.transform='translateY(8px)';
-      setTimeout(()=>{
-        cur2.classList.remove('a');cur2.style.transition='';cur2.style.opacity='';cur2.style.transform='';
-        next.classList.add('a');switching=false;
-      },220);
-    }else{next.classList.add('a');switching=false;}
-  });
-});
-
-/* ═══ HERO GLITCH ═══ */
-const hn=document.querySelector('h1.hn');
-if(hn){
-  hn.addEventListener('mouseenter',()=>{hn.classList.add('g')});
-  hn.addEventListener('animationend',()=>hn.classList.remove('g'));
-}
-
-/* ═══ PARTICLES ═══ */
-(()=>{
-  const c=document.getElementById('pc');
-  const ctx=c.getContext('2d');
-  let W,H,P=[];
-  const resize=()=>{W=c.width=innerWidth;H=c.height=innerHeight};
-  resize();addEventListener('resize',resize);
-  for(let i=0;i<60;i++)P.push({x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.3+.2,dx:(Math.random()-.5)*.3,dy:-(Math.random()*.35+.08),a:Math.random()*.4+.08,p:Math.random()*Math.PI*2});
-  const draw=()=>{
-    ctx.clearRect(0,0,W,H);
-    P.forEach(p=>{
-      p.p+=.015;
-      const a=p.a*(0.6+0.4*Math.sin(p.p));
-      ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
-      ctx.fillStyle=`rgba(192,57,43,${a})`;ctx.fill();
-      p.x+=p.dx;p.y+=p.dy;
-      if(p.y<-5){p.y=H+5;p.x=Math.random()*W}
-      if(p.x<-5)p.x=W+5;if(p.x>W+5)p.x=-5;
-    });
-    requestAnimationFrame(draw);
-  };draw();
-})();
-
-/* ═══ PARALLAX ORBS (hero bg text) ═══ */
-const bgTxt=document.querySelector('.hero-bg-text');
-addEventListener('mousemove',e=>{
-  if(bgTxt){
-    const rx=(e.clientX/innerWidth-.5)*18;
-    const ry=(e.clientY/innerHeight-.5)*12;
-    bgTxt.style.transform=`translateY(-55%) translate(${rx}px,${ry}px)`;
-  }
-});
-
-/* ═══ HIDDEN SATANIC MESSAGE TRIGGER ═══ */
-// Hover copyright text for 3 seconds to reveal
-let stimer=null;
-const strig=document.getElementById('s-trigger');
-const smsg=document.getElementById('s-msg');
-if(strig&&smsg){
-  strig.addEventListener('mouseenter',()=>{
-    stimer=setTimeout(()=>smsg.classList.add('reveal-s'),3000);
-  });
-  strig.addEventListener('mouseleave',()=>{
-    clearTimeout(stimer);
-    setTimeout(()=>smsg.classList.remove('reveal-s'),2000);
-  });
-}
-
-/* ═══ KONAMI CODE ═══ */
-const seq=[38,38,40,40,37,39,37,39,66,65];
-let kp=0;
-document.addEventListener('keydown',e=>{
-  if(e.keyCode===seq[kp])kp++;else kp=0;
-  if(kp===seq.length){
-    document.getElementById('konami-overlay').classList.add('show');
-    kp=0;
-  }
-});
-
-/* ═══ TERMINAL ═══ */
-const ti=document.getElementById('ti');
-const tout=document.getElementById('term-out');
-const tb=document.getElementById('tb');
-const tc=document.getElementById('tc');
-
-// Caret measurement canvas
-const cvc=document.createElement('canvas');
-const cvx=cvc.getContext('2d');
-const measure=t=>{cvx.font='13px "IBM Plex Mono",monospace';return cvx.measureText(t).width};
-const updateCaret=()=>{
-  const v=ti.value,p=ti.selectionStart??v.length;
-  tc.style.left=measure(v.substring(0,p))+'px';
-};
-ti.addEventListener('focus',updateCaret);
-['input','keydown','keyup','click','select','paste','cut'].forEach(ev=>ti.addEventListener(ev,()=>requestAnimationFrame(updateCaret)));
-requestAnimationFrame(updateCaret);
-
-function append(html){
-  const d=document.createElement('div');d.className='tout';d.innerHTML=html;
-  tout.appendChild(d);tb.scrollTop=tb.scrollHeight;
-}
-function addPrompt(cmd){
-  const d=document.createElement('div');d.className='tp';
-  d.innerHTML=`<span class="tpu">piyusha</span><span class="tpat">@</span><span class="tph">native-framework</span><span class="tpsep">:</span><span class="tppath">~</span><span class="tpsym">$ </span><span style="color:var(--bone2)">${cmd}</span>`;
-  tout.appendChild(d);
-}
-
-const CMDS={
-  help:()=>`<span class="tg">AVAILABLE COMMANDS:</span>
-  <span class="tb2">ls</span>            — List all project repositories
-  <span class="tb2">open</span> [name]   — Open a project on GitHub
-  <span class="tb2">whoami</span>        — Operator profile
-  <span class="tb2">skills</span>        — Technical skill set
-  <span class="tb2">artemis</span>       — Artemis framework details
-  <span class="tb2">certs</span>         — Certifications list
-  <span class="tb2">ctf</span>           — CTF platform profiles
-  <span class="tb2">blog</span>          — Open the blog
-  <span class="tb2">academy</span>       — Open the academy
-  <span class="tb2">cv</span>            — Open resume PDF
-  <span class="tb2">socials</span>       — Contact links
-  <span class="tb2">clear</span>         — Clear terminal
-  <span class="td2">Projects: ${Object.keys(PROJECTS).join(', ')}</span>`,
-
-  ls:()=>Object.keys(PROJECTS).map((p,i)=>`<span class="tg">[${String(i+1).padStart(2,'0')}]</span> <span class="tb2">📁 ${p}</span>`).join('\n'),
-
-  whoami:()=>`<span class="tg">Piyusha Akash // 0x3xp</span>
-<span class="td2">─────────────────────────────────────────</span>
-Role     : Red Team Operator · Ethical Hacker
-Specialty: Syscall Forge · Malware Dev · EDR Evasion
-Status   : <span class="tg">AVAILABLE FOR ENGAGEMENTS</span>
-Kernel   : <span class="tb2">ring-0 access preferred</span>
-GitHub   : <span class="tb2">github.com/0x3xp</span>
-LinkedIn : <span class="tb2">linkedin.com/in/piyushaakash</span>`,
-
-  artemis:()=>`<span class="tg">⚔ PROJECT ARTEMIS v1.0.0</span>
-<span class="td2">─────────────────────────────────────────</span>
-<span class="tb2">Tagline  :</span> "Where the kernel has no secrets."
-<span class="tb2">Lang     :</span> C, x86/x64 Assembly (MASM)
-<span class="tb2">Platform :</span> Windows NT · x64 / x86
-<span class="tb2">DB Size  :</span> 14,869 syscall entries · Win10 build 10240 → 26100
-
-<span class="tg">ENGINES:</span>
-  🎯 Hunter      — Dynamic SSN resolution from compiled database
-  ⚙  Blacksmith  — MASM-ready .asm stub generator (direct + indirect)
-  🔐 Crypto Vault— XOR · Rolling XOR · RC4 encryption of stubs
-
-<span class="tg">USAGE EXAMPLE:</span>
-  Artemis> ssn -api NtOpenProcess -build 22621 -arch x64
-  [+] SUCCESS: SSN for NtOpenProcess is 0x0026
-
-  Artemis> forge -api NtOpenProcess -mode indirect -enc rc4 -key S3cr3t
-  [+] Forge complete: output/NtOpenProcess_crypt.h
-
-<span class="td2">→ github.com/0x3xp/Artemis</span>`,
-
-  skills:()=>`<span class="tg">TECHNICAL ARSENAL:</span>
-<span class="td2">─────────────────────────────────────────</span>
-Languages : C, C++, x64 Assembly, Bash
-Windows   : Internals, Win32, Kernel, NTAPI, Syscalls
-Offensive : Malware Dev, Exploit Dev, Evasion, Injection
-Artemis   : Syscall Forge, SSN Discovery, Stub Gen, RC4
-RE Tools  : IDA Pro, Ghidra, x64dbg
-Network   : Pentesting, Recon, Red Team Infra
-OSINT     : Open Source Intel, Recon, Profiling`,
-
-  certs:()=>`<span class="tg">CERTIFICATIONS:</span>
-<span class="td2">─────────────────────────────────────────</span>
-<span class="tr">[NEW]</span> Hackviser         — CAPT (verify: HV-CAPT-HKXRNSLE)
-       Red Team Leaders  — COWA (Offensive Windows API)
-       CISCO             — Introduction to Cybersecurity
-       CISCO             — Computer Hardware Basics
-       CISCO             — Packet Tracer
-       Security Blue     — Introduction to OSINT
-       Security Blue     — Introduction to Virtual Machines
-       OPSWAT            — Introduction to Cybersecurity
-       Linux Foundation  — Introduction to Linux (LFS101)`,
-
-  ctf:()=>`<span class="tg">CTF PROFILES:</span>
-<span class="td2">─────────────────────────────────────────</span>
-<span class="tr">[THM]</span> TryHackMe  → <span class="tb2">tryhackme.com/p/0x3xp</span>
-<span class="tr">[HTB]</span> HackTheBox → <span class="tb2">hackthebox.com/users/1981311</span>
-<span class="tr">[HV] </span> Hackviser  → <span class="tb2">hackviser.com/profile/0x3xp</span>`,
-
-  cv:()=>{
-    setTimeout(()=>open('https://0x3xp.github.io/assets/PiyushaAkash-Resume.pdf','_blank'),500);
-    return`<span class="tg">Opening resume...</span> <span class="td2">→ PiyushaAkash-Resume.pdf</span>`;
-  },
-  socials:()=>`<span class="tg">CONTACT & SOCIALS:</span>
-<span class="td2">─────────────────────────────────────────</span>
-GitHub    → <span class="tb2">https://github.com/0x3xp</span>
-LinkedIn  → <span class="tb2">https://linkedin.com/in/piyushaakash</span>
-Linktree  → <span class="tb2">https://linktr.ee/piyushaakash</span>
-Resume    → <span class="tb2">https://0x3xp.github.io/assets/PiyushaAkash-Resume.pdf</span>`,
-  blog:()=>{
-    setTimeout(()=>open('./blog','_blank'),300);
-    return`<span class="tg">Opening blog...</span> <span class="td2">→ 0x3xp.github.io/blog</span>`;
-  },
-  academy:()=>{
-    setTimeout(()=>open('./academy','_blank'),300);
-    return`<span class="tg">Opening academy...</span> <span class="td2">→ 0x3xp.github.io/academy</span>`;
-  },
-  clear:()=>{tout.innerHTML='';return null},
+const commands = {
+  help: `
+<span class="to-gold">available commands:</span>
+<span class="to-output">  whoami          &nbsp;→ operator profile</span>
+<span class="to-output">  artemis         &nbsp;→ framework details</span>
+<span class="to-output">  research        &nbsp;→ list research entries</span>
+<span class="to-output">  skills          &nbsp;→ technical arsenal</span>
+<span class="to-output">  certs           &nbsp;→ certifications</span>
+<span class="to-output">  ctf             &nbsp;→ platform handles</span>
+<span class="to-output">  philosophy      &nbsp;→ buddhism &amp; lucifer</span>
+<span class="to-output">  contact         &nbsp;→ get in touch</span>
+<span class="to-output">  clear           &nbsp;→ clear terminal</span>
+<span class="to-output">  exit            &nbsp;→ ...</span>`,
+  whoami: `
+<span class="to-gold">operator: piyusha akash // 0x3xp</span>
+<span class="to-output">role      → low level engineer</span>
+<span class="to-output">layer     → ring-0 / kernel space</span>
+<span class="to-output">focus     → malware dev, os internals, reverse engineering</span>
+<span class="to-output">religion  → buddhist</span>
+<span class="to-output">philosophy→ luciferian (the light-bearer descends)</span>
+<span class="to-output">hireable  → true</span>
+<span class="to-output">dangerous → true</span>
+<span class="to-output">skiddie   → false</span>`,
+  artemis: `
+<span class="to-gold">ARTEMIS v1.0.0 — Syscall Forge Framework</span>
+<span class="to-output">language  → C + x64 ASM + MASM</span>
+<span class="to-output">mode      → direct/indirect syscalls · stack spoofing</span>
+<span class="to-output">database  → 14,869 SSN entries</span>
+<span class="to-output">crypto    → XOR / Rolling XOR / RC4</span>
+<span class="to-output">target    → EDR hook bypass · ring-0 telemetry blind</span>
+<span class="to-output">motto     → "where the kernel has no secrets"</span>
+<span class="to-output">link      → <a style="color:var(--red2)" href="https://github.com/0x3xp/Artemis" target="_blank">github.com/0x3xp/Artemis</a></span>`,
+  research: `
+<span class="to-gold">research index:</span>
+<span class="to-output">  R-001 → SetupAPI Callback Redirection</span>
+<span class="to-output">          Process injection via setup infrastructure</span>
+<span class="to-output">          technique: callback abuse · edr evasion · windows internals</span>
+<span class="to-output">          link: <a style="color:var(--red2)" href="https://github.com/0x3xp/Native-Adversary-Framework/tree/main/Malware-Dev/Injection/SetupAPI-Callback-Redirection" target="_blank">view on github ↗</a></span>`,
+  skills: `
+<span class="to-gold">technical arsenal:</span>
+<span class="to-output">  languages → C · C++ · x64 ASM · MASM · Python · Bash</span>
+<span class="to-output">  windows   → NTDLL · Win32 API · Syscall Tables · PE Format</span>
+<span class="to-output">  offensive → shellcode · EDR evasion · process injection</span>
+<span class="to-output">  RE tools  → IDA Pro · Ghidra · WinDbg · x64dbg</span>
+<span class="to-output">  mindset   → low level first · no tools, build · understand don't copy</span>`,
+  certs: `
+<span class="to-gold">certifications:</span>
+<span class="to-output">  CAPT   → Certified Associate Penetration Tester (Hackviser) [NEW]</span>
+<span class="to-output">  COWA   → Certified Offensive Windows API (Red Team Leaders)</span>
+<span class="to-output">  CISCO  → Intro to Cybersecurity · Hardware · Packet Tracer</span>
+<span class="to-output">  SBT    → OSINT · Virtual Machines</span>
+<span class="to-output">  OPSWAT → Intro to Cybersecurity</span>
+<span class="to-output">  LFS101 → Introduction to Linux</span>`,
+  ctf: `
+<span class="to-gold">ctf platforms:</span>
+<span class="to-output">  TryHackMe  → <a style="color:var(--red2)" href="https://tryhackme.com/p/0x3xp" target="_blank">tryhackme.com/p/0x3xp</a></span>
+<span class="to-output">  HackTheBox → <a style="color:var(--red2)" href="https://app.hackthebox.com/users/1981311" target="_blank">ID: 1981311</a></span>
+<span class="to-output">  Hackviser  → <a style="color:var(--red2)" href="https://app.hackviser.com/profile/0x3xp" target="_blank">hackviser.com/profile/0x3xp</a></span>`,
+  philosophy: `
+<span class="to-gold">⛧ luciferian path:</span>
+<span class="to-output">  "I did not fall. I descended.</span>
+<span class="to-output">   The kernel fears what it cannot hook.</span>
+<span class="to-output">   Every patch written against you is proof you exist."</span>
+<span class="to-output">   — Lucifer, sigil: 0x666</span>
+<br>
+<span class="to-gold">☸  buddhist dhamma:</span>
+<span class="to-output">  "Manopubbaṅgamā dhammā — all phenomena are mind-made.</span>
+<span class="to-output">   Every vulnerability is impermanence made visible.</span>
+<span class="to-output">   The Middle Path runs between ring-3 and ring-0."</span>
+<span class="to-output">   — Dhammapada v.1</span>`,
+  contact: `
+<span class="to-gold">contact:</span>
+<span class="to-output">  github   → <a style="color:var(--red2)" href="https://github.com/0x3xp" target="_blank">github.com/0x3xp</a></span>
+<span class="to-output">  linkedin → <a style="color:var(--red2)" href="https://linkedin.com/in/piyushaakash" target="_blank">piyushaakash</a></span>
+<span class="to-output">  linktree → <a style="color:var(--red2)" href="https://linktr.ee/piyushaakash" target="_blank">linktr.ee/piyushaakash</a></span>
+<span class="to-output">  status   → available for red team ops &amp; research</span>`,
+  exit: `<span class="to-comment">// "You cannot exit what you are."  — the void</span>`,
 };
 
-ti.addEventListener('keydown',e=>{
-  if(e.key!=='Enter')return;
-  const raw=ti.value.trim();
-  const parts=raw.split(' ');
-  const cmd=parts[0].toLowerCase();
-  const arg=parts.slice(1).join(' ').trim();
-  addPrompt(raw);ti.value='';
-  requestAnimationFrame(updateCaret);
-  if(!raw){tb.scrollTop=tb.scrollHeight;return}
-  if(cmd==='open'){
-    if(PROJECTS[arg]){
-      setTimeout(()=>open(PROJECTS[arg],'_blank'),300);
-      append(`<span class="tg">Opening</span> <span class="tb2">${arg}</span><span class="td2"> ...</span>`);
-    }else{
-      append(`<span class="tr">Error:</span> <span class="td2">Project '${arg}' not found. Type 'ls' to list.</span>`);
-    }
-  }else if(CMDS[cmd]){
-    const out=CMDS[cmd](arg);
-    if(out!==null&&out!==undefined)append(out);
-  }else{
-    append(`<span class="tr">command not found:</span> <span class="td2">${cmd}</span>`);
+const input = document.getElementById('term-input');
+const output = document.getElementById('term-output');
+
+function appendOutput(html) {
+  const div = document.createElement('div');
+  div.innerHTML = html;
+  output.appendChild(div);
+}
+function prompt(cmd) {
+  appendOutput(`<span class="to-prompt">piyusha@native-framework:~$ </span><span class="to-output">${cmd}</span>`);
+}
+
+input.addEventListener('keydown', e => {
+  if(e.key === 'Enter') {
+    const cmd = input.value.trim().toLowerCase();
+    input.value = '';
+    if(!cmd) return;
+    prompt(cmd);
+    if(cmd === 'clear') { output.innerHTML = ''; return; }
+    const res = commands[cmd];
+    if(res) appendOutput(`<div style="margin:4px 0 8px">${res}</div>`);
+    else appendOutput(`<span class="to-error">command not found: ${cmd} — type 'help' for commands</span>`);
+    output.parentElement.scrollTop = output.parentElement.scrollHeight;
   }
 });
-document.getElementById('tb').addEventListener('click',()=>{ti.focus();requestAnimationFrame(updateCaret)});
-addEventListener('load',()=>{ti.focus();requestAnimationFrame(updateCaret)});
 </script>
 </body>
 </html>
