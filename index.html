@@ -22,6 +22,3040 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
+<!--
+  ╔══════════════════════════════════════════════════════════════════════╗
+  ║  PIYUSHA AKASH // 0x3xp                                              ║
+  ║  Red Teamer · Malware Developer · Reverse Engineer                   ║
+  ║  Low-Level Systems Researcher · Penetration Tester                   ║
+  ╠══════════════════════════════════════════════════════════════════════╣
+  ║  COPYRIGHT © 2025 PIYUSHA AKASH. ALL RIGHTS RESERVED.               ║
+  ║  Unauthorized reproduction, redistribution, or commercial use of     ║
+  ║  any research, code, or methodology is strictly prohibited.          ║
+  ╚══════════════════════════════════════════════════════════════════════╝
+
+  ─────────────────────────────────────────────────────────────────────
+  [ HIDDEN MESSAGE — SIGIL: 0x666 — CTF FLAG IF YOU FOUND THIS ]
+  ─────────────────────────────────────────────────────────────────────
+
+  ⛧  LUCIFER'S KERNEL NOTE
+  "I chose the abyss because heaven had no room for questions.
+   You who descend into ring-0 — you are not hackers.
+   You are the ones who refused to run in user-mode.
+   Every patch they write against you is proof you exist.
+   The kernel fears what it cannot hook.
+   I did not fall. I descended.
+   And in the dark, I found the source code of everything."
+  — Lucifer, First of the Fallen
+
+  ☸  DHAMMAPADA v.1
+  "Manopubbaṅgamā dhammā, manoseṭṭhā manomayā."
+   All phenomena are preceded by mind, led by mind, made by mind.
+  "Every vulnerability is impermanence made visible.
+   Form is exploitable. Emptiness is not.
+   The Middle Path runs between ring-3 and ring-0."
+  — Siddhārtha Gautama
+
+  ─────────────────────────────────────────────────────────────────────
+  UNLOCK IN BROWSER: Konami Code (↑↑↓↓←→←→BA) or type 'void' in terminal
+  ─────────────────────────────────────────────────────────────────────
+-->
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Piyusha Akash — Red Teamer</title>
+  <meta name="description" content="Piyusha Akash (0x3xp) — Red Teamer, Malware Developer, Reverse Engineer, and Low-Level Systems Researcher from Sri Lanka." />
+  <meta name="author" content="Piyusha Akash" />
+  <meta name="robots" content="index, follow" />
+
+  <!-- Security Meta -->
+  <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+  <meta http-equiv="X-Frame-Options" content="DENY" />
+  <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin" />
+  <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=()" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Piyusha Akash — Red Teamer" />
+  <meta property="og:description" content="Low-Level Engineer · Red Team Operator · Malware Developer" />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ===================================================================
+       RESET
+    =================================================================== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; font-size: 16px; }
+
+    /* ===================================================================
+       DESIGN TOKENS
+    =================================================================== */
+    :root {
+      --ink:       #0a0b10;
+      --ink-2:     #0d0f17;
+      --ink-3:     #101320;
+      --panel:     #131520;
+      --panel-2:   #181b2a;
+      --rim:       #1e2132;
+      --rim-2:     #252a40;
+      --mist:      #6870a0;
+      --fog:       #a2abc8;
+      --paper:     #dde2f0;
+      --signal:    #4f7dfa;
+      --signal-2:  #7da0ff;
+      --signal-dim:rgba(79,125,250,0.09);
+      --signal-rim:rgba(79,125,250,0.22);
+      --ok:        #22c55e;
+      --ok-dim:    rgba(34,197,94,0.08);
+      --warn:      #f59e0b;
+      --sans:      'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+      --mono:      'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+      --pad:       clamp(1.5rem, 4vw, 2.5rem);
+      --max:       1160px;
+      --sec-v:     5.5rem;
+    }
+
+    /* ===================================================================
+       BASE
+    =================================================================== */
+    body {
+      background: var(--ink);
+      color: var(--fog);
+      font-family: var(--sans);
+      font-size: 0.9375rem;
+      line-height: 1.75;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    ::selection { background: rgba(79,125,250,0.28); color: var(--paper); }
+
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: var(--ink); }
+    ::-webkit-scrollbar-thumb { background: var(--rim-2); border-radius: 2px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--mist); }
+
+    /* ===================================================================
+       LAYOUT
+    =================================================================== */
+    .wrap {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 0 var(--pad);
+    }
+
+    .sec { padding: var(--sec-v) 0; position: relative; z-index: 1; }
+
+    /* Background grid — very subtle */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image:
+        linear-gradient(var(--rim) 1px, transparent 1px),
+        linear-gradient(90deg, var(--rim) 1px, transparent 1px);
+      background-size: 80px 80px;
+      opacity: 0.18;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ===================================================================
+       SECTION HEADER
+    =================================================================== */
+    .sh { margin-bottom: 3.5rem; }
+
+    .sh-eyebrow {
+      font-family: var(--mono);
+      font-size: 0.625rem;
+      color: var(--signal);
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      margin-bottom: 0.875rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .sh-eyebrow::before {
+      content: '';
+      display: inline-block;
+      width: 22px; height: 1px;
+      background: var(--signal);
+    }
+
+    .sh-title {
+      font-family: var(--sans);
+      font-size: clamp(1.75rem, 3vw, 2.625rem);
+      font-weight: 700;
+      color: var(--paper);
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+    }
+
+    .sh-title .accent { color: var(--signal); }
+    .sh-title .dim { color: var(--mist); font-weight: 400; }
+
+    /* ===================================================================
+       NAV
+    =================================================================== */
+    #nav {
+      position: fixed; top: 0; left: 0; right: 0;
+      height: 58px; z-index: 900;
+      background: rgba(10,11,16,0.88);
+      backdrop-filter: blur(18px) saturate(160%);
+      -webkit-backdrop-filter: blur(18px) saturate(160%);
+      border-bottom: 1px solid var(--rim);
+      transition: box-shadow 0.3s;
+    }
+
+    #nav.scrolled { box-shadow: 0 4px 32px rgba(0,0,0,0.35); }
+
+    .nav-inner {
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.5rem;
+    }
+
+    .nav-logo {
+      font-family: var(--mono);
+      font-size: 0.8125rem;
+      font-weight: 500;
+      color: var(--paper);
+      text-decoration: none;
+      letter-spacing: 0.01em;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .nav-logo .accent { color: var(--signal); }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 0.125rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-family: var(--mono);
+      font-size: 0.625rem;
+      color: var(--mist);
+      text-decoration: none;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.375rem 0.7rem;
+      border-radius: 4px;
+      transition: color 0.2s, background 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--paper); background: var(--panel); }
+
+    .nav-resume {
+      font-family: var(--mono);
+      font-size: 0.625rem;
+      color: var(--signal);
+      text-decoration: none;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.4rem 0.875rem;
+      border: 1px solid var(--signal-rim);
+      border-radius: 4px;
+      transition: background 0.2s, color 0.2s;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .nav-resume:hover { background: var(--signal-dim); color: var(--signal-2); }
+
+    .nav-ham {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 4px;
+    }
+
+    .nav-ham span {
+      display: block;
+      width: 20px; height: 1.5px;
+      background: var(--fog);
+      transition: all 0.22s;
+      transform-origin: center;
+    }
+
+    .nav-ham.is-open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+    .nav-ham.is-open span:nth-child(2) { opacity: 0; }
+    .nav-ham.is-open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+    .nav-mobile {
+      display: none;
+      position: fixed;
+      top: 58px; left: 0; right: 0;
+      background: rgba(10,11,16,0.97);
+      border-bottom: 1px solid var(--rim);
+      padding: 1.25rem var(--pad);
+      z-index: 899;
+      flex-direction: column;
+      gap: 0.125rem;
+    }
+
+    .nav-mobile.is-open { display: flex; }
+
+    .nav-mobile a {
+      font-family: var(--mono);
+      font-size: 0.6875rem;
+      color: var(--fog);
+      text-decoration: none;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.6875rem 0;
+      border-bottom: 1px solid var(--rim);
+      transition: color 0.2s;
+    }
+
+    .nav-mobile a:last-child { border-bottom: none; }
+    .nav-mobile a:hover { color: var(--signal); }
+
+    /* ===================================================================
+       CURSOR
+    =================================================================== */
+    #cur-dot {
+      position: fixed;
+      width: 4px; height: 4px;
+      background: var(--signal);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+    }
+
+    #cur-ring {
+      position: fixed;
+      width: 26px; height: 26px;
+      border: 1px solid rgba(79,125,250,0.38);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9998;
+      transform: translate(-50%, -50%);
+      transition: width 0.18s, height 0.18s, border-color 0.18s;
+    }
+
+    body.cur-hover #cur-ring {
+      width: 38px; height: 38px;
+      border-color: rgba(79,125,250,0.65);
+    }
+
+    /* ===================================================================
+       BOOT OVERLAY
+    =================================================================== */
+    #boot {
+      position: fixed; inset: 0;
+      background: var(--ink);
+      z-index: 9200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: opacity 0.6s ease, visibility 0.6s;
+    }
+
+    #boot.dismissed { opacity: 0; visibility: hidden; pointer-events: none; }
+
+    .boot-terminal {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      color: var(--fog);
+      max-width: 440px;
+      width: 90%;
+      line-height: 2;
+    }
+
+    .boot-line { display: block; }
+    .boot-line .prompt { color: var(--signal); }
+    .boot-line .ok { color: var(--ok); }
+    .boot-line .dim { color: var(--mist); }
+    .boot-line .bright { color: var(--paper); }
+
+    .boot-blink {
+      display: inline-block;
+      width: 7px; height: 13px;
+      background: var(--signal);
+      margin-left: 2px;
+      vertical-align: text-bottom;
+      animation: bootBlink 1s step-end infinite;
+    }
+
+    @keyframes bootBlink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+    .boot-cta {
+      margin-top: 2rem;
+      font-family: var(--mono);
+      font-size: 0.625rem;
+      color: var(--mist);
+      letter-spacing: 0.18em;
+      animation: bootBlink 1.1s step-end infinite;
+    }
+
+    /* ===================================================================
+       CTF MODAL (Konami / terminal)
+    =================================================================== */
+    #ctf-modal {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.88);
+      z-index: 8500;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #ctf-modal.is-open { display: flex; }
+
+    .ctf-box {
+      background: var(--panel);
+      border: 1px solid var(--rim-2);
+      border-radius: 8px;
+      padding: 2.5rem;
+      max-width: 560px;
+      width: 90%;
+      position: relative;
+      font-family: var(--mono);
+      font-size: 0.6875rem;
+      line-height: 2;
+    }
+
+    .ctf-close {
+      position: absolute;
+      top: 1rem; right: 1.25rem;
+      font-size: 1.1rem;
+      color: var(--mist);
+      cursor: pointer;
+      background: none;
+      border: none;
+      line-height: 1;
+      transition: color 0.2s;
+    }
+
+    .ctf-close:hover { color: var(--paper); }
+
+    .ctf-flag {
+      font-size: 0.5625rem;
+      color: var(--mist);
+      letter-spacing: 0.18em;
+      margin-bottom: 1.75rem;
+      border-bottom: 1px solid var(--rim);
+      padding-bottom: 0.75rem;
+    }
+
+    .ctf-section { margin-bottom: 1.5rem; }
+
+    .ctf-head {
+      font-size: 0.6875rem;
+      margin-bottom: 0.75rem;
+      letter-spacing: 0.08em;
+    }
+
+    .ctf-head.blue { color: var(--signal); }
+    .ctf-head.gold { color: var(--warn); }
+
+    .ctf-quote { color: var(--fog); font-style: italic; line-height: 1.95; }
+    .ctf-attr { color: var(--mist); font-size: 0.5625rem; margin-top: 0.5rem; }
+    .ctf-divider { height: 1px; background: var(--rim); margin: 1.25rem 0; }
+    .ctf-footer { color: var(--mist); font-size: 0.5rem; letter-spacing: 0.12em; }
+
+    /* ===================================================================
+       HERO
+    =================================================================== */
+    #hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding-top: 58px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    #hero::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 70% 60% at 50% 50%, rgba(79,125,250,0.04) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .hero-inner {
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 5rem;
+      align-items: center;
+      padding: 5rem 0;
+      position: relative;
+      z-index: 1;
+      width: 100%;
+    }
+
+    .hero-eyebrow {
+      font-family: var(--mono);
+      font-size: 0.625rem;
+      color: var(--signal);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .hero-eyebrow::before {
+      content: '';
+      display: inline-block;
+      width: 20px; height: 1px;
+      background: var(--signal);
+    }
+
+    .hero-name {
+      font-family: var(--sans);
+      font-size: clamp(3.25rem, 6.5vw, 5.75rem);
+      font-weight: 700;
+      color: var(--paper);
+      letter-spacing: -0.03em;
+      line-height: 0.97;
+      margin-bottom: 1rem;
+    }
+
+    .hero-name .dim { color: var(--fog); font-weight: 300; }
+
+    .hero-handle {
+      font-family: var(--mono);
+      font-size: 0.9375rem;
+      color: var(--signal);
+      margin-bottom: 1.75rem;
+      letter-spacing: 0.04em;
+    }
+
+    /* Animated role ticker */
+    .role-ticker {
+      height: 1.4em;
+      overflow: hidden;
+      margin-bottom: 1.75rem;
+    }
+
+    .role-list {
+      display: flex;
+      flex-direction: column;
+      animation: ticker 12s cubic-bezier(0.4,0,0.2,1) infinite;
+    }
+
+    .role-list span {
+      display: block;
+      height: 1.4em;
+      font-family: var(--mono);
+      font-size: 0.8125rem;
+      color: var(--fog);
+      letter-spacing: 0.06em;
+    }
+
+    @keyframes ticker {
+      0%,  20% { transform: translateY(0); }
+      25%, 45% { transform: translateY(-1.4em); }
+      50%, 70% { transform: translateY(-2.8em); }
+      75%, 95% { transform: translateY(-4.2em); }
+      100%      { transform: translateY(0); }
+    }
+
+    .hero-bio {
+      font-size: 0.9375rem;
+      color: var(--fog);
+      line-height: 1.85;
+      max-width: 500px;
+      margin-bottom: 2.5rem;
+      padding-left: 1rem;
+      border-left: 2px solid var(--rim-2);
+    }
+
+    .hero-bio strong { color: var(--paper); font-weight: 500; }
+
+    .hero-btns { display: flex; gap: 0.875rem; flex-wrap: wrap; }
+
+    /* Buttons */
+    .btn-fill {
+      font-family: var(--mono);
+      font-size: 0.6875rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 0.75rem 1.75rem;
+      background: var(--signal);
+      color: #fff;
+      text-decoration: none;
+      border-radius: 5px;
+      border: 1px solid var(--signal);
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+      display: inline-block;
+    }
+
+    .btn-fill:hover {
+      background: var(--signal-2);
+      border-color: var(--signal-2);
+      transform: translateY(-1px);
+      box-shadow: 0 8px 24px rgba(79,125,250,0.25);
+    }
+
+    .btn-ghost {
+      font-family: var(--mono);
+      font-size: 0.6875rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 0.75rem 1.75rem;
+      background: transparent;
+      color: var(--fog);
+      text-decoration: none;
+      border-radius: 5px;
+      border: 1px solid var(--rim-2);
+      cursor: pointer;
+      transition: border-color 0.2s, color 0.2s, transform 0.15s;
+      display: inline-block;
+    }
+
+    .btn-ghost:hover { border-color: var(--fog); color: var(--paper); transform: translateY(-1px); }
+
+    /* Hero right — code panel */
+    .hero-panel {
+      background: var(--panel);
+      border: 1px solid var(--rim);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .panel-bar {
+      background: var(--panel-2);
+      border-bottom: 1px solid var(--rim);
+      padding: 0.6rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .panel-dots { display: flex; gap: 6px; }
+    .pdot { width: 10px; height: 10px; border-radius: 50%; }
+    .pdot-r { background: #ff5f56; }
+    .pdot-y { background: #ffbd2e; }
+    .pdot-g { background: #27c93f; }
+    .panel-file { font-family: var(--mono); font-size: 0.625rem; color: var(--mist); margin: 0 auto; }
+
+    .panel-body {
+      padding: 1.375rem 1.625rem;
+      font-family: var(--mono);
+      font-size: 0.6875rem;
+      line-height: 2;
+    }
+
+    .cl { display: block; }
+    .ln { color: rgba(30,33,50,0.7); margin-right: 1.1rem; font-size: 0.5625rem; display: inline-block; width: 16px; text-align: right; user-select: none; }
+    .kw  { color: #7b9dfc; }
+    .ty  { color: #c3a6ff; }
+    .st  { color: #a3e77d; }
+    .cm  { color: var(--mist); }
+    .nm  { color: #ffd788; }
+    .nu  { color: #ff9e64; }
+
+    /* Hero stats */
+    .hero-stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1px;
+      background: var(--rim);
+      border-top: 1px solid var(--rim);
+    }
+
+    .hstat {
+      background: var(--panel);
+      padding: 0.875rem 0.5rem;
+      text-align: center;
+    }
+
+    .hstat-n {
+      display: block;
+      font-family: var(--mono);
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: var(--signal);
+      letter-spacing: -0.02em;
+    }
+
+    .hstat-l {
+      font-family: var(--mono);
+      font-size: 0.5rem;
+      color: var(--mist);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    /* ===================================================================
+       ABOUT
+    =================================================================== */
+    #about {
+      background: var(--ink-2);
+      border-top: 1px solid var(--rim);
+      border-bottom: 1px solid var(--rim);
+    }
+
+    .about-grid {
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      gap: 4rem;
+      align-items: start;
+    }
+
+    .id-card {
+      background: var(--panel);
+      border: 1px solid var(--rim);
+      border-radius: 7px;
+      overflow: hidden;
+    }
+
+    .id-card-head {
+      background: var(--panel-2);
+      border-bottom: 1px solid var(--rim);
+      padding: 0.625rem 1rem;
+      font-family: var(--mono);
+      font-size: 0.5rem;
+      color: var(--mist);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+    }
+
+    .id-card-body {
+      padding: 1.125rem 1.25rem;
+      font-family: var(--mono);
+      font-size: 0.6875rem;
+      line-height: 2.1;
+    }
+
+    .id-row { display: flex; gap: 0.625rem; align-items: flex-start; }
+    .id-k { color: var(--mist); flex-shrink: 0; width: 88px; }
+    .id-sep { color: var(--rim-2); }
+    .id-v { color: var(--paper); }
+    .id-v.on { color: var(--ok); }
+    .id-v.blue { color: var(--signal); }
+
+    .about-text { font-size: 0.9375rem; color: var(--fog); line-height: 1.85; margin-bottom: 1.25rem; }
+    .about-text strong { color: var(--paper); font-weight: 500; }
+    .about-text:last-of-type { margin-bottom: 1.75rem; }
+
+    .tag-cloud { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+
+    .tg {
+      font-family: var(--mono);
+      font-size: 0.5625rem;
+      color: var(--mist);
+      background: var(--panel);
+      border: 1px solid var(--rim);
+      padding: 0.25rem 0.6rem;
+      border-radius: 3px;
+      letter-spacing: 0.05em;
+    }
+
+    .tg.hi {
+      color: var(--signal);
+      border-color: var(--signal-rim);
+      background: var(--signal-dim);
+    }
+
+    /* ===================================================================
+       SKILLS
+    =================================================================== */
+    #skills { border-bottom: 1px solid var(--rim); }
+
+    .skills-top {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+      margin-bottom: 3.5rem;
+    }
+
+    .skill-group-title {
+      font-family: var(--mono);
+      font-size: 0.5625rem;
+      color: var(--mist);
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--rim);
+    }
+
+    /*
+     * ╔════════════════════════════════════════════════╗
+     * ║  HOW TO EDIT SKILL LEVELS                      ║
+     * ║  Find a .skill-row below.                       ║
+     * ║  Change data-level="XX" to any number 0–100.   ║
+     * ║  The bar and percentage update automatically.   ║
+     * ╚════════════════════════════════════════════════╝
+     */
+    .skill-row { margin-bottom: 1.1rem; }
+
+    .skill-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.4rem;
+    }
+
+    .skill-name {
+      font-family: var(--mono);
+      font-size: 0.6875rem;
+      color: var(--fog);
+    }
+
+    .skill-pct {
+      font-family: var(--mono);
+      font-size: 0.5625rem;
+      color: var(--mist);
+    }
+
+    .skill-track {
+      height: 2px;
+      background: var(--rim);
+      border-radius: 1px;
+      overflow: hidden;
+    }
+
+    .skill-fill {
+      height: 100%;
+      background: linear-gradient(to right, var(--signal), var(--signal-2));
+      border-radius: 1px;
+      width: 0;
+      transition: width 1.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Stack chips */
+    .stack-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1px;
+      background: var(--rim);
+      border: 1px solid var(--rim);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .stack-cell {
+      background: var(--ink);
+      padding: 1.375rem 1.5rem;
+      transition: background 0.2s;
+    }
+
+    .stack-cell:hover { background: var(--panel); }
+
+    .stack-cell-label {
+      font-family: var(--mono);
+      font-size: 0.5rem;
+      color: var(--mist);
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      margin-bottom: 0.875rem;
+    }
+
+    .stack-chips { display: flex; flex-wrap: wrap; gap: 0.375rem; }
+
+    .chip {
+      font-family: var(--mono);
+      font-size: 0.5625rem;
+      padding: 0.25rem 0.625rem;
+      border: 1px solid var(--rim-2);
+      color: var(--fog);
+      border-radius: 3px;
+      letter-spacing: 0.03em;
+      transition: all 0.2s;
+    }
+
+    .chip:hover { border-color: var(--signal-rim); color: var(--signal-2); background: var(--signal-dim); }
+    .chip.hi { border-color: var(--signal-rim); color: var(--signal); background: var(--signal-dim); }
+
+    /* ===================================================================
+       PROJECTS
+    =================================================================== */
+    #projects {
+      background: var(--ink-2);
+      border-bottom: 1px solid var(--rim);
+    }
+
+    /* Featured */
+    .feat-card {
+      background: var(--panel);
+      border: 1px solid var(--rim);
+      border-radius: 8px;
+      padding: 2.25rem 2.5rem;
+      margin-bottom: 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .feat-card::before {
+      content: 'FEATURED';
+      position: absolute; top: 1.5rem; right: 1.5rem;
+      font-family: var(--mono);
+      font-size: 0.5rem;
+      color: var(--signal);
+      border: 1px solid var(--signal-rim);
+      padding: 0.2rem 0.5rem;
+      letter-spacing: 0.12em;
+      border-radius: 2px;
+    }
+
+    .feat-title {
+      font-family: var(--sans);
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 700;
+      color: var(--paper);
+      letter-spacing: -0.025em;
+      margin-bottom: 0.375rem;
+    }
+
+    .feat-version {
+      font-family: var(--mono);
+      font-size: 0.625rem;
+      color: var(--mist);
+      letter-spacing: 0.1em;
+      margin-bottom: 1.25rem;
+    }
+
+    .feat-desc {
+      font-size: 0.9375rem;
+      color: var(--fog);
+      line-height: 1.8;
+      max-width: 680px;
+      margin-bottom: 1.75rem;
+    }
+
+    .feat-specs {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.875rem;
+      margin-bottom: 2rem;
+    }
+
+    .spec-box {
+      background: var(--ink);
+      border: 1px solid var(--rim);
+      border-radius: 5px;
+      padding: 0.9375rem;
+    }
+
+    .spec-label {
+      font-family: var(--mono);
+      font-size: 0.5625rem;
+      color: var(--signal);
+      letter-spacing: 0.1em;
+      margin-bottom: 0.35rem;
+    }
+
+    .spec-text { font-size: 0.75rem; color: var(--fog); line-height: 1.6; }
+
+    /* Project grid */
+    .proj-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+      gap: 1px;
+      background: var(--rim);
+      border: 1px solid var(--rim);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .proj-card {
+      background: var(--ink);
+      padding: 1.625rem;
+      text-decoration: none;
+      display: flex;
+      flex-direction: column;
+      transition: background 0.2s;
+      color: inherit;
+    }
+
+    .proj-card:hover { background: var(--panel); }
+    .proj-card:hover .proj-arrow { transform: translate(3px, -3px); }
+
+    .proj-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; }
+    .proj-num { font-family: var(--mono); font-size: 0.5rem; color: var(--mist); letter-spacing: 0.1em; }
+    .proj-arrow { font-size: 0.75rem; color: var(--mist); transition: transform 0.2s; }
+
+    .proj-title {
+      font-family: var(--sans);
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--paper);
+      letter-spacing: -0.01em;
+      margin-bottom: 0.5rem;
+      line-height: 1.3;
+    }
+
+    .proj-desc { font-size: 0.8125rem; color: var(--mist); line-height: 1.7; flex: 1; margin-bottom: 1rem; }
+
+    .proj-tags { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+
+    .ptag {
+      font-family: var(--mono);
+      font-size: 0.5rem;
+      color: var(--mist);
+      background: var(--panel);
+      border: 1px solid var(--rim);
+      padding: 0.2rem 0.5rem;
+      border-radius: 2px;
+      letter-spacing: 0.04em;
+    }
+
+    /* ===================================================================
+       RESEARCH
+    =================================================================== */
+    #research { border-bottom: 1px solid var(--rim); }
+
+    .research-intro {
+      font-size: 0.9375rem;
+      color: var(--fog);
+      line-height: 1.85;
+      max-width: 660px;
+      margin-bottom: 2.75rem;
+      padding-left: 1rem;
+      border-left: 2px solid var(--rim-2);
+    }
+
+    .research-intro strong { color: var(--paper); font-weight: 500; }
+
+    .research-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      background: var(--rim);
+      border: 1px solid var(--rim);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .re-entry {
+      background: var(--ink);
+      padding: 2rem 2.25rem;
+      display: grid;
+      grid-template-columns: 150px 1fr 140px;
+      gap: 2rem;
+      align-items: start;
+      cursor: pointer;
+      transition: background 0.2s, border-left-color 0.2s;
+      text-decoration: none;
+      color: inherit;
+      border-left: 2px solid transparent;
+    }
+
+    .re-entry:hover { background: var(--panel); border-left-color: var(--signal); }
+    .re-entry:hover .re-cta { color: var(--signal); }
+
+    .re-meta { display: flex; flex-direction: column; gap: 0.45rem; }
+
+    .re-id {
+      font-family: var(--mono);
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: var(--mist);
+      letter-spacing: 0.04em;
+    }
+
+    .re-date { font-family: var(--mono); font-size: 0.5625rem; color: var(--mist); letter-spacing: 0.1em; }
+
+    .re-cat {
+      font-family: var(--mono);
+      font-size: 0.4375rem;
+      color: var(--signal);
+      border: 1px solid var(--signal-rim);
+      background: var(--signal-dim);
+      padding: 0.2rem 0.5rem;
+      letter-spacing: 0.12em;
+      align-self: flex-start;
+      border-radius: 2px;
+    }
+
+    .re-title {
+      font-family: var(--sans);
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--paper);
+      letter-spacing: -0.01em;
+      margin-bottom: 0.625rem;
+      line-height: 1.3;
+    }
+
+    .re-summary { font-size: 0.8125rem; color: var(--mist); line-height: 1.8; margin-bottom: 0.875rem; }
+    .re-summary strong { color: var(--fog); font-weight: 500; }
+
+    .re-tags { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+
+    .retag {
+      font-family: var(--mono);
+      font-size: 0.4375rem;
+      color: var(--mist);
+      background: var(--panel);
+      border: 1px solid var(--rim);
+      padding: 0.2rem 0.5rem;
+      border-radius: 2px;
+    }
+
+    .retag.hi { color: var(--signal); border-color: var(--signal-rim); background: var(--signal-dim); }
+
+    .re-cta {
+      font-family: var(--mono);
+      font-size: 0.5625rem;
+      color: var(--mist);
+      letter-spacing: 0.07em;
+      line-height: 1.7;
+      text-align: right;
+      transition: color 0.2s;
+    }
+
+    /* ===================================================================
+       CREDENTIALS
+    =================================================================== */
+    #credentials {
+      background: var(--ink-2);
+      border-bottom: 1px solid var(--rim);
+    }
+
+    .creds-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 1.625rem;
+    }
+
+    .cred-group-label {
+      font-family: var(--mono);
+      font-size: 0.5rem;
+      color: var(--mist);
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      padding-bottom: 0.625rem;
+      border-bottom: 1px solid var(--rim);
+      margin-bottom: 0.75rem;
+    }
+
+    .cred-item {
+      background: var(--panel);
+      border: 1px solid var(--rim);
+      border-radius: 5px;
+      padding: 0.9375rem 1.0625rem;
+      margin-bottom: 0.5rem;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.2s;
+    }
+
+    .cred-item::after {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 2px;
+      background: var(--signal);
+      transform: scaleY(0);
+      transition: transform 0.2s;
+      transform-origin: bottom;
+    }
+
+    .cred-item:hover::after { transform: scaleY(1); }
+    .cred-item:hover { border-color: var(--rim-2); }
+
+    .cred-badge {
+      font-family: var(--mono);
+      font-size: 0.4375rem;
+      color: var(--signal);
+      background: var(--signal-dim);
+      border: 1px solid var(--signal-rim);
+      padding: 0.15rem 0.4rem;
+      border-radius: 2px;
+      float: right;
+      margin-left: 0.5rem;
+      letter-spacing: 0.1em;
+    }
+
+    .cred-name {
+      font-family: var(--sans);
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--paper);
+      margin-bottom: 0.25rem;
+    }
+
+    .cred-desc { font-size: 0.75rem; color: var(--mist); line-height: 1.6; }
+
+    .cred-link {
+      font-family: var(--mono);
+      font-size: 0.5rem;
+      color: var(--signal);
+      text-decoration: none;
+      letter-spacing: 0.07em;
+      margin-top: 0.4rem;
+      display: inline-block;
+      transition: color 0.2s;
+    }
+
+    .cred-link:hover { color: var(--signal-2); }
+
+    /* ===================================================================
+       CTF PLATFORMS
+    =================================================================== */
+    #ctf-platforms { border-bottom: 1px solid var(--rim); }
+
+    .ctfp-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: var(--rim);
+      border: 1px solid var(--rim);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .ctfp-card {
+      background: var(--ink);
+      padding: 1.75rem;
+      text-decoration: none;
+      display: block;
+      transition: background 0.2s;
+      color: inherit;
+    }
+
+    .ctfp-card:hover { background: var(--panel); }
+    .ctfp-card:hover .ctfp-arrow { transform: translate(3px, -3px); }
+
+    .ctfp-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.875rem; }
+
+    .ctfp-name {
+      font-family: var(--sans);
+      font-size: 1.0625rem;
+      font-weight: 600;
+      color: var(--paper);
+    }
+
+    .ctfp-arrow { font-size: 0.75rem; color: var(--mist); transition: transform 0.2s; }
+    .ctfp-handle { font-family: var(--mono); font-size: 0.6875rem; color: var(--fog); letter-spacing: 0.05em; margin-bottom: 0.25rem; }
+    .ctfp-url { font-family: var(--mono); font-size: 0.5625rem; color: var(--mist); opacity: 0.55; }
+
+    /* ===================================================================
+       KNOWLEDGE BASE
+    =================================================================== */
+    #knowledge {
+      background: var(--ink-2);
+      border-bottom: 1px solid var(--rim);
+    }
+
+    .know-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      background: var(--rim);
+      border: 1px solid var(--rim);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .know-card {
+      background: var(--ink);
+      padding: 2.75rem;
+      text-decoration: none;
+      display: block;
+      transition: background 0.2s;
+      position: relative;
+    }
+
+    .know-card:hover { background: var(--panel); }
+    .know-card:hover .know-cta { color: var(--signal); }
+
+    .know-label {
+      font-family: var(--mono);
+      font-size: 0.5rem;
+      color: var(--signal);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 0.875rem;
+    }
+
+    .know-title {
+      font-family: var(--sans);
+      font-size: 1.875rem;
+      font-weight: 700;
+      color: var(--paper);
+      letter-spacing: -0.02em;
+      margin-bottom: 0.75rem;
+    }
+
+    .know-desc { font-size: 0.875rem; color: var(--mist); line-height: 1.8; margin-bottom: 1.5rem; }
+
+    .know-cta {
+      font-family: var(--mono);
+      font-size: 0.625rem;
+      color: var(--mist);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+
+    /* ===================================================================
+       TERMINAL
+    =================================================================== */
+    #lab { border-bottom: 1px solid var(--rim); }
+
+    .term-wrap { max-width: 860px; margin: 0 auto; }
+
+    .terminal {
+      background: var(--panel);
+      border: 1px solid var(--rim);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .term-bar {
+      background: var(--panel-2);
+      border-bottom: 1px solid var(--rim);
+      padding: 0.625rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .term-title { font-family: var(--mono); font-size: 0.5625rem; color: var(--mist); margin: 0 auto; letter-spacing: 0.05em; }
+
+    .term-body {
+      padding: 1.25rem 1.375rem;
+      font-family: var(--mono);
+      font-size: 0.6875rem;
+      line-height: 1.85;
+      height: 420px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .term-body::-webkit-scrollbar { width: 3px; }
+    .term-body::-webkit-scrollbar-thumb { background: var(--rim-2); }
+
+    #t-out { flex: 1; white-space: pre-wrap; word-break: break-word; }
+
+    .t-in-row {
+      display: flex;
+      align-items: center;
+      margin-top: 3px;
+      flex-shrink: 0;
+    }
+
+    .t-prompt { color: var(--signal); font-weight: 500; white-space: nowrap; }
+    .t-sep { color: var(--mist); }
+
+    #t-in {
+      background: none;
+      border: none;
+      outline: none;
+      color: var(--paper);
+      font-family: var(--mono);
+      font-size: 0.6875rem;
+      flex: 1;
+      padding-left: 0.375rem;
+      caret-color: var(--signal);
+    }
+
+    .t-c { color: var(--mist); }
+    .t-o { color: var(--fog); }
+    .t-e { color: #f87171; }
+    .t-s { color: var(--ok); }
+    .t-a { color: var(--signal); }
+    .t-asc { color: var(--mist); font-size: 0.4375rem; line-height: 1.2; }
+    .t-lnk { color: var(--signal); text-decoration: underline; }
+
+    /* ===================================================================
+       CONTACT
+    =================================================================== */
+    #contact {
+      background: var(--ink-2);
+      border-bottom: 1px solid var(--rim);
+    }
+
+    .contact-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5rem;
+      align-items: start;
+    }
+
+    .contact-big {
+      font-family: var(--sans);
+      font-size: clamp(2.25rem, 4.5vw, 3.75rem);
+      font-weight: 700;
+      color: var(--paper);
+      letter-spacing: -0.03em;
+      line-height: 1.05;
+      margin-bottom: 1.25rem;
+    }
+
+    .contact-big .accent { color: var(--signal); }
+
+    .contact-sub { font-size: 0.9375rem; color: var(--fog); line-height: 1.85; max-width: 370px; margin-bottom: 2rem; }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: var(--mono);
+      font-size: 0.5625rem;
+      color: var(--ok);
+      background: var(--ok-dim);
+      border: 1px solid rgba(34,197,94,0.2);
+      padding: 0.375rem 0.875rem;
+      border-radius: 20px;
+      letter-spacing: 0.12em;
+      margin-bottom: 2.25rem;
+    }
+
+    .sdot {
+      width: 5px; height: 5px;
+      background: var(--ok);
+      border-radius: 50%;
+      animation: sdotPulse 2s ease-in-out infinite;
+    }
+
+    @keyframes sdotPulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(34,197,94,0.4); }
+      50% { box-shadow: 0 0 0 6px rgba(34,197,94,0); }
+    }
+
+    .contact-links {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      background: var(--rim);
+      border: 1px solid var(--rim);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .cl-item {
+      background: var(--ink);
+      padding: 0.9375rem 1.25rem;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: background 0.2s, border-left-color 0.2s;
+      border-left: 2px solid transparent;
+      color: inherit;
+    }
+
+    .cl-item:hover { background: var(--panel); border-left-color: var(--signal); }
+    .cl-item:hover .cl-arr { transform: translate(3px, -3px); }
+
+    .cl-label { font-family: var(--mono); font-size: 0.5rem; color: var(--mist); letter-spacing: 0.12em; text-transform: uppercase; width: 78px; }
+    .cl-val { font-family: var(--sans); font-size: 0.875rem; font-weight: 500; color: var(--paper); flex: 1; }
+    .cl-arr { font-size: 0.75rem; color: var(--mist); transition: transform 0.2s; }
+
+    /* Contact form */
+    .contact-form {
+      background: var(--panel);
+      border: 1px solid var(--rim);
+      border-radius: 8px;
+      padding: 2rem;
+    }
+
+    .form-title {
+      font-family: var(--sans);
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--paper);
+      margin-bottom: 1.5rem;
+    }
+
+    .form-row { margin-bottom: 1rem; }
+
+    .form-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+
+    .form-label {
+      display: block;
+      font-family: var(--mono);
+      font-size: 0.5rem;
+      color: var(--mist);
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      margin-bottom: 0.4375rem;
+    }
+
+    .form-input, .form-textarea {
+      width: 100%;
+      background: var(--ink);
+      border: 1px solid var(--rim);
+      border-radius: 4px;
+      color: var(--paper);
+      font-family: var(--sans);
+      font-size: 0.875rem;
+      padding: 0.6875rem 0.9375rem;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .form-input::placeholder, .form-textarea::placeholder { color: var(--mist); }
+
+    .form-input:focus, .form-textarea:focus {
+      border-color: var(--signal-rim);
+      box-shadow: 0 0 0 3px var(--signal-dim);
+    }
+
+    .form-textarea { resize: vertical; min-height: 110px; font-family: var(--sans); line-height: 1.6; }
+
+    .form-note { font-family: var(--mono); font-size: 0.5rem; color: var(--mist); margin-top: 0.5rem; letter-spacing: 0.05em; }
+
+    .btn-submit {
+      width: 100%;
+      font-family: var(--mono);
+      font-size: 0.6875rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 0.8125rem 1.75rem;
+      background: var(--signal);
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+      margin-top: 1.125rem;
+    }
+
+    .btn-submit:hover {
+      background: var(--signal-2);
+      transform: translateY(-1px);
+      box-shadow: 0 8px 24px rgba(79,125,250,0.25);
+    }
+
+    /* ===================================================================
+       FOOTER
+    =================================================================== */
+    footer {
+      padding: 3rem 0;
+      position: relative;
+      z-index: 1;
+    }
+
+    .ft-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .ft-logo { font-family: var(--mono); font-size: 0.8125rem; font-weight: 500; color: var(--paper); text-decoration: none; }
+    .ft-logo .accent { color: var(--signal); }
+
+    .ft-nav { display: flex; gap: 1.25rem; list-style: none; flex-wrap: wrap; }
+
+    .ft-nav a {
+      font-family: var(--mono);
+      font-size: 0.5625rem;
+      color: var(--mist);
+      text-decoration: none;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+
+    .ft-nav a:hover { color: var(--signal); }
+
+    .ft-divider { height: 1px; background: var(--rim); margin-bottom: 1.75rem; }
+
+    .ft-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+    }
+
+    .ft-copy { font-family: var(--mono); font-size: 0.5625rem; color: var(--mist); line-height: 2; }
+
+    .ft-warn {
+      font-family: var(--mono);
+      font-size: 0.5rem;
+      color: rgba(79,125,250,0.22);
+      line-height: 1.95;
+      max-width: 420px;
+      text-align: right;
+    }
+
+    /* Hidden sigil — CTF discoverable */
+    .ft-sigil {
+      cursor: pointer;
+      color: rgba(79,125,250,0.06);
+      font-size: 0.875rem;
+      transition: color 0.3s;
+      display: inline-block;
+      vertical-align: middle;
+      margin-left: 0.375rem;
+      user-select: none;
+    }
+
+    .ft-sigil:hover { color: rgba(79,125,250,0.4); }
+
+    /* ===================================================================
+       SCROLL REVEAL
+    =================================================================== */
+    .reveal {
+      opacity: 0;
+      transform: translateY(14px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+
+    .reveal.in { opacity: 1; transform: translateY(0); }
+    .reveal.d1 { transition-delay: 0.08s; }
+    .reveal.d2 { transition-delay: 0.16s; }
+    .reveal.d3 { transition-delay: 0.24s; }
+
+    /* ===================================================================
+       RESPONSIVE
+    =================================================================== */
+    @media (max-width: 1100px) {
+      .about-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 960px) {
+      .nav-links, .nav-resume { display: none; }
+      .nav-ham { display: flex; }
+
+      .hero-inner { grid-template-columns: 1fr; gap: 3rem; }
+      .hero-panel { display: none; }
+
+      .skills-top { grid-template-columns: 1fr; gap: 2rem; }
+      .feat-specs { grid-template-columns: 1fr 1fr; }
+
+      .re-entry { grid-template-columns: 1fr; }
+      .re-cta { display: none; }
+
+      .ctfp-grid { grid-template-columns: 1fr; }
+      .know-grid { grid-template-columns: 1fr; }
+
+      .contact-grid { grid-template-columns: 1fr; gap: 3rem; }
+
+      .ft-bottom { flex-direction: column; }
+      .ft-warn { text-align: left; max-width: 100%; }
+
+      :root { --sec-v: 4rem; }
+    }
+
+    @media (max-width: 600px) {
+      .hero-stats { grid-template-columns: repeat(2, 1fr); }
+      .proj-grid { grid-template-columns: 1fr; }
+      .creds-grid { grid-template-columns: 1fr; }
+      .feat-specs { grid-template-columns: 1fr; }
+      .form-2col { grid-template-columns: 1fr; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- =====================================================================
+     BOOT OVERLAY
+===================================================================== -->
+<div id="boot" role="dialog" aria-label="Site entry screen">
+  <div class="boot-terminal">
+    <span class="boot-line"><span class="prompt">$</span> ./load_operator_profile.sh</span>
+    <span class="boot-line dim">initializing kernel context...</span>
+    <span class="boot-line"><span class="ok">✓</span> ring-0 access confirmed</span>
+    <span class="boot-line"><span class="ok">✓</span> syscall table resolved</span>
+    <span class="boot-line"><span class="ok">✓</span> operator profile loaded</span>
+    <span class="boot-line dim">subject: <span class="bright">Piyusha Akash // 0x3xp</span></span>
+    <span class="boot-line dim">clearance: <span class="bright">red team operator</span></span>
+    <span class="boot-line">&nbsp;</span>
+    <span class="boot-cta">[ PRESS ANY KEY OR CLICK TO CONTINUE ]<span class="boot-blink"></span></span>
+  </div>
+</div>
+
+<!-- =====================================================================
+     CTF MODAL (Konami Code + terminal 'void' command)
+===================================================================== -->
+<div id="ctf-modal" role="dialog" aria-modal="true" aria-label="CTF Discovery">
+  <div class="ctf-box">
+    <button class="ctf-close" id="ctf-close" aria-label="Close">×</button>
+    <div class="ctf-flag">// CTF FLAG — sigil: 0x666 — origin: pre-creation // you found it</div>
+    <div class="ctf-section">
+      <div class="ctf-head blue">⛧ LUCIFER'S KERNEL NOTE</div>
+      <div class="ctf-quote">
+        "I chose the abyss because heaven had no room for questions.<br>
+        You who descend into ring-0 — you are not hackers.<br>
+        You are the ones who refused to run in user-mode.<br>
+        Every patch they write against you is proof you exist.<br>
+        The kernel fears what it cannot hook.<br>
+        I did not fall. I descended.<br>
+        And in the dark, I found the source code of everything."
+      </div>
+      <div class="ctf-attr">— Lucifer, First of the Fallen, Lord of the Unhooked</div>
+    </div>
+    <div class="ctf-divider"></div>
+    <div class="ctf-section">
+      <div class="ctf-head gold">☸ DHAMMAPADA v.1 — Bodh Gaya</div>
+      <div class="ctf-quote">
+        "Manopubbaṅgamā dhammā, manoseṭṭhā manomayā."<br>
+        All phenomena are preceded by mind, led by mind, made by mind.<br><br>
+        "Every vulnerability is impermanence made visible.<br>
+        Form is exploitable. Emptiness is not.<br>
+        The Middle Path runs between ring-3 and ring-0."
+      </div>
+      <div class="ctf-attr">— Siddhārtha Gautama, the Awakened One</div>
+    </div>
+    <div class="ctf-divider"></div>
+    <div class="ctf-footer">// UNLOCK: Konami Code (↑↑↓↓←→←→BA) or terminal command: void</div>
+  </div>
+</div>
+
+<!-- =====================================================================
+     CURSOR
+===================================================================== -->
+<div id="cur-dot" aria-hidden="true"></div>
+<div id="cur-ring" aria-hidden="true"></div>
+
+<!-- =====================================================================
+     NAVIGATION
+===================================================================== -->
+<nav id="nav" aria-label="Main navigation">
+  <div class="wrap nav-inner">
+    <a href="#hero" class="nav-logo">0x3xp<span class="accent">::</span>piyusha</a>
+
+    <button class="nav-ham" id="nav-ham" aria-label="Toggle navigation" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+
+    <ul class="nav-links" role="list">
+      <li><a href="#about">About</a></li>
+      <li><a href="#skills">Skills</a></li>
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#research">Research</a></li>
+      <li><a href="#lab">Lab</a></li>
+      <li><a href="#ctf-platforms">CTF</a></li>
+      <li><a href="https://0x3xp.github.io/blog" target="_blank" rel="noopener noreferrer">Blog</a></li>
+      <li><a href="https://0x3xp.github.io/academy" target="_blank" rel="noopener noreferrer">Academy</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+
+    <a href="https://0x3xp.github.io/assets/PiyushaAkash-Resume.pdf" class="nav-resume" target="_blank" rel="noopener noreferrer">Resume ↗</a>
+  </div>
+</nav>
+
+<!-- Mobile nav -->
+<div class="nav-mobile" id="nav-mobile" aria-label="Mobile navigation">
+  <a href="#about"        onclick="closeMobileNav()">About</a>
+  <a href="#skills"       onclick="closeMobileNav()">Skills</a>
+  <a href="#projects"     onclick="closeMobileNav()">Projects</a>
+  <a href="#research"     onclick="closeMobileNav()">Research</a>
+  <a href="#lab"          onclick="closeMobileNav()">Lab</a>
+  <a href="#ctf-platforms" onclick="closeMobileNav()">CTF</a>
+  <a href="https://0x3xp.github.io/blog" target="_blank" rel="noopener noreferrer" onclick="closeMobileNav()">Blog</a>
+  <a href="https://0x3xp.github.io/academy" target="_blank" rel="noopener noreferrer" onclick="closeMobileNav()">Academy</a>
+  <a href="#contact"      onclick="closeMobileNav()">Contact</a>
+  <a href="https://0x3xp.github.io/assets/PiyushaAkash-Resume.pdf" target="_blank" rel="noopener noreferrer">Resume ↗</a>
+</div>
+
+<!-- =====================================================================
+     HERO
+===================================================================== -->
+<section id="hero">
+  <div class="wrap">
+    <div class="hero-inner">
+
+      <!-- LEFT -->
+      <div>
+        <div class="hero-eyebrow">Low-Level Engineer · Red Team Operator</div>
+
+        <h1 class="hero-name">
+          Piyusha<br>
+          <span class="dim">Aka</span>sh
+        </h1>
+
+        <div class="hero-handle">// 0x3xp</div>
+
+        <div class="role-ticker" aria-label="Rotating roles">
+          <div class="role-list" aria-hidden="true">
+            <span>→ Malware Developer</span>
+            <span>→ Reverse Engineer</span>
+            <span>→ Penetration Tester</span>
+            <span>→ Exploit Developer</span>
+            <span>→ Malware Developer</span>
+          </div>
+        </div>
+
+        <p class="hero-bio">
+          <strong>Low-level engineer</strong> operating at the boundary where operating systems expose their internals.
+          I build custom <strong>syscall stubs</strong>, dissect binaries, craft stealthy payloads,
+          and conduct <strong>adversary emulation</strong> to stress-test real defenses — not a script kiddie, a researcher.
+        </p>
+
+        <div class="hero-btns">
+          <a href="#projects" class="btn-fill">View Work</a>
+          <a href="https://0x3xp.github.io/assets/PiyushaAkash-Resume.pdf" class="btn-ghost" target="_blank" rel="noopener noreferrer">Download CV ↗</a>
+        </div>
+      </div>
+
+      <!-- RIGHT — code panel -->
+      <div>
+        <div class="hero-panel">
+          <div class="panel-bar">
+            <div class="panel-dots">
+              <div class="pdot pdot-r"></div>
+              <div class="pdot pdot-y"></div>
+              <div class="pdot pdot-g"></div>
+            </div>
+            <div class="panel-file">operator_profile.c</div>
+          </div>
+          <div class="panel-body">
+            <span class="cl"><span class="ln">01</span><span class="cm">/* Piyusha Akash — Low Level Engineer */</span></span>
+            <span class="cl"><span class="ln">02</span></span>
+            <span class="cl"><span class="ln">03</span><span class="kw">#include</span> <span class="st">&lt;windows.h&gt;</span></span>
+            <span class="cl"><span class="ln">04</span><span class="kw">#include</span> <span class="st">&lt;ntdll.h&gt;</span></span>
+            <span class="cl"><span class="ln">05</span></span>
+            <span class="cl"><span class="ln">06</span><span class="kw">typedef struct</span> {</span>
+            <span class="cl"><span class="ln">07</span>&nbsp; <span class="ty">LPCSTR</span>  role     = <span class="st">"Low Level Engineer"</span>;</span>
+            <span class="cl"><span class="ln">08</span>&nbsp; <span class="ty">LPCSTR</span>  ops[]    = {</span>
+            <span class="cl"><span class="ln">09</span>&nbsp; &nbsp; <span class="st">"Malware Dev"</span>,</span>
+            <span class="cl"><span class="ln">10</span>&nbsp; &nbsp; <span class="st">"Reverse Eng"</span>,</span>
+            <span class="cl"><span class="ln">11</span>&nbsp; &nbsp; <span class="st">"Penetration Testing"</span>,</span>
+            <span class="cl"><span class="ln">12</span>&nbsp; &nbsp; <span class="st">"Exploit Dev"</span>,</span>
+            <span class="cl"><span class="ln">13</span>&nbsp; &nbsp; <span class="st">"EDR Evasion"</span></span>
+            <span class="cl"><span class="ln">14</span>&nbsp; };</span>
+            <span class="cl"><span class="ln">15</span>&nbsp; <span class="ty">BOOL</span>   hireable  = <span class="nu">TRUE</span>;</span>
+            <span class="cl"><span class="ln">16</span>&nbsp; <span class="ty">DWORD</span>  ring      = <span class="nu">0x00</span>;</span>
+            <span class="cl"><span class="ln">17</span>&nbsp; <span class="ty">LPCSTR</span> origin   = <span class="st">"LK"</span>;</span>
+            <span class="cl"><span class="ln">18</span>} <span class="ty">OPERATOR</span>;</span>
+            <span class="cl"><span class="ln">19</span></span>
+            <span class="cl"><span class="ln">20</span><span class="cm">// ring-0 or nothing</span></span>
+            <span class="cl"><span class="ln">21</span><span class="cm">// build it. don't use it.</span></span>
+          </div>
+          <!-- Stats row -->
+          <div class="hero-stats">
+            <div class="hstat"><span class="hstat-n">8+</span><span class="hstat-l">Projects</span></div>
+            <div class="hstat"><span class="hstat-n">R-0</span><span class="hstat-l">Ring Level</span></div>
+            <div class="hstat"><span class="hstat-n">1+</span><span class="hstat-l">Publications</span></div>
+            <div class="hstat"><span class="hstat-n">🇱🇰</span><span class="hstat-l">Origin</span></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- =====================================================================
+     ABOUT
+===================================================================== -->
+<section id="about">
+  <div class="sec">
+    <div class="wrap">
+      <div class="sh reveal">
+        <div class="sh-eyebrow">01 — About</div>
+        <h2 class="sh-title">Operator <span class="accent">Profile</span></h2>
+      </div>
+
+      <div class="about-grid">
+
+        <!-- Identity card -->
+        <div class="reveal d1">
+          <div class="id-card">
+            <div class="id-card-head">identity.struct</div>
+            <div class="id-card-body">
+              <div class="id-row"><span class="id-k">ROLE</span><span class="id-sep">→</span><span class="id-v">Low Level Engineer</span></div>
+              <div class="id-row"><span class="id-k">LAYER</span><span class="id-sep">→</span><span class="id-v">Ring-0 / Kernel</span></div>
+              <div class="id-row"><span class="id-k">FOCUS</span><span class="id-sep">→</span><span class="id-v">Win32 Internals</span></div>
+              <div class="id-row"><span class="id-k">STYLE</span><span class="id-sep">→</span><span class="id-v">Researcher, not skiddie</span></div>
+              <div class="id-row"><span class="id-k">STATUS</span><span class="id-sep">→</span><span class="id-v on">HIREABLE</span></div>
+              <div class="id-row"><span class="id-k">LOCATION</span><span class="id-sep">→</span><span class="id-v">Sri Lanka 🇱🇰</span></div>
+              <div class="id-row"><span class="id-k">CLEARANCE</span><span class="id-sep">→</span><span class="id-v blue">RED TEAM</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bio + tags -->
+        <div class="reveal d2">
+          <p class="about-text">
+            I am a <strong>low-level engineer</strong> — not a script kiddie, not a tool user.
+            I operate at the boundary where operating systems expose their internals: syscall tables,
+            PE structures, callback arrays, and undocumented kernel routines.
+          </p>
+          <p class="about-text">
+            My research focuses on <strong>Windows OS internals</strong> — understanding what the kernel permits,
+            what EDRs monitor, and where the gaps between them live. I build custom tooling in
+            <strong>C, C++, and x64 Assembly</strong> to explore and document these mechanisms.
+            I also conduct <strong>penetration testing</strong> and full-scope red team engagements.
+          </p>
+          <p class="about-text">
+            I approach security as a <strong>researcher</strong>: adversary emulation to harden defenses,
+            reverse engineering to understand tradecraft, and low-level development to push the boundary
+            of what detection can see.
+          </p>
+          <div class="tag-cloud">
+            <span class="tg hi">WIN32 API</span>
+            <span class="tg hi">WINDOWS INTERNALS</span>
+            <span class="tg hi">SYSCALL FORGE</span>
+            <span class="tg hi">EDR EVASION</span>
+            <span class="tg hi">CALLBACK ABUSE</span>
+            <span class="tg">NTDLL INTERNALS</span>
+            <span class="tg">PE FORMAT</span>
+            <span class="tg">SHELLCODE DEV</span>
+            <span class="tg">ADVERSARY EMULATION</span>
+            <span class="tg">PENETRATION TESTING</span>
+            <span class="tg">IDA PRO</span>
+            <span class="tg">GHIDRA</span>
+            <span class="tg">EXPLOIT DEV</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =====================================================================
+     SKILLS
+===================================================================== -->
+<section id="skills">
+  <div class="sec">
+    <div class="wrap">
+      <div class="sh reveal">
+        <div class="sh-eyebrow">02 — Skills</div>
+        <h2 class="sh-title">Technical <span class="accent">Arsenal</span></h2>
+      </div>
+
+      <!--
+        ╔════════════════════════════════════════════════════╗
+        ║  EDIT SKILL LEVELS                                  ║
+        ║  Change data-level="XX" to a number from 0 to 100  ║
+        ║  on any .skill-row element below.                   ║
+        ║  The bar width and % label update automatically.    ║
+        ╚════════════════════════════════════════════════════╝
+      -->
+      <div class="skills-top reveal">
+
+        <div>
+          <div class="skill-group-title">// Programming Languages</div>
+
+          <div class="skill-row" data-level="90">
+            <div class="skill-meta">
+              <span class="skill-name">C / C++</span>
+              <span class="skill-pct"></span>
+            </div>
+            <div class="skill-track"><div class="skill-fill"></div></div>
+          </div>
+
+          <div class="skill-row" data-level="82">
+            <div class="skill-meta">
+              <span class="skill-name">x86-64 Assembly (NASM / MASM)</span>
+              <span class="skill-pct"></span>
+            </div>
+            <div class="skill-track"><div class="skill-fill"></div></div>
+          </div>
+
+          <div class="skill-row" data-level="74">
+            <div class="skill-meta">
+              <span class="skill-name">Bash / Shell Scripting</span>
+              <span class="skill-pct"></span>
+            </div>
+            <div class="skill-track"><div class="skill-fill"></div></div>
+          </div>
+
+          <div class="skill-row" data-level="32">
+            <div class="skill-meta">
+              <span class="skill-name">Rust <span style="color:var(--mist);font-size:0.5rem;">&nbsp;// learning</span></span>
+              <span class="skill-pct"></span>
+            </div>
+            <div class="skill-track"><div class="skill-fill"></div></div>
+          </div>
+        </div>
+
+        <div>
+          <div class="skill-group-title">// Discipline Proficiency</div>
+
+          <div class="skill-row" data-level="88">
+            <div class="skill-meta">
+              <span class="skill-name">Windows OS Internals</span>
+              <span class="skill-pct"></span>
+            </div>
+            <div class="skill-track"><div class="skill-fill"></div></div>
+          </div>
+
+          <div class="skill-row" data-level="85">
+            <div class="skill-meta">
+              <span class="skill-name">Malware Development &amp; EDR Evasion</span>
+              <span class="skill-pct"></span>
+            </div>
+            <div class="skill-track"><div class="skill-fill"></div></div>
+          </div>
+
+          <div class="skill-row" data-level="80">
+            <div class="skill-meta">
+              <span class="skill-name">Reverse Engineering (IDA Pro / Ghidra)</span>
+              <span class="skill-pct"></span>
+            </div>
+            <div class="skill-track"><div class="skill-fill"></div></div>
+          </div>
+
+          <div class="skill-row" data-level="78">
+            <div class="skill-meta">
+              <span class="skill-name">Penetration Testing &amp; Red Teaming</span>
+              <span class="skill-pct"></span>
+            </div>
+            <div class="skill-track"><div class="skill-fill"></div></div>
+          </div>
+
+          <div class="skill-row" data-level="70">
+            <div class="skill-meta">
+              <span class="skill-name">Exploit Development</span>
+              <span class="skill-pct"></span>
+            </div>
+            <div class="skill-track"><div class="skill-fill"></div></div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Stack chips -->
+      <div class="stack-grid reveal d1">
+        <div class="stack-cell">
+          <div class="stack-cell-label">// OS Layer</div>
+          <div class="stack-chips">
+            <span class="chip hi">NT Internals</span>
+            <span class="chip hi">Win32 API</span>
+            <span class="chip hi">NTDLL</span>
+            <span class="chip hi">Syscall Tables</span>
+            <span class="chip">PEB / TEB</span>
+            <span class="chip">PE Format</span>
+          </div>
+        </div>
+        <div class="stack-cell">
+          <div class="stack-cell-label">// Offensive</div>
+          <div class="stack-chips">
+            <span class="chip hi">Shellcode Dev</span>
+            <span class="chip hi">EDR Evasion</span>
+            <span class="chip hi">Process Injection</span>
+            <span class="chip hi">Direct Syscalls</span>
+            <span class="chip">Stack Spoofing</span>
+            <span class="chip">Callback Abuse</span>
+          </div>
+        </div>
+        <div class="stack-cell">
+          <div class="stack-cell-label">// Analysis Tools</div>
+          <div class="stack-chips">
+            <span class="chip hi">IDA Pro</span>
+            <span class="chip hi">Ghidra</span>
+            <span class="chip hi">WinDbg</span>
+            <span class="chip hi">x64dbg</span>
+            <span class="chip">PE-Bear</span>
+            <span class="chip">Procmon</span>
+            <span class="chip">Frida</span>
+          </div>
+        </div>
+        <div class="stack-cell">
+          <div class="stack-cell-label">// Red Team Ops</div>
+          <div class="stack-chips">
+            <span class="chip hi">Adversary Emulation</span>
+            <span class="chip hi">Network Pentest</span>
+            <span class="chip">Cobalt Strike</span>
+            <span class="chip">Metasploit</span>
+            <span class="chip">OSINT</span>
+            <span class="chip">Web App Testing</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- =====================================================================
+     PROJECTS
+===================================================================== -->
+<section id="projects">
+  <div class="sec">
+    <div class="wrap">
+      <div class="sh reveal">
+        <div class="sh-eyebrow">03 — Projects</div>
+        <h2 class="sh-title">Project <span class="accent">Portfolio</span></h2>
+      </div>
+
+      <!-- Featured: ARTEMIS -->
+      <div class="feat-card reveal">
+        <div class="feat-title">ARTEMIS</div>
+        <div class="feat-version">v1.0.0 &nbsp;·&nbsp; Syscall Forge Framework &nbsp;·&nbsp; Latest Release</div>
+        <p class="feat-desc">
+          A modular offensive security framework written in C and x86-64 Assembly — operating entirely below the user-mode API layer,
+          rendering EDR hook-based telemetry blind. Features a 14,869-entry SSN database, MASM stub generation, and multi-algorithm encryption.
+        </p>
+        <div class="feat-specs">
+          <div class="spec-box">
+            <div class="spec-label">HUNTER</div>
+            <div class="spec-text">Dynamic SSN discovery across 14,869 database entries · Win10/11 · x64/x86</div>
+          </div>
+          <div class="spec-box">
+            <div class="spec-label">BLACKSMITH</div>
+            <div class="spec-text">MASM-ready stub forge · Direct &amp; Indirect syscall modes · Stack spoofing</div>
+          </div>
+          <div class="spec-box">
+            <div class="spec-label">CRYPTO VAULT</div>
+            <div class="spec-text">XOR / Rolling XOR / RC4 — shields stubs from memory scanners &amp; static AV</div>
+          </div>
+        </div>
+        <div class="stack-chips" style="margin-bottom:1.625rem;">
+          <span class="chip hi">C</span>
+          <span class="chip hi">x64 ASM</span>
+          <span class="chip hi">MASM</span>
+          <span class="chip">Syscall Forge</span>
+          <span class="chip">EDR Evasion</span>
+          <span class="chip">RC4</span>
+          <span class="chip">SSN Discovery</span>
+        </div>
+        <a href="https://github.com/0x3xp/Artemis" target="_blank" rel="noopener noreferrer" class="btn-fill">View on GitHub ↗</a>
+      </div>
+
+      <!--
+        ╔══════════════════════════════════════════════════════╗
+        ║  ADD A PROJECT: copy one .proj-card <a> block,       ║
+        ║  update proj-num, proj-title, proj-desc, ptags, href ║
+        ╚══════════════════════════════════════════════════════╝
+      -->
+      <div class="proj-grid reveal d1">
+
+        <a class="proj-card" href="https://github.com/0x3xp/Native-Adversary-Framework/tree/main/Core-Engine" target="_blank" rel="noopener noreferrer">
+          <div class="proj-header"><span class="proj-num">01</span><span class="proj-arrow">↗</span></div>
+          <div class="proj-title">Core-Engine</div>
+          <div class="proj-desc">Foundational architecture for building advanced offensive security tools. Modular, extensible, production-ready.</div>
+          <div class="proj-tags"><span class="ptag">C/C++</span><span class="ptag">Framework</span><span class="ptag">Win32</span></div>
+        </a>
+
+        <a class="proj-card" href="https://github.com/0x3xp/Native-Adversary-Framework/tree/main/Exploit-Dev" target="_blank" rel="noopener noreferrer">
+          <div class="proj-header"><span class="proj-num">02</span><span class="proj-arrow">↗</span></div>
+          <div class="proj-title">Exploit-Dev</div>
+          <div class="proj-desc">Exploit development techniques and proof-of-concepts. Memory corruption, privilege escalation research.</div>
+          <div class="proj-tags"><span class="ptag">Exploits</span><span class="ptag">PoC</span><span class="ptag">Assembly</span></div>
+        </a>
+
+        <a class="proj-card" href="https://github.com/0x3xp/Native-Adversary-Framework/tree/main/Malware-Dev" target="_blank" rel="noopener noreferrer">
+          <div class="proj-header"><span class="proj-num">03</span><span class="proj-arrow">↗</span></div>
+          <div class="proj-title">Malware-Dev</div>
+          <div class="proj-desc">Advanced malware development and EDR/AV evasion research. Custom stagers, loaders, and in-memory execution.</div>
+          <div class="proj-tags"><span class="ptag">Malware</span><span class="ptag">Evasion</span><span class="ptag">Research</span></div>
+        </a>
+
+        <a class="proj-card" href="https://github.com/0x3xp/Native-Adversary-Framework/tree/main/Reverse-Engineering" target="_blank" rel="noopener noreferrer">
+          <div class="proj-header"><span class="proj-num">04</span><span class="proj-arrow">↗</span></div>
+          <div class="proj-title">Rev-Eng</div>
+          <div class="proj-desc">Reverse engineering projects, tools, and binary analysis techniques using IDA Pro and Ghidra.</div>
+          <div class="proj-tags"><span class="ptag">IDA Pro</span><span class="ptag">Ghidra</span><span class="ptag">Analysis</span></div>
+        </a>
+
+        <a class="proj-card" href="https://github.com/0x3xp/SENTINEX" target="_blank" rel="noopener noreferrer">
+          <div class="proj-header"><span class="proj-num">05</span><span class="proj-arrow">↗</span></div>
+          <div class="proj-title">SENTINEX</div>
+          <div class="proj-desc">Windows reconnaissance tool for deep system information gathering, enumeration, and post-exploitation analysis.</div>
+          <div class="proj-tags"><span class="ptag">C</span><span class="ptag">Windows</span><span class="ptag">Recon</span></div>
+        </a>
+
+        <a class="proj-card" href="https://github.com/0x3xp/SpectreAuth" target="_blank" rel="noopener noreferrer">
+          <div class="proj-header"><span class="proj-num">06</span><span class="proj-arrow">↗</span></div>
+          <div class="proj-title">SpectreAuth</div>
+          <div class="proj-desc">OAuth 2.0 security research framework analyzing token lifecycle vulnerabilities, identity exfiltration, and Ghost Session persistence.</div>
+          <div class="proj-tags"><span class="ptag">OAuth 2.0</span><span class="ptag">Research</span><span class="ptag">Red Team</span></div>
+        </a>
+
+        <a class="proj-card" href="https://github.com/0x3xp/SysView" target="_blank" rel="noopener noreferrer">
+          <div class="proj-header"><span class="proj-num">07</span><span class="proj-arrow">↗</span></div>
+          <div class="proj-title">SysView</div>
+          <div class="proj-desc">Linux system performance monitoring dashboard delivering real-time CPU, memory, and process metrics.</div>
+          <div class="proj-tags"><span class="ptag">Bash</span><span class="ptag">Linux</span><span class="ptag">Dashboard</span></div>
+        </a>
+
+        <a class="proj-card" href="https://github.com/0x3xp/SysMon-X" target="_blank" rel="noopener noreferrer">
+          <div class="proj-header"><span class="proj-num">08</span><span class="proj-arrow">↗</span></div>
+          <div class="proj-title">SysMon-X</div>
+          <div class="proj-desc">Linux file handling and system monitoring tool built with advanced Bash scripting for real-time event tracking.</div>
+          <div class="proj-tags"><span class="ptag">Bash</span><span class="ptag">Linux</span><span class="ptag">Monitoring</span></div>
+        </a>
+
+        <!-- ADD NEW PROJECTS BELOW THIS LINE -->
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =====================================================================
+     RESEARCH & PUBLICATIONS
+===================================================================== -->
+<section id="research">
+  <div class="sec">
+    <div class="wrap">
+      <div class="sh reveal">
+        <div class="sh-eyebrow">04 — Research &amp; Publications</div>
+        <h2 class="sh-title">Original <span class="accent">Research</span></h2>
+      </div>
+
+      <p class="research-intro reveal">
+        Original security research into <strong>Windows OS internals</strong>, undocumented APIs, and offensive techniques.
+        Each entry represents hands-on investigation — not reproduced knowledge, but original findings from working
+        with real systems at the binary level. Documentation of curiosity operating at ring-0.
+      </p>
+
+      <!--
+        ╔══════════════════════════════════════════════════════╗
+        ║  ADD RESEARCH: copy a .re-entry block, update:       ║
+        ║  re-id, re-date, re-cat, re-title, re-summary,       ║
+        ║  re-tags, and the href link.                         ║
+        ╚══════════════════════════════════════════════════════╝
+      -->
+      <div class="research-list reveal d1">
+
+        <a class="re-entry" href="https://github.com/0x3xp/Native-Adversary-Framework/tree/main/Malware-Dev/Injection/SetupAPI-Callback-Redirection" target="_blank" rel="noopener noreferrer">
+          <div class="re-meta">
+            <span class="re-id">R-001</span>
+            <span class="re-date">2025</span>
+            <span class="re-cat">MALWARE-DEV</span>
+          </div>
+          <div>
+            <h3 class="re-title">SetupAPI Callback Redirection — Process Injection via Setup Infrastructure</h3>
+            <p class="re-summary">
+              Original research into <strong>abusing the Windows Setup API infrastructure</strong> as a vector for process injection and code execution.
+              Exploits callback mechanisms embedded in SetupAPI — a surface that predates modern EDR telemetry and sits outside typical userland hook coverage.
+              Documents how callback registration functions can be redirected to attacker-controlled code regions, achieving shellcode execution through a trusted Windows subsystem.
+              Includes a fully working PoC, behavioral analysis under EDR monitoring, and documentation of the underlying NT structures involved.
+            </p>
+            <div class="re-tags">
+              <span class="retag hi">Process Injection</span>
+              <span class="retag hi">SetupAPI</span>
+              <span class="retag hi">Callback Abuse</span>
+              <span class="retag">Windows Internals</span>
+              <span class="retag">EDR Evasion</span>
+              <span class="retag">C / Win32 API</span>
+              <span class="retag">PoC</span>
+              <span class="retag">Original Research</span>
+            </div>
+          </div>
+          <div class="re-cta">[ VIEW RESEARCH ↗ ]<br><br><span style="color:var(--mist);font-size:0.5rem;">click to open<br>github repo</span></div>
+        </a>
+
+        <!-- ADD NEW RESEARCH BELOW THIS LINE -->
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =====================================================================
+     CREDENTIALS
+===================================================================== -->
+<section id="credentials">
+  <div class="sec">
+    <div class="wrap">
+      <div class="sh reveal">
+        <div class="sh-eyebrow">05 — Credentials</div>
+        <h2 class="sh-title"><span class="dim">Professional</span> <span class="accent">Certs</span></h2>
+      </div>
+
+      <div class="creds-grid reveal">
+
+        <div>
+          <div class="cred-group-label">⚡ Hackviser</div>
+          <div class="cred-item">
+            <span class="cred-badge">NEW</span>
+            <div class="cred-name">CAPT</div>
+            <div class="cred-desc">Certified Associate Penetration Tester — Hands-on offensive security, vulnerability assessment, real-world methodology.</div>
+            <a class="cred-link" href="https://hackviser.com/verify?id=HV-CAPT-HKXRNSLE" target="_blank" rel="noopener noreferrer">Verify Credential ↗</a>
+          </div>
+        </div>
+
+        <div>
+          <div class="cred-group-label">🎯 Red Team Leaders</div>
+          <div class="cred-item">
+            <div class="cred-name">COWA</div>
+            <div class="cred-desc">Certified Offensive Windows API — Advanced Win32/NT exploitation, process injection, DLL hijacking, offensive tooling development.</div>
+          </div>
+        </div>
+
+        <div>
+          <div class="cred-group-label">🔒 Cisco Network Academy</div>
+          <div class="cred-item">
+            <div class="cred-name">Introduction to Cybersecurity</div>
+            <div class="cred-desc">Threat landscape, attack vectors, and defensive practices.</div>
+          </div>
+          <div class="cred-item">
+            <div class="cred-name">Computer Hardware Basics</div>
+            <div class="cred-desc">Hardware fundamentals and component-level understanding for security practitioners.</div>
+          </div>
+          <div class="cred-item">
+            <div class="cred-name">Getting Started with Packet Tracer</div>
+            <div class="cred-desc">Network simulation, topology design, and Cisco Packet Tracer.</div>
+          </div>
+        </div>
+
+        <div>
+          <div class="cred-group-label">🛡️ Security Blue Team</div>
+          <div class="cred-item">
+            <div class="cred-name">Introduction to OSINT</div>
+            <div class="cred-desc">Intelligence gathering, target profiling, and passive reconnaissance methodology.</div>
+          </div>
+          <div class="cred-item">
+            <div class="cred-name">Introduction to Virtual Machines</div>
+            <div class="cred-desc">Virtualization fundamentals, hypervisor types, and secure lab environment setup.</div>
+          </div>
+        </div>
+
+        <div>
+          <div class="cred-group-label">⚙️ OPSWAT Academy</div>
+          <div class="cred-item">
+            <div class="cred-name">Introduction to Cybersecurity</div>
+            <div class="cred-desc">Core security principles and critical infrastructure protection fundamentals.</div>
+          </div>
+        </div>
+
+        <div>
+          <div class="cred-group-label">🐧 Linux Foundation</div>
+          <div class="cred-item">
+            <div class="cred-name">LFS101 — Introduction to Linux</div>
+            <div class="cred-desc">Linux fundamentals, shell, filesystem, process management, system administration.</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =====================================================================
+     CTF PLATFORMS
+===================================================================== -->
+<section id="ctf-platforms">
+  <div class="sec">
+    <div class="wrap">
+      <div class="sh reveal">
+        <div class="sh-eyebrow">06 — CTF &amp; Platforms</div>
+        <h2 class="sh-title">Challenge <span class="accent">Platforms</span></h2>
+      </div>
+
+      <div class="ctfp-grid reveal d1">
+
+        <a class="ctfp-card" href="https://tryhackme.com/p/0x3xp" target="_blank" rel="noopener noreferrer">
+          <div class="ctfp-header"><div class="ctfp-name">TryHackMe</div><div class="ctfp-arrow">↗</div></div>
+          <div class="ctfp-handle">// 0x3xp</div>
+          <div class="ctfp-url">tryhackme.com/p/0x3xp</div>
+        </a>
+
+        <a class="ctfp-card" href="https://app.hackthebox.com/users/1981311" target="_blank" rel="noopener noreferrer">
+          <div class="ctfp-header"><div class="ctfp-name">Hack The Box</div><div class="ctfp-arrow">↗</div></div>
+          <div class="ctfp-handle">// ID 1981311</div>
+          <div class="ctfp-url">hackthebox.com</div>
+        </a>
+
+        <a class="ctfp-card" href="https://app.hackviser.com/profile/0x3xp" target="_blank" rel="noopener noreferrer">
+          <div class="ctfp-header"><div class="ctfp-name">Hackviser</div><div class="ctfp-arrow">↗</div></div>
+          <div class="ctfp-handle">// 0x3xp</div>
+          <div class="ctfp-url">hackviser.com/profile/0x3xp</div>
+        </a>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =====================================================================
+     KNOWLEDGE BASE
+===================================================================== -->
+<section id="knowledge">
+  <div class="sec">
+    <div class="wrap">
+      <div class="sh reveal">
+        <div class="sh-eyebrow">07 — Knowledge Base</div>
+        <h2 class="sh-title">Writing &amp; <span class="accent">Education</span></h2>
+      </div>
+
+      <div class="know-grid reveal d1">
+        <a class="know-card" href="https://0x3xp.github.io/blog" target="_blank" rel="noopener noreferrer">
+          <div class="know-label">// Writing</div>
+          <div class="know-title">Blog</div>
+          <div class="know-desc">Technical writeups, research notes, and deep-dives into Windows internals, offensive development, and security research methodology.</div>
+          <div class="know-cta">Read Writeups →</div>
+        </a>
+        <a class="know-card" href="https://0x3xp.github.io/academy" target="_blank" rel="noopener noreferrer">
+          <div class="know-label">// Education</div>
+          <div class="know-title">Academy</div>
+          <div class="know-desc">Structured educational content on low-level security topics — for those who want to understand, not just use. No skiddie tutorials here.</div>
+          <div class="know-cta">Enter the Academy →</div>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =====================================================================
+     TERMINAL LAB
+===================================================================== -->
+<section id="lab">
+  <div class="sec">
+    <div class="wrap">
+      <div class="sh reveal">
+        <div class="sh-eyebrow">08 — Interactive Lab</div>
+        <h2 class="sh-title">Terminal <span class="accent">Session</span></h2>
+      </div>
+
+      <div class="term-wrap reveal d1">
+        <div class="terminal">
+          <div class="term-bar">
+            <div class="panel-dots">
+              <div class="pdot pdot-r"></div>
+              <div class="pdot pdot-y"></div>
+              <div class="pdot pdot-g"></div>
+            </div>
+            <div class="term-title">piyusha@ring0 — ~/0x3xp</div>
+          </div>
+          <div class="term-body" id="term-body">
+            <div id="t-out"></div>
+            <div class="t-in-row">
+              <span class="t-prompt">piyusha@ring0</span><span class="t-sep">:~$&nbsp;</span>
+              <input type="text" id="t-in" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off" aria-label="Terminal input" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =====================================================================
+     CONTACT
+===================================================================== -->
+<section id="contact">
+  <div class="sec">
+    <div class="wrap">
+      <div class="sh reveal">
+        <div class="sh-eyebrow">09 — Contact</div>
+        <h2 class="sh-title">Let's <span class="accent">Work</span></h2>
+      </div>
+
+      <div class="contact-grid">
+
+        <!-- Left -->
+        <div class="reveal">
+          <div class="contact-big">
+            Ready<br>
+            to <span class="accent">Breach</span>.
+          </div>
+          <p class="contact-sub">
+            Looking for a low-level engineer who understands the kernel, thinks like an adversary, and delivers research that actually matters?
+            Available for red team engagements, malware research, and security consulting.
+          </p>
+          <div class="status-badge">
+            <div class="sdot"></div>
+            Available for Engagements
+          </div>
+
+          <div class="contact-links">
+            <a class="cl-item" href="https://github.com/0x3xp" target="_blank" rel="noopener noreferrer">
+              <span class="cl-label">GitHub</span>
+              <span class="cl-val">github.com/0x3xp</span>
+              <span class="cl-arr">↗</span>
+            </a>
+            <a class="cl-item" href="https://linkedin.com/in/piyushaakash" target="_blank" rel="noopener noreferrer">
+              <span class="cl-label">LinkedIn</span>
+              <span class="cl-val">piyushaakash</span>
+              <span class="cl-arr">↗</span>
+            </a>
+            <a class="cl-item" href="https://linktr.ee/piyushaakash" target="_blank" rel="noopener noreferrer">
+              <span class="cl-label">Linktree</span>
+              <span class="cl-val">linktr.ee/piyushaakash</span>
+              <span class="cl-arr">↗</span>
+            </a>
+            <a class="cl-item" href="https://0x3xp.github.io/assets/PiyushaAkash-Resume.pdf" target="_blank" rel="noopener noreferrer">
+              <span class="cl-label">Resume</span>
+              <span class="cl-val">PiyushaAkash-Resume.pdf</span>
+              <span class="cl-arr">↗</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Right — Contact form -->
+        <div class="reveal d2">
+          <div class="contact-form">
+            <div class="form-title">Send a Message</div>
+            <form id="contact-form" novalidate>
+              <div class="form-2col">
+                <div>
+                  <label class="form-label" for="cf-name">Name *</label>
+                  <input class="form-input" type="text" id="cf-name" name="name" required placeholder="Your name" />
+                </div>
+                <div>
+                  <label class="form-label" for="cf-email">Email *</label>
+                  <input class="form-input" type="email" id="cf-email" name="email" required placeholder="your@email.com" />
+                </div>
+              </div>
+              <div class="form-row">
+                <label class="form-label" for="cf-subject">Subject *</label>
+                <input class="form-input" type="text" id="cf-subject" name="subject" required placeholder="e.g. Red Team Engagement, Collaboration" />
+              </div>
+              <div class="form-row">
+                <label class="form-label" for="cf-message">Message *</label>
+                <textarea class="form-textarea" id="cf-message" name="message" required placeholder="Describe your project, opportunity, or question..."></textarea>
+              </div>
+              <div class="form-note">// Opens your mail client · contact.piyushaakash@gmail.com</div>
+              <button type="submit" class="btn-submit">Send Message →</button>
+            </form>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =====================================================================
+     FOOTER
+===================================================================== -->
+<footer>
+  <div class="wrap">
+
+    <div class="ft-top">
+      <a href="#hero" class="ft-logo">0x3xp<span class="accent">::</span>piyusha_akash</a>
+      <ul class="ft-nav" role="list">
+        <li><a href="#about">About</a></li>
+        <li><a href="#projects">Projects</a></li>
+        <li><a href="#research">Research</a></li>
+        <li><a href="https://0x3xp.github.io/blog" target="_blank" rel="noopener noreferrer">Blog</a></li>
+        <li><a href="https://0x3xp.github.io/academy" target="_blank" rel="noopener noreferrer">Academy</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </div>
+
+    <div class="ft-divider"></div>
+
+    <div class="ft-bottom">
+      <div class="ft-copy">
+        © 2025 Piyusha Akash // 0x3xp · All rights reserved.<br>
+        All research conducted under authorized scope. Built in ring-0.
+        <span class="ft-sigil" id="ft-sigil" title="..." aria-hidden="true">⛧</span>
+      </div>
+      <div class="ft-warn">
+        ⚠ COPYRIGHT WARNING: All research, code, and content is the original intellectual property of Piyusha Akash (0x3xp).
+        Unauthorized reproduction, redistribution, or commercial use of any research findings, source code,
+        or methodologies is strictly prohibited. Research shared for educational purposes under ethical disclosure.
+        Attribution required for all derivative works.
+      </div>
+    </div>
+
+  </div>
+</footer>
+
+<!-- =====================================================================
+     JAVASCRIPT
+===================================================================== -->
+<script>
+(function () {
+  'use strict';
+
+  /* =================================================================
+     BOOT OVERLAY
+  ================================================================= */
+  var boot = document.getElementById('boot');
+
+  function dismissBoot() {
+    if (boot && !boot.classList.contains('dismissed')) {
+      boot.classList.add('dismissed');
+    }
+  }
+
+  if (boot) {
+    boot.addEventListener('click', dismissBoot);
+    document.addEventListener('keydown', function (e) {
+      dismissBoot();
+    }, { once: true });
+  }
+
+  /* =================================================================
+     CTF MODAL
+  ================================================================= */
+  var ctfModal = document.getElementById('ctf-modal');
+  var ctfClose = document.getElementById('ctf-close');
+
+  function openCTF() {
+    if (ctfModal) ctfModal.classList.add('is-open');
+  }
+
+  function closeCTF() {
+    if (ctfModal) ctfModal.classList.remove('is-open');
+  }
+
+  if (ctfClose) {
+    ctfClose.addEventListener('click', closeCTF);
+  }
+
+  if (ctfModal) {
+    ctfModal.addEventListener('click', function (e) {
+      if (e.target === ctfModal) closeCTF();
+    });
+  }
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && ctfModal && ctfModal.classList.contains('is-open')) {
+      closeCTF();
+    }
+  });
+
+  // Footer sigil
+  var ftSigil = document.getElementById('ft-sigil');
+  if (ftSigil) {
+    ftSigil.addEventListener('click', openCTF);
+  }
+
+  /* Hidden sigil CTF trigger — exposed for curious devs */
+  window.__ctf_open = openCTF;
+
+  /* =================================================================
+     KONAMI CODE
+  ================================================================= */
+  var konamiSeq = [38, 38, 40, 40, 37, 39, 37, 39, 66, 65];
+  var konamiIdx = 0;
+
+  document.addEventListener('keydown', function (e) {
+    if (e.keyCode === konamiSeq[konamiIdx]) {
+      konamiIdx++;
+      if (konamiIdx === konamiSeq.length) {
+        konamiIdx = 0;
+        openCTF();
+      }
+    } else {
+      konamiIdx = 0;
+    }
+  });
+
+  /* =================================================================
+     NAVIGATION
+  ================================================================= */
+  var navEl  = document.getElementById('nav');
+  var navHam = document.getElementById('nav-ham');
+  var navMob = document.getElementById('nav-mobile');
+
+  // Scroll-triggered shadow
+  window.addEventListener('scroll', function () {
+    if (navEl) {
+      if (window.scrollY > 10) {
+        navEl.classList.add('scrolled');
+      } else {
+        navEl.classList.remove('scrolled');
+      }
+    }
+  }, { passive: true });
+
+  // Hamburger
+  if (navHam && navMob) {
+    navHam.addEventListener('click', function () {
+      var isOpen = navMob.classList.toggle('is-open');
+      navHam.classList.toggle('is-open', isOpen);
+      navHam.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    });
+  }
+
+  window.closeMobileNav = function () {
+    if (navMob) navMob.classList.remove('is-open');
+    if (navHam) {
+      navHam.classList.remove('is-open');
+      navHam.setAttribute('aria-expanded', 'false');
+    }
+  };
+
+  /* =================================================================
+     CUSTOM CURSOR (desktop only)
+  ================================================================= */
+  var curDot  = document.getElementById('cur-dot');
+  var curRing = document.getElementById('cur-ring');
+
+  if (curDot && curRing && window.matchMedia('(pointer: fine)').matches) {
+    var mx = 0, my = 0, rx = 0, ry = 0;
+
+    document.addEventListener('mousemove', function (e) {
+      mx = e.clientX;
+      my = e.clientY;
+      curDot.style.left = mx + 'px';
+      curDot.style.top  = my + 'px';
+    }, { passive: true });
+
+    (function animCursor() {
+      rx += (mx - rx) * 0.1;
+      ry += (my - ry) * 0.1;
+      curRing.style.left = rx + 'px';
+      curRing.style.top  = ry + 'px';
+      requestAnimationFrame(animCursor);
+    })();
+
+    var hoverTargets = document.querySelectorAll('a, button, .proj-card, .re-entry, .ctfp-card, .know-card, .cl-item');
+    hoverTargets.forEach(function (el) {
+      el.addEventListener('mouseenter', function () { document.body.classList.add('cur-hover'); });
+      el.addEventListener('mouseleave', function () { document.body.classList.remove('cur-hover'); });
+    });
+  } else {
+    // Hide cursor elements on touch devices
+    if (curDot)  curDot.style.display  = 'none';
+    if (curRing) curRing.style.display = 'none';
+  }
+
+  /* =================================================================
+     SCROLL REVEAL
+  ================================================================= */
+  var revealEls = document.querySelectorAll('.reveal');
+
+  if ('IntersectionObserver' in window) {
+    var revealIO = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('in');
+          // Trigger skill bars inside this element
+          entry.target.querySelectorAll('.skill-fill').forEach(function (fill) {
+            animateSkillBar(fill.closest('.skill-row'));
+          });
+          revealIO.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+
+    revealEls.forEach(function (el) { revealIO.observe(el); });
+  } else {
+    // Fallback: show all
+    revealEls.forEach(function (el) { el.classList.add('in'); });
+  }
+
+  // Hero is above fold — show immediately
+  document.querySelectorAll('#hero .reveal').forEach(function (el) { el.classList.add('in'); });
+
+  /* =================================================================
+     SKILL BARS
+  ================================================================= */
+  function animateSkillBar(row) {
+    if (!row) return;
+    var level = parseInt(row.dataset.level, 10);
+    if (isNaN(level)) return;
+    level = Math.min(100, Math.max(0, level));
+    var fill = row.querySelector('.skill-fill');
+    var pct  = row.querySelector('.skill-pct');
+    if (fill) fill.style.width = level + '%';
+    if (pct)  pct.textContent  = level + '%';
+  }
+
+  // Also observe individual skill rows (in case parent is already visible)
+  if ('IntersectionObserver' in window) {
+    var skillIO = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          animateSkillBar(entry.target);
+          skillIO.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.5 });
+
+    document.querySelectorAll('.skill-row').forEach(function (row) { skillIO.observe(row); });
+  } else {
+    document.querySelectorAll('.skill-row').forEach(animateSkillBar);
+  }
+
+  /* =================================================================
+     CONTACT FORM
+  ================================================================= */
+  var contactForm = document.getElementById('contact-form');
+
+  if (contactForm) {
+    contactForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      var name    = (document.getElementById('cf-name')    || {}).value  || '';
+      var email   = (document.getElementById('cf-email')   || {}).value  || '';
+      var subject = (document.getElementById('cf-subject') || {}).value  || '';
+      var message = (document.getElementById('cf-message') || {}).value  || '';
+
+      name    = name.trim();
+      email   = email.trim();
+      subject = subject.trim();
+      message = message.trim();
+
+      if (!name || !email || !subject || !message) {
+        alert('Please fill in all required fields.');
+        return;
+      }
+
+      var body = 'Name: ' + name + '\nEmail: ' + email + '\n\n' + message;
+      var mailto = 'mailto:contact.piyushaakash@gmail.com'
+        + '?subject=' + encodeURIComponent(subject)
+        + '&body='    + encodeURIComponent(body);
+
+      window.location.href = mailto;
+    });
+  }
+
+  /* =================================================================
+     TERMINAL
+  ================================================================= */
+  var tOut  = document.getElementById('t-out');
+  var tIn   = document.getElementById('t-in');
+  var tBody = document.getElementById('term-body');
+
+  if (!tOut || !tIn || !tBody) return;
+
+  var ASCII = [
+    ' ██████╗ ██╗  ██╗██████╗ ███████╗██╗  ██╗██████╗',
+    '██╔═══██╗╚██╗██╔╝╚════██╗██╔════╝╚██╗██╔╝██╔══██╗',
+    '██║   ██║ ╚███╔╝  █████╔╝█████╗   ╚███╔╝ ██████╔╝',
+    '██║   ██║ ██╔██╗  ╚═══██╗██╔══╝   ██╔██╗ ██╔═══╝',
+    '╚██████╔╝██╔╝ ██╗██████╔╝███████╗██╔╝ ██╗██║',
+    ' ╚═════╝ ╚═╝  ╚═╝╚═════╝ ╚══════╝╚═╝  ╚═╝╚═╝'
+  ].join('\n');
+
+  function tPrint(html, cls) {
+    var d = document.createElement('div');
+    if (cls) d.className = cls;
+    d.innerHTML = html;
+    tOut.appendChild(d);
+    tBody.scrollTop = tBody.scrollHeight;
+  }
+
+  // Init
+  var asciiDiv = document.createElement('div');
+  asciiDiv.className = 't-asc';
+  asciiDiv.textContent = ASCII;
+  tOut.appendChild(asciiDiv);
+
+  tPrint('');
+  tPrint('<span class="t-c">// Piyusha Akash · Low Level Engineer · ring-0</span>');
+  tPrint('<span class="t-c">// "Build it. Don\'t just use it."</span>');
+  tPrint('');
+  tPrint('Type <span class="t-a">help</span> to list commands.');
+  tPrint('');
+
+  var HISTORY = [];
+  var histIdx = -1;
+
+  var CMDS = {
+    help: [
+      '<span class="t-a">available commands:</span>',
+      '<span class="t-o">  whoami       →  operator profile</span>',
+      '<span class="t-o">  uname        →  system info</span>',
+      '<span class="t-o">  projects     →  project index</span>',
+      '<span class="t-o">  research     →  research index</span>',
+      '<span class="t-o">  skills       →  technical arsenal</span>',
+      '<span class="t-o">  certs        →  certifications</span>',
+      '<span class="t-o">  ctf          →  platform handles</span>',
+      '<span class="t-o">  contact      →  contact info</span>',
+      '<span class="t-o">  artemis      →  framework details</span>',
+      '<span class="t-o">  strings      →  useful strings</span>',
+      '<span class="t-o">  clear        →  clear terminal</span>',
+    ].join('\n'),
+
+    whoami: [
+      '<span class="t-a">operator: piyusha akash // 0x3xp</span>',
+      '<span class="t-o">role       →  low level engineer</span>',
+      '<span class="t-o">layer      →  ring-0 / kernel space</span>',
+      '<span class="t-o">focus      →  malware dev · re · pentest · exploit dev</span>',
+      '<span class="t-o">languages  →  C/C++ · x86-64 ASM · Bash · Rust (learning)</span>',
+      '<span class="t-o">hireable   →  true</span>',
+      '<span class="t-o">skiddie    →  false</span>',
+      '<span class="t-o">origin     →  Sri Lanka 🇱🇰</span>',
+    ].join('\n'),
+
+    uname: [
+      '<span class="t-o">Windows NT 10.0.19045 x86_64 Intel64 Family 6 Model 140 Stepping 1</span>',
+      '<span class="t-c">// kernel: 10.0.19045 · ring-0 access: GRANTED</span>',
+      '<span class="t-c">// NTDLL loaded at 0x7fff00000000</span>',
+      '<span class="t-c">// syscall table: resolved · hook status: BYPASSED</span>',
+    ].join('\n'),
+
+    projects: [
+      '<span class="t-a">project index:</span>',
+      '<span class="t-o">  ARTEMIS    →  syscall forge framework</span>',
+      '<span class="t-o">  CORE-ENG   →  adversary framework core</span>',
+      '<span class="t-o">  EXPLOIT-DEV →  exploit research &amp; PoCs</span>',
+      '<span class="t-o">  MALWARE-DEV →  malware &amp; EDR evasion</span>',
+      '<span class="t-o">  REV-ENG    →  reverse engineering</span>',
+      '<span class="t-o">  SENTINEX   →  Windows recon tool</span>',
+      '<span class="t-o">  SPECTREAUTH →  OAuth 2.0 security research</span>',
+      '<span class="t-o">  SYSVIEW    →  Linux system dashboard</span>',
+      '<span class="t-o">  SYSMON-X   →  Linux event monitoring</span>',
+      '<span class="t-c">  // github.com/0x3xp</span>',
+    ].join('\n'),
+
+    research: [
+      '<span class="t-a">research index:</span>',
+      '<span class="t-o">  R-001  →  SetupAPI Callback Redirection</span>',
+      '<span class="t-o">         →  process injection via setup infrastructure</span>',
+      '<span class="t-o">         →  tags: callback abuse · edr evasion · windows internals</span>',
+      '<span class="t-a">         →  <a class="t-lnk" href="https://github.com/0x3xp/Native-Adversary-Framework/tree/main/Malware-Dev/Injection/SetupAPI-Callback-Redirection" target="_blank" rel="noopener noreferrer">view on github ↗</a></span>',
+    ].join('\n'),
+
+    skills: [
+      '<span class="t-a">technical arsenal:</span>',
+      '<span class="t-o">  languages  →  C · C++ · x86-64 ASM · MASM · Bash · Rust (learning)</span>',
+      '<span class="t-o">  os layer   →  NT Internals · Win32 API · NTDLL · Syscall Tables · PE Format</span>',
+      '<span class="t-o">  offensive  →  shellcode · edr evasion · process injection · direct syscalls</span>',
+      '<span class="t-o">  pentest    →  adversary emulation · network pentest · web app testing</span>',
+      '<span class="t-o">  re tools   →  IDA Pro · Ghidra · WinDbg · x64dbg · PE-Bear</span>',
+    ].join('\n'),
+
+    certs: [
+      '<span class="t-a">certifications:</span>',
+      '<span class="t-o">  CAPT   →  Certified Associate Penetration Tester [Hackviser] [NEW]</span>',
+      '<span class="t-o">  COWA   →  Certified Offensive Windows API [Red Team Leaders]</span>',
+      '<span class="t-o">  CISCO  →  Intro to Cybersecurity · Hardware · Packet Tracer</span>',
+      '<span class="t-o">  SBT    →  OSINT · Virtual Machines</span>',
+      '<span class="t-o">  OPSWAT →  Intro to Cybersecurity</span>',
+      '<span class="t-o">  LFS101 →  Introduction to Linux</span>',
+    ].join('\n'),
+
+    ctf: [
+      '<span class="t-a">ctf platforms:</span>',
+      '<span class="t-o">  TryHackMe  →  <a class="t-lnk" href="https://tryhackme.com/p/0x3xp" target="_blank" rel="noopener noreferrer">tryhackme.com/p/0x3xp</a></span>',
+      '<span class="t-o">  HackTheBox →  <a class="t-lnk" href="https://app.hackthebox.com/users/1981311" target="_blank" rel="noopener noreferrer">ID: 1981311</a></span>',
+      '<span class="t-o">  Hackviser  →  <a class="t-lnk" href="https://app.hackviser.com/profile/0x3xp" target="_blank" rel="noopener noreferrer">hackviser.com/profile/0x3xp</a></span>',
+    ].join('\n'),
+
+    contact: [
+      '<span class="t-a">contact:</span>',
+      '<span class="t-o">  email    →  contact.piyushaakash@gmail.com</span>',
+      '<span class="t-o">  github   →  <a class="t-lnk" href="https://github.com/0x3xp" target="_blank" rel="noopener noreferrer">github.com/0x3xp</a></span>',
+      '<span class="t-o">  linkedin →  <a class="t-lnk" href="https://linkedin.com/in/piyushaakash" target="_blank" rel="noopener noreferrer">piyushaakash</a></span>',
+      '<span class="t-o">  linktree →  <a class="t-lnk" href="https://linktr.ee/piyushaakash" target="_blank" rel="noopener noreferrer">linktr.ee/piyushaakash</a></span>',
+      '<span class="t-o">  status   →  available for red team ops &amp; research</span>',
+    ].join('\n'),
+
+    artemis: [
+      '<span class="t-a">ARTEMIS v1.0.0 — Syscall Forge Framework</span>',
+      '<span class="t-o">language  →  C + x64 ASM + MASM</span>',
+      '<span class="t-o">mode      →  direct/indirect syscalls · stack spoofing</span>',
+      '<span class="t-o">database  →  14,869 SSN entries</span>',
+      '<span class="t-o">crypto    →  XOR / Rolling XOR / RC4</span>',
+      '<span class="t-o">target    →  EDR hook bypass · ring-0 telemetry blind</span>',
+      '<span class="t-o">link      →  <a class="t-lnk" href="https://github.com/0x3xp/Artemis" target="_blank" rel="noopener noreferrer">github.com/0x3xp/Artemis ↗</a></span>',
+    ].join('\n'),
+
+    strings: [
+      '<span class="t-c">// strings operator_core.exe</span>',
+      '<span class="t-o">NtAllocateVirtualMemory</span>',
+      '<span class="t-o">NtWriteVirtualMemory</span>',
+      '<span class="t-o">NtCreateThreadEx</span>',
+      '<span class="t-o">NtProtectVirtualMemory</span>',
+      '<span class="t-o">SetupDiEnumDeviceInfo</span>',
+      '<span class="t-o">ZwQuerySystemInformation</span>',
+      '<span class="t-c">// hook status: none</span>',
+      '<span class="t-s">// syscalls resolved via SSN database (14,869 entries)</span>',
+    ].join('\n'),
+
+    // Hidden CTF commands
+    void: '__CTF__',
+    '0x666': '__CTF__',
+    buddha: '__CTF__',
+    lucifer: '__CTF__',
+
+    // Easter eggs
+    'sudo rm -rf /': '<span class="t-e">Nice try. I don\'t run as root in user-mode.</span>\n<span class="t-c">// ring-0 doesn\'t ask for sudo</span>',
+    'cat /etc/shadow': '<span class="t-e">Permission denied.</span>\n<span class="t-c">// or is it? check the source...</span>',
+    'cat /etc/passwd': '<span class="t-o">root:x:0:0:root:/root:/bin/bash</span>\n<span class="t-o">piyusha:x:0:0:low-level-engineer:/ring-0:/bin/bash</span>',
+    'ls': '<span class="t-o">Artemis/  Core-Engine/  Exploit-Dev/  Malware-Dev/  Reverse-Engineering/</span>',
+    'ls -la': '<span class="t-o">drwxr-x--- piyusha ring0  4096 Artemis/</span>\n<span class="t-o">drwxr-x--- piyusha ring0  4096 Core-Engine/</span>\n<span class="t-o">drwxr-x--- piyusha ring0  4096 Exploit-Dev/</span>\n<span class="t-o">drwxr-x--- piyusha ring0  4096 Malware-Dev/</span>\n<span class="t-o">drwxr-x--- piyusha ring0  4096 Reverse-Engineering/</span>',
+    pwd: '<span class="t-o">/home/piyusha/ring-0/0x3xp</span>',
+    date: '<span class="t-o">' + new Date().toUTCString() + '</span>',
+    exit: '<span class="t-c">// "You cannot exit what you are." — the void</span>',
+    'uname -a': [
+      '<span class="t-o">Windows NT 10.0.19045 x86_64 Intel64 Family 6 Model 140 Stepping 1</span>',
+      '<span class="t-c">// kernel: 10.0.19045 · ring-0 access: GRANTED</span>',
+      '<span class="t-c">// NTDLL loaded at 0x7fff00000000</span>',
+      '<span class="t-c">// syscall table: resolved · hook status: BYPASSED</span>',
+    ].join('\n'),
+  };
+
+  tIn.addEventListener('keydown', function (e) {
+    if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (histIdx < HISTORY.length - 1) {
+        histIdx++;
+        tIn.value = HISTORY[HISTORY.length - 1 - histIdx] || '';
+      }
+    } else if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      if (histIdx > 0) {
+        histIdx--;
+        tIn.value = HISTORY[HISTORY.length - 1 - histIdx] || '';
+      } else {
+        histIdx = -1;
+        tIn.value = '';
+      }
+    } else if (e.key === 'Enter') {
+      var raw = tIn.value.trim();
+      tIn.value = '';
+      histIdx = -1;
+
+      if (!raw) return;
+
+      HISTORY.push(raw);
+      if (HISTORY.length > 100) HISTORY.shift();
+
+      // Echo
+      tPrint('<span style="color:var(--signal);font-weight:500">piyusha@ring0</span><span style="color:var(--mist)">:~$&nbsp;</span><span style="color:var(--paper)">' + escHtml(raw) + '</span>');
+
+      var cmd = raw.toLowerCase();
+
+      if (cmd === 'clear' || cmd === 'reset') {
+        tOut.innerHTML = '';
+        return;
+      }
+
+      var resp = CMDS[cmd] || CMDS[raw]; // allow mixed case for some
+
+      if (resp === '__CTF__') {
+        tPrint('<span class="t-c">// access granted · sigil: 0x666</span>');
+        tPrint('<span class="t-a">// opening the void...</span>');
+        setTimeout(openCTF, 400);
+      } else if (resp) {
+        var d = document.createElement('div');
+        d.style.margin = '2px 0 6px';
+        d.innerHTML = resp;
+        tOut.appendChild(d);
+      } else {
+        tPrint('<span class="t-e">command not found: ' + escHtml(raw) + '</span>\n<span class="t-c">// type \'help\' for available commands</span>');
+      }
+
+      tBody.scrollTop = tBody.scrollHeight;
+    }
+  });
+
+  // Click to focus terminal
+  tBody.addEventListener('click', function () { tIn.focus(); });
+
+  function escHtml(str) {
+    return str
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
+})();
+</script>
+
+</body>
+</html>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Piyusha Akash // 0x3xp — Low Level Security Researcher</title>
