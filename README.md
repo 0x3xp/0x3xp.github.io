@@ -1,45 +1,44 @@
-# 0x3xp Portfolio V2
+# 0x3xp Portfolio
 
-Plain HTML, CSS, and JavaScript portfolio for GitHub Pages.
+A static three-page portfolio designed for direct GitHub Pages hosting.
 
 ## Pages
 
-- `index.html`
-- `projects/projects.html`
-- `blog/blog.html`
+- `/index.html`
+- `/projects/projects.html`
+- `/blog/blog.html`
 
-## Source-driven content
+## Stack
 
-Edit `js/data.js` to update:
+- HTML
+- CSS
+- Vanilla JavaScript
+- GitHub Pages
 
-- projects
-- certifications
-- blog entries
-- focus areas
+There is no Jekyll, framework, package manager, generator or build step.
 
-No Jekyll, bundler, Node build step, or framework is required.
+## Edit the site
 
-## Structure
+The source is intentionally straightforward.
 
-```text
-.
-├── index.html
-├── assets/
-│   └── css/
-│       └── site.css
-├── js/
-│   ├── data.js
-│   ├── main.js
-│   └── render.js
-├── blog/
-│   └── blog.html
-├── projects/
-│   └── projects.html
-├── robots.txt
-├── sitemap.xml
-└── README.md
-```
+### Home
 
-## GitHub Pages
+Edit `index.html` to change the biography, focus areas, technical stack, certifications and contact information.
 
-Upload or replace the site files in the repository root and enable GitHub Pages from the repository settings. The site needs no build command.
+### Projects
+
+Edit `projects/projects.html` to add or change project cards. Copy an existing `project-card` article, then change its title, description, tags and links.
+
+### Blog
+
+Edit `blog/blog.html` to add or change publication rows. Copy an existing `publication-row` article, then change its year, type, title, description, tags and link.
+
+## JavaScript
+
+`main/site.js` handles the mobile navigation.
+
+`main/render.js` handles small shared browser tasks such as the current year and external link behavior.
+
+## Deployment
+
+Push the directory structure to the GitHub Pages repository. GitHub Pages serves the files directly.
