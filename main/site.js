@@ -1,22 +1,22 @@
-(() => {
-  const toggle = document.querySelector('.nav-toggle');
-  const nav = document.getElementById('site-nav');
+(function () {
+  "use strict";
 
-  if (toggle && nav) {
-    toggle.addEventListener('click', () => {
-      const open = nav.classList.toggle('is-open');
-      toggle.setAttribute('aria-expanded', String(open));
+  document.addEventListener("DOMContentLoaded", function () {
+    const button = document.querySelector("[data-nav-toggle]");
+    const nav = document.querySelector("[data-nav]");
+
+    if (!button || !nav) return;
+
+    button.addEventListener("click", function () {
+      const open = nav.classList.toggle("is-open");
+      button.setAttribute("aria-expanded", String(open));
     });
 
-    nav.addEventListener('click', (event) => {
-      if (event.target.matches('a')) {
-        nav.classList.remove('is-open');
-        toggle.setAttribute('aria-expanded', 'false');
-      }
+    nav.querySelectorAll("a").forEach(function (link) {
+      link.addEventListener("click", function () {
+        nav.classList.remove("is-open");
+        button.setAttribute("aria-expanded", "false");
+      });
     });
-  }
-
-  document.querySelectorAll('[data-year]').forEach((node) => {
-    node.textContent = String(new Date().getFullYear());
   });
 })();
