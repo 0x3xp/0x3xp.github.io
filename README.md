@@ -1,6 +1,6 @@
 # 0x3xp Portfolio
 
-Static portfolio for Piyusha Akash.
+Static portfolio for Piyusha Akash / 0x3xp.
 
 ## Stack
 
@@ -11,19 +11,14 @@ Static portfolio for Piyusha Akash.
 
 ## Pages
 
-- `index.html`
-- `projects/projects.html`
-- `blog/blog.html`
+- `/index.html`
+- `/projects/projects.html`
+- `/blog/blog.html`
 
 ## Content
 
-Portfolio content is written directly in the HTML files. No generator or build step is required.
+Portfolio content is maintained directly in the three HTML pages. Source-edit guidance is kept in HTML comments only.
 
-## JavaScript
+## Deployment
 
-`main/site.js` handles responsive navigation.
-`main/render.js` handles the current year and external-link behavior.
-
-## Favicon
-
-`assets/img/favicon.png` is the only use of the supplied artwork. It is not displayed as a brand image in the site layout.
+Push the directory to a GitHub Pages repository. No build step is required.
