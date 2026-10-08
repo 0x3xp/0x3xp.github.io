@@ -1,12 +1,6 @@
 # 0x3xp Portfolio
 
-A static three-page portfolio designed for direct GitHub Pages hosting.
-
-## Pages
-
-- `/index.html`
-- `/projects/projects.html`
-- `/blog/blog.html`
+Static GitHub Pages portfolio for Piyusha Akash.
 
 ## Stack
 
@@ -15,30 +9,24 @@ A static three-page portfolio designed for direct GitHub Pages hosting.
 - Vanilla JavaScript
 - GitHub Pages
 
-There is no Jekyll, framework, package manager, generator or build step.
+No Jekyll, framework, package manager, or build step is required.
 
-## Edit the site
+## Pages
 
-The source is intentionally straightforward.
+- `index.html` profile
+- `projects/projects.html` projects
+- `blog/blog.html` writing
 
-### Home
+## Editing content
 
-Edit `index.html` to change the biography, focus areas, technical stack, certifications and contact information.
+Project records are written directly in `projects/projects.html`.
+Credential records are written directly in `index.html` under the credentials section.
+Articles are written directly in `blog/blog.html`.
 
-### Projects
+JavaScript is only used for shared browser behavior such as the mobile navigation and current year. The visible portfolio content is present in the HTML source for maintainability, accessibility, and search indexing.
 
-Edit `projects/projects.html` to add or change project cards. Copy an existing `project-card` article, then change its title, description, tags and links.
+## GitHub Pages
 
-### Blog
+Publish the repository as a static Pages site. The root URL is expected to be:
 
-Edit `blog/blog.html` to add or change publication rows. Copy an existing `publication-row` article, then change its year, type, title, description, tags and link.
-
-## JavaScript
-
-`main/site.js` handles the mobile navigation.
-
-`main/render.js` handles small shared browser tasks such as the current year and external link behavior.
-
-## Deployment
-
-Push the directory structure to the GitHub Pages repository. GitHub Pages serves the files directly.
+`https://0x3xp.github.io/`
