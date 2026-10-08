@@ -3,35 +3,33 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#0b0c0d">
+  <meta name="theme-color" content="#0d0e10">
   <meta name="color-scheme" content="dark">
   <meta name="author" content="Piyusha Akash">
   <meta name="robots" content="index, follow">
-  <meta name="description" content="Technical writing by Piyusha Akash covering Windows internals, reverse engineering, kernel research, AV/EDR evasion, and security research methodology.">
+  <meta name="description" content="Technical writing by Piyusha Akash covering AV/EDR Evasion, Windows internals, reverse engineering, malware research, kernel research, and exploit development.">
   <link rel="canonical" href="https://0x3xp.github.io/blog/blog.html">
   <meta property="og:type" content="website">
   <meta property="og:title" content="Writing | Piyusha Akash">
-  <meta property="og:description" content="Technical writing and research notes covering Windows internals, reverse engineering, kernel research, AV/EDR evasion, and security engineering.">
+  <meta property="og:description" content="Technical articles and research notes on endpoint security, Windows internals, reverse engineering, malware development, and exploit development.">
   <meta property="og:url" content="https://0x3xp.github.io/blog/blog.html">
   <meta property="og:site_name" content="Piyusha Akash">
+  <meta property="og:image" content="https://0x3xp.github.io/assets/img/brand-icon.png">
   <meta name="twitter:card" content="summary">
   <title>Writing | Piyusha Akash</title>
-  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="../assets/img/favicon.png" type="image/png">
   <link rel="stylesheet" href="../assets/css/site.css">
 </head>
 <body class="page-blog">
   <header class="site-header">
     <div class="shell header-inner">
       <a class="brand" href="../" aria-label="Piyusha Akash home">
-        <span class="brand-mark">0x</span>
-        <span class="brand-copy">
-          <span class="brand-name">Piyusha Akash</span>
-          <span class="brand-handle">/ 0x3xp</span>
-        </span>
+        <img class="brand-icon" src="../assets/img/brand-icon.png" alt="">
+        <span class="brand-text"><strong>0x3xp</strong><small>Piyusha Akash</small></span>
       </a>
       <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" data-nav-toggle>Menu</button>
       <nav class="site-nav" id="site-nav" data-nav aria-label="Primary navigation">
-        <a href="../">Profile</a>
+        <a href="../">Home</a>
         <a href="../projects/projects.html">Projects</a>
         <a class="is-active" href="./" aria-current="page">Writing</a>
       </nav>
@@ -41,65 +39,55 @@
   <main>
     <section class="page-hero shell">
       <div>
-        <p class="kicker">Technical writing <span>·</span> Research notes</p>
+        <p class="eyebrow">Research notes &amp; technical writing</p>
         <h1>Writing</h1>
       </div>
-      <p class="page-hero-intro">Long-form notes from reverse engineering, Windows internals research, endpoint security studies, and security engineering experiments.</p>
+      <p class="page-intro">Technical articles covering endpoint security, Windows internals, reverse engineering, malware research, kernel research, and exploit development.</p>
     </section>
 
-    <section class="shell writing-list">
-      <!-- Add, remove, or edit articles directly in this list. -->
-      <article class="writing-entry writing-featured">
-        <div class="writing-meta">
-          <span>01</span>
-          <span>Windows Internals</span>
-          <span>Research</span>
-        </div>
-        <div class="writing-body">
-          <h2>Windows DirectComposition: Kernel-Mode Attack Surface Analysis</h2>
-          <p>Static and dynamic analysis of the DirectComposition path from win32u.dll through dcomp.dll to win32kbase.sys, including syscall enumeration, channel handling, batch dispatch, validation boundaries, and next-step fuzzing targets.</p>
-          <a class="text-link" href="https://0x3xp.github.io/blog/posts/dcomp-kernel-attack-surface.html">Read research ↗</a>
-        </div>
-        <div class="writing-date">Published research</div>
-      </article>
-
-      <article class="writing-entry">
-        <div class="writing-meta">
-          <span>02</span>
-          <span>Binary Security</span>
-          <span>Exploit Development</span>
-        </div>
-        <div class="writing-body">
-          <h2>Linux x64 Exploit Development Notes</h2>
-          <p>A structured collection of practical writeups covering Linux x64 memory corruption, debugging, binary analysis, and exploit development fundamentals.</p>
-          <a class="text-link" href="https://github.com/0x3xp/Linux-ExploitDev">Open collection ↗</a>
-        </div>
-        <div class="writing-date">GitHub</div>
-      </article>
-
-      <article class="writing-entry">
-        <div class="writing-meta">
-          <span>03</span>
-          <span>Windows Internals</span>
-          <span>Coming next</span>
-        </div>
-        <div class="writing-body">
-          <h2>Windows Process Internals</h2>
-          <p>Research notes on process objects, EPROCESS, handles, modules, memory layout, and the boundaries between user mode and kernel mode.</p>
-          <span class="text-link text-link-muted">In preparation</span>
-        </div>
-        <div class="writing-date">Planned</div>
-      </article>
-    </section>
-
-    <section class="section shell section-rule writing-note">
-      <div class="section-aside">
-        <span class="section-number">04</span>
-        <span class="section-label">Research Standard</span>
+    <section class="writing-section shell">
+      <div class="section-heading"><span class="section-index">01</span><h2>Published &amp; Ongoing</h2></div>
+      <div class="writing-list">
+        <article class="writing-entry">
+          <div class="writing-meta"><span>Linux Exploit Development</span><time datetime="2026">2026</time></div>
+          <div class="writing-body">
+            <h3>Introduction to Exploit Development in Linux x64</h3>
+            <p>A practical introduction to Linux x64 exploit development, covering the execution environment, calling conventions, memory corruption concepts, debugging, and the building blocks used in later exploitation work.</p>
+            <a class="text-link" href="https://0x3xp.github.io/Linux-ExploitDev/">Read article <span>↗</span></a>
+          </div>
+        </article>
+        <article class="writing-entry">
+          <div class="writing-meta"><span>Windows Internals</span><span>Research</span></div>
+          <div class="writing-body">
+            <h3>Understanding EPROCESS and Windows Process Internals</h3>
+            <p>A planned technical note on the Windows process object, its important fields, relationships with process and token state, and why EPROCESS matters to endpoint security research.</p>
+            <span class="status-label">In preparation</span>
+          </div>
+        </article>
+        <article class="writing-entry">
+          <div class="writing-meta"><span>Endpoint Security</span><span>Research</span></div>
+          <div class="writing-body">
+            <h3>How Endpoint Telemetry Follows Execution</h3>
+            <p>Research notes examining the points where user-mode and kernel activity becomes observable, and how execution changes can alter the defensive view of a process.</p>
+            <span class="status-label">In preparation</span>
+          </div>
+        </article>
+        <article class="writing-entry">
+          <div class="writing-meta"><span>Reverse Engineering</span><span>Technical Note</span></div>
+          <div class="writing-body">
+            <h3>Reverse Engineering Windows Native API Boundaries</h3>
+            <p>A planned study of Win32 to Native API transitions, NTDLL behavior, syscall stubs, and the relationship between documented interfaces and the underlying Windows implementation.</p>
+            <span class="status-label">Planned</span>
+          </div>
+        </article>
       </div>
-      <div class="section-main note-layout">
-        <p class="section-lead">Document the mechanism before discussing the technique.</p>
-        <p>Research notes are intended to preserve the implementation details, observations, assumptions, limitations, and defensive implications behind the work. Public material is produced from controlled testing and authorized research.</p>
+    </section>
+
+    <section class="writing-principle shell">
+      <div class="section-heading"><span class="section-index">02</span><h2>Research Approach</h2></div>
+      <div class="principle-grid">
+        <p class="principle-lead">Understand the mechanism first. Then explain the technique.</p>
+        <p>Public notes focus on implementation details, observations, assumptions, limitations, and defensive implications. The goal is to leave enough technical context for a reader to understand what was actually tested and why the result matters.</p>
       </div>
     </section>
   </main>
@@ -107,6 +95,7 @@
   <footer class="site-footer">
     <div class="shell footer-inner">
       <span>© <span data-year></span> Piyusha Akash</span>
+      <a href="https://github.com/0x3xp/0x3xp.github.io">Source on GitHub ↗</a>
       <span>0x3xp</span>
     </div>
   </footer>

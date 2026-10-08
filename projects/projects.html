@@ -3,35 +3,33 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#0b0c0d">
+  <meta name="theme-color" content="#0d0e10">
   <meta name="color-scheme" content="dark">
   <meta name="author" content="Piyusha Akash">
   <meta name="robots" content="index, follow">
-  <meta name="description" content="Selected projects by Piyusha Akash spanning Windows internals, AV/EDR evasion, reverse engineering, malware development, offensive tooling, and security research.">
+  <meta name="description" content="Security research and engineering projects by Piyusha Akash, including Windows kernel research, AV/EDR Evasion, reverse engineering, malware development, and offensive security tooling.">
   <link rel="canonical" href="https://0x3xp.github.io/projects/projects.html">
   <meta property="og:type" content="website">
   <meta property="og:title" content="Projects | Piyusha Akash">
-  <meta property="og:description" content="Security research and development projects covering Windows internals, AV/EDR evasion, reverse engineering, malware development, and offensive security. ">
+  <meta property="og:description" content="Selected security research, offensive engineering, reverse engineering, and Windows internals projects.">
   <meta property="og:url" content="https://0x3xp.github.io/projects/projects.html">
   <meta property="og:site_name" content="Piyusha Akash">
+  <meta property="og:image" content="https://0x3xp.github.io/assets/img/brand-icon.png">
   <meta name="twitter:card" content="summary">
   <title>Projects | Piyusha Akash</title>
-  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="../assets/img/favicon.png" type="image/png">
   <link rel="stylesheet" href="../assets/css/site.css">
 </head>
 <body class="page-projects">
   <header class="site-header">
     <div class="shell header-inner">
       <a class="brand" href="../" aria-label="Piyusha Akash home">
-        <span class="brand-mark">0x</span>
-        <span class="brand-copy">
-          <span class="brand-name">Piyusha Akash</span>
-          <span class="brand-handle">/ 0x3xp</span>
-        </span>
+        <img class="brand-icon" src="../assets/img/brand-icon.png" alt="">
+        <span class="brand-text"><strong>0x3xp</strong><small>Piyusha Akash</small></span>
       </a>
       <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" data-nav-toggle>Menu</button>
       <nav class="site-nav" id="site-nav" data-nav aria-label="Primary navigation">
-        <a href="../">Profile</a>
+        <a href="../">Home</a>
         <a class="is-active" href="./" aria-current="page">Projects</a>
         <a href="../blog/blog.html">Writing</a>
       </nav>
@@ -41,105 +39,78 @@
   <main>
     <section class="page-hero shell">
       <div>
-        <p class="kicker">Selected work <span>·</span> Research &amp; Development</p>
+        <p class="eyebrow">Security research &amp; engineering</p>
         <h1>Projects</h1>
       </div>
-      <p class="page-hero-intro">A record of software, security tooling, reverse-engineering studies, and operating-system research. The emphasis is on implementation, methodology, and technical understanding.</p>
+      <p class="page-intro">Selected work in Windows internals, AV/EDR Evasion, reverse engineering, malware development, offensive tooling, and penetration testing.</p>
     </section>
 
-    <section class="shell featured-project">
-      <div class="featured-topline">
-        <span>Featured research</span>
-        <span>01</span>
-      </div>
-      <div class="featured-grid">
-        <div>
-          <p class="project-type">Windows Kernel Research</p>
+    <section class="featured-project shell">
+      <div class="feature-label-row"><span>Featured project</span><span>01</span></div>
+      <div class="feature-grid">
+        <div class="feature-copy">
+          <p class="project-kicker">Windows Kernel Research</p>
           <h2>Lethe</h2>
-          <p class="featured-summary">A Windows kernel-mode research tool built around a self-rescheduling KTIMER, KDPC, and IO_WORKITEM execution chain. The project investigates kernel execution, process and memory internals, credential-access paths, token manipulation, and endpoint detection surfaces.</p>
-          <div class="project-actions">
-            <a class="button button-solid" href="https://github.com/0x3xp/Lethe">GitHub ↗</a>
-            <a class="button button-ghost" href="https://github.com/0x3xp/Lethe/blob/main/WIKI.md">Technical Wiki ↗</a>
+          <p>Lethe is a Windows kernel-mode research project exploring an alternative execution path built around a self-rescheduling KTIMER, KDPC, and IO_WORKITEM chain. The project uses that architecture to investigate kernel execution, process and memory internals, token operations, credential-access paths, and endpoint detection surfaces.</p>
+          <div class="action-row">
+            <a class="button button-light" href="https://github.com/0x3xp/Lethe">Repository <span>↗</span></a>
+            <a class="button" href="https://github.com/0x3xp/Lethe/blob/main/WIKI.md">Technical Wiki <span>↗</span></a>
+            <a class="button" href="https://github.com/0x3xp/Lethe/blob/main/BYOVD.md">BYOVD Notes <span>↗</span></a>
           </div>
         </div>
-        <aside class="research-panel">
-          <div class="research-row"><span>Language</span><strong>C</strong></div>
-          <div class="research-row"><span>Platform</span><strong>Windows x64</strong></div>
-          <div class="research-row"><span>Kernel path</span><strong>KTIMER → KDPC → IO_WORKITEM</strong></div>
-          <div class="research-row"><span>Research areas</span><strong>Kernel execution · EPROCESS · detection surface</strong></div>
-          <div class="research-row"><span>Documentation</span><strong>README · Wiki · BYOVD notes</strong></div>
+        <aside class="feature-meta" aria-label="Lethe project details">
+          <div><span>Language</span><strong>C</strong></div>
+          <div><span>Platform</span><strong>Windows x64</strong></div>
+          <div><span>Execution</span><strong>KTIMER → KDPC → IO_WORKITEM</strong></div>
+          <div><span>Research</span><strong>Kernel execution · EPROCESS · memory · endpoint visibility</strong></div>
+          <div><span>Documentation</span><strong>README · Wiki · BYOVD research notes</strong></div>
         </aside>
       </div>
-      <div class="featured-notes">
-        <article>
-          <span>Execution model</span>
-          <p>The DPC performs minimal scheduling work before the system worker queue executes the main logic at PASSIVE_LEVEL.</p>
+      <div class="feature-observations">
+        <article><span>Architecture</span><p>The DPC path performs scheduling work before the main logic is dispatched through the system worker queue at PASSIVE_LEVEL.</p></article>
+        <article><span>Research value</span><p>The project provides a practical environment for studying Windows kernel execution and the boundary between user-mode visibility and deeper telemetry.</p></article>
+        <article><span>Defensive view</span><p>The project documentation describes limitations and monitoring considerations instead of making absolute claims about invisibility.</p></article>
+      </div>
+    </section>
+
+    <section class="project-section shell">
+      <div class="section-heading"><span class="section-index">02</span><h2>Selected Work</h2></div>
+      <div class="project-list">
+        <article class="project-entry">
+          <div class="project-entry-top"><span>Offensive Engineering</span><span>02</span></div>
+          <h3>Artemis</h3>
+          <p>Modular Windows research tooling for system call generation, SSN discovery, syscall stub generation, and shellcode transformation.</p>
+          <div class="project-tags"><span>C</span><span>x64 Assembly</span><span>Windows</span><span>Syscalls</span></div>
+          <a class="text-link" href="https://github.com/0x3xp/Artemis">Repository <span>↗</span></a>
         </article>
-        <article>
-          <span>Defensive perspective</span>
-          <p>The research explicitly documents what user-mode tools can and cannot observe, while noting kernel and hypervisor monitoring limits.</p>
+        <article class="project-entry">
+          <div class="project-entry-top"><span>Windows Internals</span><span>03</span></div>
+          <h3>Native-Adversary-Framework</h3>
+          <p>A low-level research repository covering native APIs, PE structures, process and memory internals, shellcode, exploit development, malware engineering, and reverse engineering.</p>
+          <div class="project-tags"><span>C</span><span>C++</span><span>NTAPI</span><span>Windows</span></div>
+          <a class="text-link" href="https://github.com/0x3xp/Native-Adversary-Framework">Repository <span>↗</span></a>
         </article>
-        <article>
-          <span>Research status</span>
-          <p>Built for controlled security research and red team testing. The project documentation records limitations rather than claiming absolute invisibility.</p>
+        <article class="project-entry">
+          <div class="project-entry-top"><span>Reconnaissance</span><span>04</span></div>
+          <h3>SENTINEX</h3>
+          <p>A lightweight Windows reconnaissance framework written in C for red team operations, adversary simulation, and authorized security assessment.</p>
+          <div class="project-tags"><span>C</span><span>Windows x64</span><span>Recon</span></div>
+          <a class="text-link" href="https://github.com/0x3xp/SENTINEX">Repository <span>↗</span></a>
+        </article>
+        <article class="project-entry">
+          <div class="project-entry-top"><span>Exploit Development</span><span>05</span></div>
+          <h3>Linux Exploit Development</h3>
+          <p>Public technical notes covering Linux x64 exploitation fundamentals, memory corruption, debugging, and practical exploit-development work.</p>
+          <div class="project-tags"><span>Linux</span><span>x64</span><span>C</span><span>Exploit Dev</span></div>
+          <a class="text-link" href="https://github.com/0x3xp/Linux-ExploitDev">Repository <span>↗</span></a>
         </article>
       </div>
     </section>
 
-    <section class="section shell section-rule projects-section">
-      <div class="section-aside">
-        <span class="section-number">02</span>
-        <span class="section-label">Selected Projects</span>
-      </div>
-      <div class="section-main">
-        <div class="project-grid">
-          <!-- Add, remove, or edit project records directly in this list. -->
-          <article class="project-card">
-            <div class="project-card-head"><span>Offensive Tooling</span><span>02</span></div>
-            <h2>Artemis</h2>
-            <p>Modular Windows security tooling for system call research, SSN discovery, syscall stub generation, and shellcode transformation.</p>
-            <div class="tags"><span>C</span><span>x64 ASM</span><span>Windows</span><span>Syscalls</span></div>
-            <a href="https://github.com/0x3xp/Artemis" class="text-link">View repository ↗</a>
-          </article>
-
-          <article class="project-card">
-            <div class="project-card-head"><span>Windows Internals</span><span>03</span></div>
-            <h2>Native-Adversary-Framework</h2>
-            <p>A collection of Windows internals research and implementations covering native APIs, PE structures, process and memory concepts, and low-level offensive development.</p>
-            <div class="tags"><span>C</span><span>Win32</span><span>NTAPI</span><span>Internals</span></div>
-            <a href="https://github.com/0x3xp/Native-Adversary-Framework" class="text-link">View repository ↗</a>
-          </article>
-
-          <article class="project-card">
-            <div class="project-card-head"><span>Reconnaissance</span><span>04</span></div>
-            <h2>SENTINEX</h2>
-            <p>A Windows reconnaissance and post-exploitation information-gathering tool focused on practical host enumeration for security assessments.</p>
-            <div class="tags"><span>C</span><span>Windows</span><span>Recon</span></div>
-            <a href="https://github.com/0x3xp/SENTINEX" class="text-link">View repository ↗</a>
-          </article>
-
-          <article class="project-card">
-            <div class="project-card-head"><span>Binary Security</span><span>05</span></div>
-            <h2>Linux Exploit Development</h2>
-            <p>A public writeup collection documenting Linux x64 exploitation concepts, memory corruption fundamentals, debugging, and practical exploit development.</p>
-            <div class="tags"><span>Linux</span><span>x64</span><span>Exploit Dev</span><span>C</span></div>
-            <a href="https://github.com/0x3xp/Linux-ExploitDev" class="text-link">View repository ↗</a>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <section class="section shell section-rule project-index">
-      <div class="section-aside">
-        <span class="section-number">03</span>
-        <span class="section-label">Additional Work</span>
-      </div>
-      <div class="section-main">
-        <div class="index-list">
-          <a href="https://github.com/0x3xp/Cross-Platform-Malware-Lab"><span>Cross-Platform-Malware-Lab</span><small>Malware analysis · PE / ELF</small><b>↗</b></a>
-          <a href="https://github.com/0x3xp/SysView"><span>SysView</span><small>Linux system information · Shell</small><b>↗</b></a>
-          <a href="https://github.com/0x3xp/SysMon-X"><span>SysMon-X</span><small>Linux system monitoring · Shell</small><b>↗</b></a>
-        </div>
+    <section class="project-index shell">
+      <div class="section-heading"><span class="section-index">03</span><h2>Other Work</h2></div>
+      <div class="index-rows">
+        <a href="https://github.com/0x3xp"><span><strong>GitHub repositories</strong><small>Additional tooling, experiments, research notes, and archived work</small></span><b>View profile ↗</b></a>
       </div>
     </section>
   </main>
@@ -147,6 +118,7 @@
   <footer class="site-footer">
     <div class="shell footer-inner">
       <span>© <span data-year></span> Piyusha Akash</span>
+      <a href="https://github.com/0x3xp/0x3xp.github.io">Source on GitHub ↗</a>
       <span>0x3xp</span>
     </div>
   </footer>

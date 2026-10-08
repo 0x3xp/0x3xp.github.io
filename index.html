@@ -3,19 +3,22 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#0b0c0d">
+  <meta name="theme-color" content="#0d0e10">
   <meta name="color-scheme" content="dark">
   <meta name="author" content="Piyusha Akash">
   <meta name="robots" content="index, follow">
-  <meta name="description" content="Piyusha Akash is a security researcher and red team operator focused on AV/EDR evasion, reverse engineering, malware development, research and development, and penetration testing.">
+  <meta name="description" content="Piyusha Akash is a Security Researcher and Red Team Operator focused on AV/EDR Evasion, reverse engineering, malware development, research and development, and penetration testing.">
   <link rel="canonical" href="https://0x3xp.github.io/">
   <meta property="og:type" content="profile">
-  <meta property="og:title" content="Piyusha Akash | Security Researcher & Red Team Operator">
-  <meta property="og:description" content="Security research and engineering focused on AV/EDR evasion, reverse engineering, malware development, research and development, and penetration testing.">
+  <meta property="og:title" content="Piyusha Akash | Security Researcher &amp; Red Team Operator">
+  <meta property="og:description" content="Security research, offensive engineering, reverse engineering, malware development, AV/EDR Evasion, and penetration testing.">
   <meta property="og:url" content="https://0x3xp.github.io/">
   <meta property="og:site_name" content="Piyusha Akash">
+  <meta property="og:image" content="https://0x3xp.github.io/assets/img/brand-icon.png">
   <meta name="twitter:card" content="summary">
-  <title>Piyusha Akash | Security Researcher & Red Team Operator</title>
+  <title>Piyusha Akash | Security Researcher &amp; Red Team Operator</title>
+  <link rel="icon" href="assets/img/favicon.png" type="image/png">
+  <link rel="stylesheet" href="assets/css/site.css">
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -33,22 +36,20 @@
     }
   }
   </script>
-  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="assets/css/site.css">
 </head>
 <body class="page-home">
   <header class="site-header">
     <div class="shell header-inner">
       <a class="brand" href="./" aria-label="Piyusha Akash home">
-        <span class="brand-mark">0x</span>
-        <span class="brand-copy">
-          <span class="brand-name">Piyusha Akash</span>
-          <span class="brand-handle">/ 0x3xp</span>
+        <img class="brand-icon" src="assets/img/brand-icon.png" alt="">
+        <span class="brand-text">
+          <strong>0x3xp</strong>
+          <small>Piyusha Akash</small>
         </span>
       </a>
       <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" data-nav-toggle>Menu</button>
       <nav class="site-nav" id="site-nav" data-nav aria-label="Primary navigation">
-        <a class="is-active" href="./" aria-current="page">Profile</a>
+        <a class="is-active" href="./" aria-current="page">Home</a>
         <a href="projects/projects.html">Projects</a>
         <a href="blog/blog.html">Writing</a>
       </nav>
@@ -56,186 +57,129 @@
   </header>
 
   <main>
-    <section class="hero shell">
-      <div class="hero-copy">
-        <p class="kicker">Security Researcher <span>·</span> Red Team Operator</p>
-        <h1>Piyusha<br><em>Akash</em></h1>
-        <p class="hero-role">AV/EDR Evasion</p>
-        <p class="hero-lede">Researching how endpoint security products observe Windows, developing low-level security tooling, and validating offensive techniques through reverse engineering and controlled testing.</p>
-        <div class="hero-actions">
-          <a class="button button-solid" href="projects/projects.html">View projects</a>
-          <a class="button button-ghost" href="blog/blog.html">Read research</a>
+    <section class="home-hero shell">
+      <div class="hero-main">
+        <p class="eyebrow">Security Researcher &amp; Red Team Operator</p>
+        <h1>Piyusha <span>Akash</span></h1>
+        <p class="hero-specialization">AV/EDR Evasion</p>
+        <p class="hero-intro">I research and build at the intersection of endpoint security, Windows internals, reverse engineering, and offensive security. My work ranges from low-level malware development and detection research to red team operations, security tooling, and penetration testing.</p>
+        <div class="hero-links">
+          <a class="primary-link" href="projects/projects.html">View projects <span>↗</span></a>
+          <a href="blog/blog.html">Read writing <span>↗</span></a>
         </div>
       </div>
 
-      <aside class="profile-panel" aria-label="Profile summary">
-        <div class="panel-head">
-          <span>Profile</span>
-          <span>0x3xp</span>
-        </div>
-        <dl class="profile-list">
-          <div><dt>Primary focus</dt><dd>AV/EDR Evasion</dd></div>
-          <div><dt>Role</dt><dd>Red Team Operator</dd></div>
-          <div><dt>Specialties</dt><dd>Reverse Engineering<br>Malware Development<br>R&amp;D<br>Penetration Testing</dd></div>
-          <div><dt>Core systems</dt><dd>Windows · Linux</dd></div>
-          <div><dt>Low-level</dt><dd>C · C++ · x64 Assembly</dd></div>
-          <div><dt>Location</dt><dd>Sri Lanka</dd></div>
-        </dl>
+      <aside class="identity-panel">
+        <div class="panel-label">Profile</div>
+        <div class="identity-row"><span>Specialization</span><strong>AV/EDR Evasion</strong></div>
+        <div class="identity-row"><span>Domains</span><strong>Windows · Linux</strong></div>
+        <div class="identity-row"><span>Primary languages</span><strong>C · C++ · x64 Assembly</strong></div>
+        <div class="identity-row"><span>Research</span><strong>Endpoint telemetry · Windows internals · kernel execution</strong></div>
+        <div class="identity-row"><span>Handle</span><strong>0x3xp</strong></div>
       </aside>
     </section>
 
-    <section class="section shell" id="about">
-      <div class="section-aside">
-        <span class="section-number">01</span>
-        <span class="section-label">About</span>
+    <section class="content-section shell">
+      <div class="section-heading">
+        <span class="section-index">01</span>
+        <h2>About</h2>
       </div>
-      <div class="section-main split-copy">
-        <div>
-          <p class="section-lead">I work at the intersection of offensive security, operating system internals, and endpoint detection.</p>
-        </div>
-        <div class="copy-stack">
-          <p>My primary discipline is AV/EDR evasion. I study the points where security products instrument Windows, how telemetry is generated, and how changes in execution, memory access, and operating-system interaction affect what defenders can observe.</p>
-          <p>My broader work covers red team operations, reverse engineering, malware development, research and development, and penetration testing. I build and analyze software rather than treating security tooling as a black box.</p>
-          <p>Current research interests include Windows internals, native APIs, system call behavior, PE structures, kernel execution, process and memory internals, and defensive visibility at the endpoint.</p>
+      <div class="about-grid">
+        <div class="about-lead">I prefer to understand security products and operating systems at the implementation level.</div>
+        <div class="about-copy">
+          <p>My primary focus is AV/EDR Evasion. I study where endpoint products collect telemetry, how Windows execution paths expose activity, and how changes at the API, syscall, process, memory, and kernel levels affect defensive visibility.</p>
+          <p>Alongside that work, I operate in reverse engineering, malware development, red team operations, research and development, and penetration testing. I build proof of concepts, inspect binaries, develop tooling, and document what the experiments show.</p>
+          <p>I use public repositories and technical writing to record the engineering behind the work, with an emphasis on reproducible research and authorized security testing.</p>
         </div>
       </div>
     </section>
 
-    <section class="section section-rule shell">
-      <div class="section-aside">
-        <span class="section-number">02</span>
-        <span class="section-label">Practice</span>
+    <section class="content-section shell">
+      <div class="section-heading">
+        <span class="section-index">02</span>
+        <h2>Research &amp; Practice</h2>
       </div>
-      <div class="section-main">
-        <div class="discipline-grid">
-          <article class="discipline">
-            <span class="discipline-no">01</span>
-            <div>
-              <h2>AV/EDR Evasion</h2>
-              <p>Endpoint telemetry, user-mode and kernel visibility, execution paths, and detection boundary research.</p>
-            </div>
-          </article>
-          <article class="discipline">
-            <span class="discipline-no">02</span>
-            <div>
-              <h2>Reverse Engineering</h2>
-              <p>Binary analysis, Windows internals, x64 disassembly, debugging, undocumented behavior, and attack-surface research.</p>
-            </div>
-          </article>
-          <article class="discipline">
-            <span class="discipline-no">03</span>
-            <div>
-              <h2>Malware Development</h2>
-              <p>Custom implants, execution research, shellcode, loaders, and low-level tradecraft for authorized testing.</p>
-            </div>
-          </article>
-          <article class="discipline">
-            <span class="discipline-no">04</span>
-            <div>
-              <h2>Red Team Operations</h2>
-              <p>Adversary emulation, post-exploitation, operator tooling, and end-to-end security assessments.</p>
-            </div>
-          </article>
-          <article class="discipline">
-            <span class="discipline-no">05</span>
-            <div>
-              <h2>Research &amp; Development</h2>
-              <p>Security tooling, proof-of-concept engineering, operating-system research, and reproducible experiments.</p>
-            </div>
-          </article>
-          <article class="discipline">
-            <span class="discipline-no">06</span>
-            <div>
-              <h2>Penetration Testing</h2>
-              <p>Web, network, host, and infrastructure security testing with practical exploitation and technical reporting.</p>
-            </div>
-          </article>
-        </div>
+      <div class="discipline-list">
+        <article class="discipline-row">
+          <span class="discipline-number">01</span>
+          <div><h3>AV/EDR Evasion</h3><p>Detection surface analysis, endpoint telemetry, execution visibility, security product behavior, and controlled evasion research.</p></div>
+        </article>
+        <article class="discipline-row">
+          <span class="discipline-number">02</span>
+          <div><h3>Reverse Engineering</h3><p>Windows binaries, PE structures, x64 disassembly, debugging, native APIs, undocumented behavior, and binary analysis.</p></div>
+        </article>
+        <article class="discipline-row">
+          <span class="discipline-number">03</span>
+          <div><h3>Malware Development</h3><p>Low-level execution, shellcode, loaders, implants, process and memory techniques, and adversary emulation tooling.</p></div>
+        </article>
+        <article class="discipline-row">
+          <span class="discipline-number">04</span>
+          <div><h3>Red Team Operations</h3><p>Adversary emulation, internal testing, post-exploitation research, custom operator tooling, and security assessments.</p></div>
+        </article>
+        <article class="discipline-row">
+          <span class="discipline-number">05</span>
+          <div><h3>Research &amp; Development</h3><p>Security software, proof-of-concept engineering, operating system research, experimentation, and technical documentation.</p></div>
+        </article>
+        <article class="discipline-row">
+          <span class="discipline-number">06</span>
+          <div><h3>Penetration Testing</h3><p>Web, API, network, host, and infrastructure assessments supported by practical exploitation and technical reporting.</p></div>
+        </article>
       </div>
     </section>
 
-    <section class="section section-rule shell">
-      <div class="section-aside">
-        <span class="section-number">03</span>
-        <span class="section-label">Technical Scope</span>
+    <section class="content-section shell">
+      <div class="section-heading">
+        <span class="section-index">03</span>
+        <h2>Technical Scope</h2>
       </div>
-      <div class="section-main">
-        <div class="tech-matrix">
-          <div class="tech-group">
-            <h2>Languages</h2>
-            <p>C / C++<br>x86-64 Assembly<br>MASM / NASM<br>Bash / Shell<br>Rust</p>
-          </div>
-          <div class="tech-group">
-            <h2>Windows</h2>
-            <p>Win32 API<br>NT Native API<br>NTDLL<br>PE Format<br>PEB / TEB<br>Kernel Structures</p>
-          </div>
-          <div class="tech-group">
-            <h2>Security Research</h2>
-            <p>AV / EDR Evasion<br>Syscalls<br>Process Injection<br>Shellcode<br>Kernel Research<br>Adversary Emulation</p>
-          </div>
-          <div class="tech-group">
-            <h2>Analysis</h2>
-            <p>IDA Pro<br>Ghidra<br>WinDbg<br>x64dbg<br>Procmon<br>Frida</p>
-          </div>
-        </div>
+      <div class="scope-grid">
+        <div class="scope-block"><h3>Languages</h3><p>C<br>C++<br>x86-64 Assembly<br>Bash / Shell<br>Rust</p></div>
+        <div class="scope-block"><h3>Windows</h3><p>Win32 API<br>NT Native API<br>NTDLL<br>PE Format<br>PEB / TEB<br>Windows Internals</p></div>
+        <div class="scope-block"><h3>Security Research</h3><p>AV / EDR Evasion<br>Syscalls<br>Process Injection<br>Shellcode<br>Kernel Research<br>Adversary Emulation</p></div>
+        <div class="scope-block"><h3>Analysis</h3><p>IDA Pro<br>Ghidra<br>WinDbg<br>x64dbg<br>Procmon<br>Frida</p></div>
       </div>
     </section>
 
-    <section class="section section-rule shell" id="credentials">
-      <div class="section-aside">
-        <span class="section-number">04</span>
-        <span class="section-label">Credentials</span>
+    <section class="content-section shell" id="credentials">
+      <div class="section-heading">
+        <span class="section-index">04</span>
+        <h2>Credentials</h2>
       </div>
-      <div class="section-main">
-        <div class="credential-list">
-          <!-- Credential records are maintained directly in this list. -->
-          <article class="credential">
-            <div class="credential-mark">CBFRPro</div>
-            <div class="credential-body">
-              <h2>Certified Binary Fuzzing &amp; Reverse Engineering Professional</h2>
-              <p>The SecOps Group</p>
-            </div>
-            <div class="credential-year">2026</div>
-          </article>
-          <article class="credential">
-            <div class="credential-mark">CAPT</div>
-            <div class="credential-body">
-              <h2>Certified Associate Penetration Tester</h2>
-              <p>Hackviser</p>
-            </div>
-            <div class="credential-year">2026</div>
-          </article>
-          <article class="credential">
-            <div class="credential-mark">COWA</div>
-            <div class="credential-body">
-              <h2>Certified Offensive Windows API</h2>
-              <p>Red Team Leaders</p>
-            </div>
-            <div class="credential-year">2026</div>
-          </article>
-          <article class="credential">
-            <div class="credential-mark">LFS101</div>
-            <div class="credential-body">
-              <h2>Introduction to Linux</h2>
-              <p>The Linux Foundation</p>
-            </div>
-            <div class="credential-year">2026</div>
-          </article>
-        </div>
+      <div class="credential-list">
+        <article class="credential-row">
+          <div class="credential-code">CBFRPro</div>
+          <div><h3>Certified Binary Fuzzing &amp; Reverse Engineering Professional</h3><p>The SecOps Group</p></div>
+          <time datetime="2026-07">Jul 2026</time>
+        </article>
+        <article class="credential-row">
+          <div class="credential-code">CAPT</div>
+          <div><h3>Certified Associate Penetration Tester</h3><p>Hackviser</p></div>
+          <time datetime="2026-02">Feb 2026</time>
+        </article>
+        <article class="credential-row">
+          <div class="credential-code">COWA</div>
+          <div><h3>Certified Offensive Windows API</h3><p>Red Team Leaders</p></div>
+          <time datetime="2026">2026</time>
+        </article>
+        <article class="credential-row">
+          <div class="credential-code">LFS101</div>
+          <div><h3>Introduction to Linux</h3><p>The Linux Foundation</p></div>
+          <time datetime="2026">2026</time>
+        </article>
       </div>
     </section>
 
-    <section class="contact shell">
+    <section class="contact-section shell">
       <div>
-        <span class="section-label">05 / Contact</span>
-        <h2>Available for serious security work.</h2>
+        <span class="eyebrow">05 / Contact</span>
+        <h2>Security research, R&amp;D, red team work, and testing.</h2>
       </div>
-      <div class="contact-copy">
-        <p>Open to red team engagements, security research collaboration, reverse engineering work, malware research, penetration testing, and research-driven security engineering.</p>
+      <div class="contact-side">
+        <p>Open to research collaboration, professional opportunities, authorized security engagements, reverse engineering work, and offensive security projects.</p>
         <div class="contact-links">
-          <a href="mailto:contact.piyushaakash@gmail.com">Email ↗</a>
-          <a href="https://github.com/0x3xp" rel="me">GitHub ↗</a>
-          <a href="https://www.linkedin.com/in/piyusha-akash" rel="me">LinkedIn ↗</a>
+          <a href="mailto:contact.piyushaakash@gmail.com">Email <span>↗</span></a>
+          <a href="https://github.com/0x3xp" rel="me">GitHub <span>↗</span></a>
+          <a href="https://www.linkedin.com/in/piyusha-akash" rel="me">LinkedIn <span>↗</span></a>
         </div>
       </div>
     </section>
@@ -244,6 +188,7 @@
   <footer class="site-footer">
     <div class="shell footer-inner">
       <span>© <span data-year></span> Piyusha Akash</span>
+      <a href="https://github.com/0x3xp/0x3xp.github.io">Source on GitHub ↗</a>
       <span>0x3xp</span>
     </div>
   </footer>

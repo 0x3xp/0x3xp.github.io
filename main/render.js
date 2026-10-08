@@ -1,7 +1,6 @@
 (function () {
   "use strict";
-
-  document.querySelectorAll("[data-year]").forEach(function (element) {
-    element.textContent = String(new Date().getFullYear());
+  document.querySelectorAll("[data-year]").forEach(function (node) {
+    node.textContent = String(new Date().getFullYear());
   });
 }());
