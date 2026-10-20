@@ -3,20 +3,35 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Writing & Research | Piyusha Akash</title>
-  <meta name="description" content="Technical writing and independent security research by Piyusha Akash covering AV/EDR evasion, Windows internals, reverse engineering and exploit development.">
+  <title>Writing &amp; Research | Piyusha Akash</title>
+  <meta name="description" content="Technical writing and independent security research by Piyusha Akash — AV/EDR evasion, Windows internals, reverse engineering, exploit development, and security tooling.">
   <meta name="author" content="Piyusha Akash">
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="https://0x3xp.github.io/blog/blog.html">
+
+  <!-- Open Graph -->
   <meta property="og:type" content="website">
-  <meta property="og:title" content="Writing & Research | Piyusha Akash">
-  <meta property="og:description" content="Technical research notes and writeups focused on AV/EDR evasion, Windows internals, reverse engineering and exploit development.">
+  <meta property="og:title" content="Writing &amp; Research | Piyusha Akash">
+  <meta property="og:description" content="Technical research notes and writeups focused on AV/EDR evasion, Windows internals, reverse engineering, and exploit development.">
   <meta property="og:url" content="https://0x3xp.github.io/blog/blog.html">
+  <meta property="og:site_name" content="Piyusha Akash">
+
+  <!-- Twitter Card -->
   <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Writing &amp; Research | Piyusha Akash">
+  <meta name="twitter:description" content="Technical security research writeups by Piyusha Akash.">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;600;650;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
   <link rel="icon" type="image/png" href="../assets/img/favicon.png">
   <link rel="stylesheet" href="../assets/css/site.css">
 </head>
 <body>
+
+  <!-- ── Header ─────────────────────────────────────────────── -->
   <header class="site-header">
     <div class="site-shell header-inner">
       <a class="brand" href="../" aria-label="Piyusha Akash home">
@@ -32,53 +47,145 @@
     </div>
   </header>
 
+  <!-- ── Main ───────────────────────────────────────────────── -->
   <main class="page-main">
     <div class="site-shell">
+
+      <!-- Page Intro -->
       <section class="page-intro">
         <div class="section-label">Publication</div>
         <div class="intro-content">
-          <p class="eyebrow">Windows Internals · AV/EDR Evasion · Reverse Engineering</p>
-          <h1>Writing & Research</h1>
-          <p class="page-summary">Technical writeups and independent research notes focused on implementation details, security boundaries and practical findings.</p>
+          <span class="eyebrow">Windows Internals · AV/EDR Evasion · Reverse Engineering</span>
+          <h1>Writing &amp; Research</h1>
+          <p class="page-summary">Technical writeups and independent research notes focused on implementation details, security boundaries, and practical findings in offensive and defensive security.</p>
         </div>
       </section>
 
+      <!-- 01 / Articles -->
       <section class="section-block">
         <div class="section-label">01 / Articles</div>
         <div class="section-content">
           <div class="publications">
-            <!-- Edit or duplicate publication-row articles directly in this file. -->
+
             <article class="publication-row">
-              <div class="pub-meta"><span>2026</span><span>Independent research</span></div>
-              <div class="pub-content">
-                <h2>Control Flow Redirection via SetupAPI Callback</h2>
-                <p>Research into redirecting SetupAPI callback execution as an alternative code execution surface, with analysis of Windows internals and endpoint telemetry implications.</p>
-                <div class="tag-row"><span class="tag">Windows</span><span class="tag">AV/EDR Evasion</span><span class="tag">Reverse Engineering</span></div>
+              <div class="pub-meta">
+                <span>2026-04-01</span>
+                <span>14 min read</span>
+                <span>Technical writeup</span>
               </div>
-              <div class="pub-action"><a href="https://github.com/0x3xp/Native-Adversary-Framework/tree/main/Malware-Dev/Injection/SetupAPI-Callback-Redirection">Read ↗</a></div>
+              <div class="pub-content">
+                <h2>Basic Process Injection — CreateRemoteThread Technique</h2>
+                <p>A complete code walkthrough of a classic CreateRemoteThread process injector in C — process enumeration with Toolhelp32, VirtualAllocEx, WriteProcessMemory, shellcode generation, and remote thread execution.</p>
+                <div class="tag-row">
+                  <span class="tag">Windows</span>
+                  <span class="tag">Process Injection</span>
+                  <span class="tag">Malware Dev</span>
+                  <span class="tag">Red Team</span>
+                </div>
+              </div>
+              <div class="pub-action"><a href="posts/basic-process-injection.html">Read ↗</a></div>
             </article>
 
             <article class="publication-row">
-              <div class="pub-meta"><span>Published</span><span>Technical writeup</span></div>
-              <div class="pub-content">
-                <h2>Introduction to Exploit Development in Linux x64</h2>
-                <p>Foundational notes covering Linux x64 exploitation, memory layout, assembly concepts, shellcode and the mechanics behind classic exploitation techniques.</p>
-                <div class="tag-row"><span class="tag">Linux</span><span class="tag">Exploit Development</span><span class="tag">x86-64</span></div>
+              <div class="pub-meta">
+                <span>2026-03-31</span>
+                <span>18 min read</span>
+                <span>Kernel analysis</span>
               </div>
-              <div class="pub-action"><a href="https://github.com/0x3xp/Linux-ExploitDev">Read ↗</a></div>
+              <div class="pub-content">
+                <h2>Windows DirectComposition — Kernel-Mode Attack Surface Analysis</h2>
+                <p>SSN extraction for NtDCompositionCommitChannel &amp; NtDCompositionCreateChannel, full Ghidra trace of the dcomp.dll commit pipeline, and kernel-side analysis of win32kbase.sys batch dispatch logic. No CVE — full analysis.</p>
+                <div class="tag-row">
+                  <span class="tag">Windows</span>
+                  <span class="tag">Internals</span>
+                  <span class="tag">Reverse Engineering</span>
+                  <span class="tag">Kernel</span>
+                </div>
+              </div>
+              <div class="pub-action"><a href="posts/dcomp-kernel-attack-surface.html">Read ↗</a></div>
             </article>
+
+            <article class="publication-row">
+              <div class="pub-meta">
+                <span>2025-12-01</span>
+                <span>12 min read</span>
+                <span>Technical writeup</span>
+              </div>
+              <div class="pub-content">
+                <h2>Windows Hardening: From Default Install to Fortress</h2>
+                <p>A systematic walkthrough of hardening a Windows 11 endpoint — BitLocker XTS-AES 256, LAPS, WDAC, killing LLMNR/NetBIOS, and PowerShell CLM configurations that hold against modern threats.</p>
+                <div class="tag-row">
+                  <span class="tag">Windows</span>
+                  <span class="tag">Hardening</span>
+                  <span class="tag">Blue Team</span>
+                  <span class="tag">Configuration</span>
+                </div>
+              </div>
+              <div class="pub-action"><a href="posts/windows-hardening.html">Read ↗</a></div>
+            </article>
+
           </div>
         </div>
       </section>
 
+      <!-- 02 / Research Notes -->
+      <section class="section-block">
+        <div class="section-label">02 / Research notes</div>
+        <div class="section-content">
+          <div class="publications">
+
+            <article class="publication-row">
+              <div class="pub-meta">
+                <span>2026</span>
+                <span>Independent research</span>
+              </div>
+              <div class="pub-content">
+                <h2>Control Flow Redirection via SetupAPI Callback</h2>
+                <p>Research into redirecting SetupAPI callback execution as an alternative code execution surface, with analysis of Windows internals and endpoint telemetry implications.</p>
+                <div class="tag-row">
+                  <span class="tag">Windows</span>
+                  <span class="tag">AV/EDR Evasion</span>
+                  <span class="tag">Reverse Engineering</span>
+                  <span class="tag">EDR</span>
+                </div>
+              </div>
+              <div class="pub-action"><a href="https://github.com/0x3xp/Native-Adversary-Framework/tree/main/Malware-Dev/Injection/SetupAPI-Callback-Redirection" rel="noreferrer noopener" target="_blank">Read ↗</a></div>
+            </article>
+
+            <article class="publication-row">
+              <div class="pub-meta">
+                <span>2026</span>
+                <span>Published work</span>
+              </div>
+              <div class="pub-content">
+                <h2>Introduction to Exploit Development in Linux x64</h2>
+                <p>Foundational notes covering Linux x64 exploitation — memory layout, assembly concepts, shellcode construction, and the mechanics of classic exploitation techniques.</p>
+                <div class="tag-row">
+                  <span class="tag">Linux</span>
+                  <span class="tag">Exploit Dev</span>
+                  <span class="tag">x86-64</span>
+                  <span class="tag">Assembly</span>
+                </div>
+              </div>
+              <div class="pub-action"><a href="https://github.com/0x3xp/Linux-ExploitDev" rel="noreferrer noopener" target="_blank">Read ↗</a></div>
+            </article>
+
+          </div>
+        </div>
+      </section>
 
     </div>
   </main>
 
+  <!-- ── Footer ─────────────────────────────────────────────── -->
   <footer class="site-footer">
     <div class="site-shell footer-inner">
-      <span>© <span data-year></span> Piyusha Akash / 0x3xp</span>
-
+      <span>© <span data-year></span> Piyusha Akash / 0x3xp &middot; Manifold Operations</span>
+      <div class="footer-links">
+        <a href="https://github.com/0x3xp" rel="noreferrer noopener" target="_blank">GitHub</a>
+        <a href="https://www.linkedin.com/in/piyusha-akash" rel="noreferrer noopener" target="_blank">LinkedIn</a>
+        <a href="https://manifoldoperations.vercel.app" rel="noreferrer noopener" target="_blank">Manifold Ops</a>
+      </div>
     </div>
   </footer>
 
