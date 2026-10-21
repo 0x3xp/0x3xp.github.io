@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Contributions | Piyusha Akash</title>
+  <meta name="description" content="Open source contributions by Piyusha Akash to libslirp — memory safety, resource leak, concurrency, and protocol correctness fixes in production networking infrastructure.">
+  <meta name="author" content="Piyusha Akash">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://0x3xp.github.io/contributions/">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Contributions | Piyusha Akash">
+  <meta property="og:description" content="Upstream contributions to libslirp — memory safety, resource leak, concurrency, and protocol correctness fixes in production networking infrastructure.">
+  <meta property="og:url" content="https://0x3xp.github.io/contributions/">
+  <meta property="og:site_name" content="Piyusha Akash">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Contributions | Piyusha Akash">
+  <meta name="twitter:description" content="Upstream contributions to libslirp by Piyusha Akash.">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;600;650;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <link rel="icon" type="image/png" href="../assets/img/favicon.png">
+  <link rel="stylesheet" href="../assets/css/site.css">
+</head>
+<body>
+
+  <!-- ── Header ─────────────────────────────────────────────── -->
+  <header class="site-header">
+    <div class="site-shell header-inner">
+      <a class="brand" href="../" aria-label="Piyusha Akash home">
+        <span class="brand-name">Piyusha Akash</span>
+        <span class="brand-handle">/0x3xp</span>
+      </a>
+      <button class="nav-toggle" type="button" data-nav-toggle aria-expanded="false" aria-controls="site-nav" aria-label="Open navigation">Menu</button>
+      <nav class="site-nav" id="site-nav" data-nav aria-label="Primary navigation">
+        <a href="../">Home</a>
+        <a href="../projects/projects.html">Projects</a>
+        <a href="./" aria-current="page">Contributions</a>
+        <a href="../blog/blog.html">Blog</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ── Main ───────────────────────────────────────────────── -->
+  <main class="page-main">
+    <div class="site-shell">
+
+      <!-- Page Intro -->
+      <section class="page-intro">
+        <div class="section-label">Upstream</div>
+        <div class="intro-content">
+          <span class="eyebrow">Open Source · Memory Safety · Systems Research</span>
+          <h1>Contributions</h1>
+          <p class="page-summary">Upstream contributions to production open source projects — finding and fixing real bugs in networking and systems libraries used across major infrastructure. All 7 contributions merged into <strong style="color:var(--text);font-weight:600;">libslirp</strong> (freedesktop.org), the user-mode TCP/IP stack powering QEMU and other virtualization platforms.</p>
+        </div>
+      </section>
+
+      <!-- 01 / libslirp -->
+      <section class="section-block">
+        <div class="section-label">01 / libslirp</div>
+        <div class="section-content">
+          <div class="section-heading">
+            <h2>freedesktop.org / libslirp</h2>
+            <span class="meta">C · Networking · Oct 2026</span>
+          </div>
+
+          <!-- #99 — Memory Leak -->
+          <article class="contrib-full-card">
+            <div class="contrib-full-top">
+              <div class="contrib-full-top-left">
+                <div class="contrib-full-badges">
+                  <span class="contrib-merged-pill">
+                    <svg width="8" height="8" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z"/></svg>
+                    Merged
+                  </span>
+                  <span class="type-badge type-security">Security</span>
+                </div>
+                <h3 class="contrib-full-title">Memory leak of <code>tftp_server_name</code> in <code>slirp_cleanup()</code></h3>
+              </div>
+              <div class="contrib-full-top-right">
+                <span class="contrib-full-date">Oct 18, 2026</span>
+                <span class="contrib-full-lang">C · Memory Safety</span>
+              </div>
+            </div>
+            <div class="contrib-full-body">
+              <div class="contrib-full-finding">
+                <strong>Finding</strong>
+                <p><code>tftp_server_name</code> is heap-allocated during initialization but never freed in the cleanup path <code>slirp_cleanup()</code>, causing a persistent memory leak on every instance teardown in QEMU and other consumers of libslirp.</p>
+              </div>
+              <div class="contrib-full-diff">
+                <div class="contrib-full-diff-header">src/slirp.c — slirp_cleanup()</div>
+                <pre><code><span class="diff-ctx"> g_free(slirp->tftp_prefix);</span>
+<span class="diff-ctx"> g_free(slirp->bootp_filename);</span>
+<span class="diff-ctx"> g_free(slirp->vdomainname);</span>
+<span class="diff-add">+g_free(slirp->tftp_server_name);</span>
+<span class="diff-ctx"> g_free(slirp);</span></code></pre>
+              </div>
+              <div class="contrib-full-links">
+                <a class="contrib-full-link" href="https://gitlab.freedesktop.org/slirp/libslirp/-/commit/fe2501e799862d6fa6adb4c5e1358567ebd8c065" rel="noreferrer noopener" target="_blank">Commit ↗</a>
+                <a class="contrib-full-link" href="https://gitlab.freedesktop.org/slirp/libslirp/-/work_items/99" rel="noreferrer noopener" target="_blank">Issue #99 ↗</a>
+              </div>
+            </div>
+          </article>
+
+          <!-- #100 — Buffer Underflow -->
+          <article class="contrib-full-card">
+            <div class="contrib-full-top">
+              <div class="contrib-full-top-left">
+                <div class="contrib-full-badges">
+                  <span class="contrib-merged-pill">
+                    <svg width="8" height="8" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z"/></svg>
+                    Merged
+                  </span>
+                  <span class="type-badge type-security">Security</span>
+                </div>
+                <h3 class="contrib-full-title">Buffer underflow in <code>tftp_handle_rrq()</code> when handling empty filename</h3>
+              </div>
+              <div class="contrib-full-top-right">
+                <span class="contrib-full-date">Oct 2026</span>
+                <span class="contrib-full-lang">C · Memory Safety</span>
+              </div>
+            </div>
+            <div class="contrib-full-body">
+              <div class="contrib-full-finding">
+                <strong>Finding</strong>
+                <p>When a TFTP read request (<code>RRQ</code>) is received with an empty filename, <code>tftp_handle_rrq()</code> performs pointer arithmetic that results in a buffer underflow — reading memory before the start of the allocated buffer. This can cause undefined behavior and potential information exposure.</p>
+              </div>
+              <div class="contrib-full-links">
+                <a class="contrib-full-link" href="https://gitlab.freedesktop.org/slirp/libslirp/-/commit/9fd2fa698886a9c222090424d6e708709db13d8d" rel="noreferrer noopener" target="_blank">Commit ↗</a>
+                <a class="contrib-full-link" href="https://gitlab.freedesktop.org/slirp/libslirp/-/work_items/100" rel="noreferrer noopener" target="_blank">Issue #100 ↗</a>
+              </div>
+            </div>
+          </article>
+
+          <!-- #101 — Protocol Mismatch -->
+          <article class="contrib-full-card">
+            <div class="contrib-full-top">
+              <div class="contrib-full-top-left">
+                <div class="contrib-full-badges">
+                  <span class="contrib-merged-pill">
+                    <svg width="8" height="8" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z"/></svg>
+                    Merged
+                  </span>
+                  <span class="type-badge type-bug">Bug</span>
+                </div>
+                <h3 class="contrib-full-title">Protocol type mismatch in <code>icmp6_receive()</code>: IPv4 <code>ICMP_UNREACH</code> emitted as ICMPv6</h3>
+              </div>
+              <div class="contrib-full-top-right">
+                <span class="contrib-full-date">Oct 2026</span>
+                <span class="contrib-full-lang">C · Protocol</span>
+              </div>
+            </div>
+            <div class="contrib-full-body">
+              <div class="contrib-full-finding">
+                <strong>Finding</strong>
+                <p>In <code>icmp6_receive()</code>, an IPv4 <code>ICMP_UNREACH</code> error is incorrectly emitted using the ICMPv6 send path. This protocol type mismatch causes malformed packets to be constructed and sent, breaking network error signaling for IPv4 unreachable conditions handled through the IPv6 receive path.</p>
+              </div>
+              <div class="contrib-full-links">
+                <a class="contrib-full-link" href="https://gitlab.freedesktop.org/slirp/libslirp/-/commit/0bda8ef0c47d2a45980a2d480312c000e6bc9b11" rel="noreferrer noopener" target="_blank">Commit ↗</a>
+                <a class="contrib-full-link" href="https://gitlab.freedesktop.org/slirp/libslirp/-/work_items/101" rel="noreferrer noopener" target="_blank">Issue #101 ↗</a>
+              </div>
+            </div>
+          </article>
+
+          <!-- #102 — Socket Descriptor Leak -->
+          <article class="contrib-full-card">
+            <div class="contrib-full-top">
+              <div class="contrib-full-top-left">
+                <div class="contrib-full-badges">
+                  <span class="contrib-merged-pill">
+                    <svg width="8" height="8" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z"/></svg>
+                    Merged
+                  </span>
+                  <span class="type-badge type-leak">Resource Leak</span>
+                </div>
+                <h3 class="contrib-full-title">Double socket descriptor leak in <code>fork_exec()</code> on argument parsing failure</h3>
+              </div>
+              <div class="contrib-full-top-right">
+                <span class="contrib-full-date">Oct 2026</span>
+                <span class="contrib-full-lang">C · Resource Management</span>
+              </div>
+            </div>
+            <div class="contrib-full-body">
+              <div class="contrib-full-finding">
+                <strong>Finding</strong>
+                <p>In <code>fork_exec()</code>, when argument parsing fails after a socket pair has already been created, both socket file descriptors are returned without being closed. This causes a double file descriptor leak on every failed invocation, gradually exhausting the process file descriptor table.</p>
+              </div>
+              <div class="contrib-full-links">
+                <a class="contrib-full-link" href="https://gitlab.freedesktop.org/slirp/libslirp/-/commit/8bb18d3043eeb463955856c3242fef9a788d4280" rel="noreferrer noopener" target="_blank">Commit ↗</a>
+                <a class="contrib-full-link" href="https://gitlab.freedesktop.org/slirp/libslirp/-/work_items/102" rel="noreferrer noopener" target="_blank">Issue #102 ↗</a>
+              </div>
+            </div>
+          </article>
+
+          <!-- #103 — Socket Heap Memory & Buffer Leak -->
+          <article class="contrib-full-card">
+            <div class="contrib-full-top">
+              <div class="contrib-full-top-left">
+                <div class="contrib-full-badges">
+                  <span class="contrib-merged-pill">
+                    <svg width="8" height="8" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z"/></svg>
+                    Merged
+                  </span>
+                  <span class="type-badge type-leak">Resource Leak</span>
+                </div>
+                <h3 class="contrib-full-title">Socket heap memory &amp; buffer leak in <code>slirp_state_load()</code> on deserialization or validation failure</h3>
+              </div>
+              <div class="contrib-full-top-right">
+                <span class="contrib-full-date">Oct 2026</span>
+                <span class="contrib-full-lang">C · Resource Management</span>
+              </div>
+            </div>
+            <div class="contrib-full-body">
+              <div class="contrib-full-finding">
+                <strong>Finding</strong>
+                <p>In <code>slirp_state_load()</code>, if deserialization or validation of a socket fails partway through, the already-allocated socket structure and its associated send/receive buffers are not freed before returning an error. This results in heap memory and buffer leaks on every failed state restore operation.</p>
+              </div>
+              <div class="contrib-full-links">
+                <a class="contrib-full-link" href="https://gitlab.freedesktop.org/slirp/libslirp/-/commit/7e571d1e0f6d2750f9e0c7272512e6f0c78bf3c8" rel="noreferrer noopener" target="_blank">Commit ↗</a>
+                <a class="contrib-full-link" href="https://gitlab.freedesktop.org/slirp/libslirp/-/work_items/103" rel="noreferrer noopener" target="_blank">Issue #103 ↗</a>
+              </div>
+            </div>
+          </article>
+
+          <!-- #104 — Non-Reentrant Static Variable -->
+          <article class="contrib-full-card">
+            <div class="contrib-full-top">
+              <div class="contrib-full-top-left">
+                <div class="contrib-full-badges">
+                  <span class="contrib-merged-pill">
+                    <svg width="8" height="8" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z"/></svg>
+                    Merged
+                  </span>
+                  <span class="type-badge type-concurrency">Concurrency</span>
+                </div>
+                <h3 class="contrib-full-title">Non-reentrant static variable in <code>tcp_emu()</code> corrupts protocol parser across sessions</h3>
+              </div>
+              <div class="contrib-full-top-right">
+                <span class="contrib-full-date">Oct 2026</span>
+                <span class="contrib-full-lang">C · Concurrency</span>
+              </div>
+            </div>
+            <div class="contrib-full-body">
+              <div class="contrib-full-finding">
+                <strong>Finding</strong>
+                <p><code>tcp_emu()</code> uses a <code>static</code> local variable to maintain parser state across calls. Because static local variables are shared across all call sites in a process, concurrent or interleaved sessions corrupt each other's protocol parser state — causing silent protocol parsing failures and undefined behavior in multi-instance libslirp environments.</p>
+              </div>
+              <div class="contrib-full-links">
+                <a class="contrib-full-link" href="https://gitlab.freedesktop.org/slirp/libslirp/-/commit/5a49e5e290093e2ff83b388330501e20de0bddcf" rel="noreferrer noopener" target="_blank">Commit ↗</a>
+                <a class="contrib-full-link" href="https://gitlab.freedesktop.org/slirp/libslirp/-/work_items/104" rel="noreferrer noopener" target="_blank">Issue #104 ↗</a>
+              </div>
+            </div>
+          </article>
+
+          <!-- #105 — Echo Reply Length Desync -->
+          <article class="contrib-full-card">
+            <div class="contrib-full-top">
+              <div class="contrib-full-top-left">
+                <div class="contrib-full-badges">
+                  <span class="contrib-merged-pill">
+                    <svg width="8" height="8" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z"/></svg>
+                    Merged
+                  </span>
+                  <span class="type-badge type-info">Info Disclosure</span>
+                </div>
+                <h3 class="contrib-full-title">Echo reply length desynchronization in <code>icmp_receive()</code> and <code>icmp6_receive()</code></h3>
+              </div>
+              <div class="contrib-full-top-right">
+                <span class="contrib-full-date">Oct 2026</span>
+                <span class="contrib-full-lang">C · Protocol</span>
+              </div>
+            </div>
+            <div class="contrib-full-body">
+              <div class="contrib-full-finding">
+                <strong>Finding</strong>
+                <p>In both <code>icmp_receive()</code> and <code>icmp6_receive()</code>, the length field of echo reply packets is not correctly synchronized with the actual payload size. This desynchronization causes malformed ICMP echo replies to be emitted, which can expose uninitialized buffer contents to the network peer — a potential information disclosure condition.</p>
+              </div>
+              <div class="contrib-full-links">
+                <a class="contrib-full-link" href="https://gitlab.freedesktop.org/slirp/libslirp/-/commit/262c9be27bc79e16b369807b460be77e23c3d788" rel="noreferrer noopener" target="_blank">Commit ↗</a>
+                <a class="contrib-full-link" href="https://gitlab.freedesktop.org/slirp/libslirp/-/work_items/105" rel="noreferrer noopener" target="_blank">Issue #105 ↗</a>
+              </div>
+            </div>
+          </article>
+
+        </div>
+      </section>
+
+      <!-- 02 / About libslirp -->
+      <section class="section-block">
+        <div class="section-label">02 / Project</div>
+        <div class="section-content">
+          <div class="section-heading">
+            <h2>About libslirp</h2>
+            <span class="meta">freedesktop.org</span>
+          </div>
+          <div class="bio-copy">
+            <p>libslirp is the user-mode TCP/IP networking stack used by QEMU, VirtualBox, and other major virtualization and emulation platforms. It implements a full network stack in user space, translating guest network traffic without requiring elevated OS privileges. Issues in libslirp directly affect the reliability and security of any system running virtual machines through QEMU.</p>
+            <p>All contributions above were identified through manual source-level code review, reported upstream with reproduction context and fix proposals, and subsequently merged into the project.</p>
+          </div>
+          <div class="contrib-full-links" style="margin-top:16px;">
+            <a class="contrib-full-link" href="https://gitlab.freedesktop.org/slirp/libslirp" rel="noreferrer noopener" target="_blank">libslirp repository ↗</a>
+            <a class="contrib-full-link" href="https://gitlab.freedesktop.org/slirp/libslirp/-/issues" rel="noreferrer noopener" target="_blank">Issue tracker ↗</a>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- ── Footer ─────────────────────────────────────────────── -->
+  <footer class="site-footer">
+    <div class="site-shell footer-inner">
+      <span>© <span data-year></span> Piyusha Akash / 0x3xp &middot; Manifold Operations</span>
+      <div class="footer-links">
+        <a href="https://github.com/0x3xp" rel="noreferrer noopener" target="_blank">GitHub</a>
+        <a href="https://www.linkedin.com/in/piyusha-akash" rel="noreferrer noopener" target="_blank">LinkedIn</a>
+        <a href="https://manifoldoperations.vercel.app" rel="noreferrer noopener" target="_blank">Manifold Ops</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../main/render.js" defer></script>
+  <script src="../main/site.js" defer></script>
+</body>
+</html>

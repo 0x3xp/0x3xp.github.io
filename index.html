@@ -63,6 +63,7 @@
       <nav class="site-nav" id="site-nav" data-nav aria-label="Primary navigation">
         <a href="./" aria-current="page">Home</a>
         <a href="projects/projects.html">Projects</a>
+        <a href="contributions/">Contributions</a>
         <a href="blog/blog.html">Blog</a>
       </nav>
     </div>
@@ -122,58 +123,126 @@
         <div class="section-content">
           <div class="section-heading">
             <h2>Upstream contributions</h2>
-            <span class="meta">Production systems research</span>
+            <span class="meta">freedesktop.org · libslirp · 7 merged</span>
           </div>
 
-          <!-- libslirp contribution card -->
-          <article class="contrib-card">
-            <div class="contrib-header">
-              <div class="contrib-header-left">
-                <div class="contrib-badge">
-                  <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
-                  Merged
+          <div class="contrib-list">
+
+            <div class="contrib-row">
+              <div class="contrib-row-left">
+                <span class="contrib-row-title">Memory leak of <code>tftp_server_name</code> in <code>slirp_cleanup()</code></span>
+                <div class="contrib-row-meta">
+                  <span class="type-badge type-security">Security</span>
+                  <span class="contrib-row-project">libslirp · #99 · Oct 2026</span>
                 </div>
-                <p class="contrib-project">freedesktop.org / libslirp</p>
-                <h3 class="contrib-title">Memory leak of <code>tftp_server_name</code> in <code>slirp_cleanup()</code></h3>
               </div>
-              <div class="contrib-meta">
-                <span class="contrib-date">Oct 18, 2026</span>
-                <span class="contrib-project-badge">C · Memory Safety</span>
+              <div class="contrib-row-right">
+                <div class="contrib-row-links">
+                  <a class="contrib-row-link" href="https://gitlab.freedesktop.org/slirp/libslirp/-/commit/fe2501e799862d6fa6adb4c5e1358567ebd8c065" rel="noreferrer noopener" target="_blank">Commit ↗</a>
+                  <a class="contrib-row-link" href="https://gitlab.freedesktop.org/slirp/libslirp/-/work_items/99" rel="noreferrer noopener" target="_blank">Issue ↗</a>
+                </div>
+              </div>
+            </div>
+
+            <div class="contrib-row">
+              <div class="contrib-row-left">
+                <span class="contrib-row-title">Buffer underflow in <code>tftp_handle_rrq()</code> when handling empty filename</span>
+                <div class="contrib-row-meta">
+                  <span class="type-badge type-security">Security</span>
+                  <span class="contrib-row-project">libslirp · #100 · Oct 2026</span>
+                </div>
+              </div>
+              <div class="contrib-row-right">
+                <div class="contrib-row-links">
+                  <a class="contrib-row-link" href="https://gitlab.freedesktop.org/slirp/libslirp/-/commit/9fd2fa698886a9c222090424d6e708709db13d8d" rel="noreferrer noopener" target="_blank">Commit ↗</a>
+                  <a class="contrib-row-link" href="https://gitlab.freedesktop.org/slirp/libslirp/-/work_items/100" rel="noreferrer noopener" target="_blank">Issue ↗</a>
+                </div>
               </div>
             </div>
 
-            <div class="contrib-body">
-              <div class="contrib-finding">
-                <strong>Finding</strong>
-                <p><code>tftp_server_name</code> in libslirp was heap-allocated during initialization but never freed in the cleanup path <code>slirp_cleanup()</code>, causing a persistent memory leak. libslirp is the user-mode TCP/IP networking stack used by QEMU and other major virtualization systems.</p>
+            <div class="contrib-row">
+              <div class="contrib-row-left">
+                <span class="contrib-row-title">Protocol type mismatch in <code>icmp6_receive()</code>: IPv4 ICMP_UNREACH emitted as ICMPv6</span>
+                <div class="contrib-row-meta">
+                  <span class="type-badge type-bug">Bug</span>
+                  <span class="contrib-row-project">libslirp · #101 · Oct 2026</span>
+                </div>
               </div>
-
-              <!-- Code diff -->
-              <div class="diff-block">
-                <div class="diff-header">src/slirp.c — slirp_cleanup()</div>
-                <pre class="diff-code"><code><span class="diff-ctx"> g_free(slirp->tftp_prefix);</span>
-<span class="diff-ctx"> g_free(slirp->bootp_filename);</span>
-<span class="diff-ctx"> g_free(slirp->vdomainname);</span>
-<span class="diff-add">+g_free(slirp->tftp_server_name);</span>
-<span class="diff-ctx"> g_free(slirp);</span></code></pre>
-              </div>
-
-              <div class="contrib-links">
-                <a class="contrib-link" href="https://gitlab.freedesktop.org/slirp/libslirp/-/commit/fe2501e799862d6fa6adb4c5e1358567ebd8c065" rel="noreferrer noopener" target="_blank">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
-                  View Commit ↗
-                </a>
-                <a class="contrib-link" href="https://gitlab.freedesktop.org/slirp/libslirp/-/work_items/99" rel="noreferrer noopener" target="_blank">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                  Issue #99 ↗
-                </a>
-                <a class="contrib-link" href="https://gitlab.freedesktop.org/slirp/libslirp" rel="noreferrer noopener" target="_blank">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/></svg>
-                  libslirp project ↗
-                </a>
+              <div class="contrib-row-right">
+                <div class="contrib-row-links">
+                  <a class="contrib-row-link" href="https://gitlab.freedesktop.org/slirp/libslirp/-/commit/0bda8ef0c47d2a45980a2d480312c000e6bc9b11" rel="noreferrer noopener" target="_blank">Commit ↗</a>
+                  <a class="contrib-row-link" href="https://gitlab.freedesktop.org/slirp/libslirp/-/work_items/101" rel="noreferrer noopener" target="_blank">Issue ↗</a>
+                </div>
               </div>
             </div>
-          </article>
+
+            <div class="contrib-row">
+              <div class="contrib-row-left">
+                <span class="contrib-row-title">Double socket descriptor leak in <code>fork_exec()</code> on argument parsing failure</span>
+                <div class="contrib-row-meta">
+                  <span class="type-badge type-leak">Resource Leak</span>
+                  <span class="contrib-row-project">libslirp · #102 · Oct 2026</span>
+                </div>
+              </div>
+              <div class="contrib-row-right">
+                <div class="contrib-row-links">
+                  <a class="contrib-row-link" href="https://gitlab.freedesktop.org/slirp/libslirp/-/commit/8bb18d3043eeb463955856c3242fef9a788d4280" rel="noreferrer noopener" target="_blank">Commit ↗</a>
+                  <a class="contrib-row-link" href="https://gitlab.freedesktop.org/slirp/libslirp/-/work_items/102" rel="noreferrer noopener" target="_blank">Issue ↗</a>
+                </div>
+              </div>
+            </div>
+
+            <div class="contrib-row">
+              <div class="contrib-row-left">
+                <span class="contrib-row-title">Socket heap memory &amp; buffer leak in <code>slirp_state_load()</code> on deserialization failure</span>
+                <div class="contrib-row-meta">
+                  <span class="type-badge type-leak">Resource Leak</span>
+                  <span class="contrib-row-project">libslirp · #103 · Oct 2026</span>
+                </div>
+              </div>
+              <div class="contrib-row-right">
+                <div class="contrib-row-links">
+                  <a class="contrib-row-link" href="https://gitlab.freedesktop.org/slirp/libslirp/-/commit/7e571d1e0f6d2750f9e0c7272512e6f0c78bf3c8" rel="noreferrer noopener" target="_blank">Commit ↗</a>
+                  <a class="contrib-row-link" href="https://gitlab.freedesktop.org/slirp/libslirp/-/work_items/103" rel="noreferrer noopener" target="_blank">Issue ↗</a>
+                </div>
+              </div>
+            </div>
+
+            <div class="contrib-row">
+              <div class="contrib-row-left">
+                <span class="contrib-row-title">Non-reentrant static variable in <code>tcp_emu()</code> corrupts protocol parser across sessions</span>
+                <div class="contrib-row-meta">
+                  <span class="type-badge type-concurrency">Concurrency</span>
+                  <span class="contrib-row-project">libslirp · #104 · Oct 2026</span>
+                </div>
+              </div>
+              <div class="contrib-row-right">
+                <div class="contrib-row-links">
+                  <a class="contrib-row-link" href="https://gitlab.freedesktop.org/slirp/libslirp/-/commit/5a49e5e290093e2ff83b388330501e20de0bddcf" rel="noreferrer noopener" target="_blank">Commit ↗</a>
+                  <a class="contrib-row-link" href="https://gitlab.freedesktop.org/slirp/libslirp/-/work_items/104" rel="noreferrer noopener" target="_blank">Issue ↗</a>
+                </div>
+              </div>
+            </div>
+
+            <div class="contrib-row">
+              <div class="contrib-row-left">
+                <span class="contrib-row-title">Echo reply length desynchronization in <code>icmp_receive()</code> and <code>icmp6_receive()</code></span>
+                <div class="contrib-row-meta">
+                  <span class="type-badge type-info">Info Disclosure</span>
+                  <span class="contrib-row-project">libslirp · #105 · Oct 2026</span>
+                </div>
+              </div>
+              <div class="contrib-row-right">
+                <div class="contrib-row-links">
+                  <a class="contrib-row-link" href="https://gitlab.freedesktop.org/slirp/libslirp/-/commit/262c9be27bc79e16b369807b460be77e23c3d788" rel="noreferrer noopener" target="_blank">Commit ↗</a>
+                  <a class="contrib-row-link" href="https://gitlab.freedesktop.org/slirp/libslirp/-/work_items/105" rel="noreferrer noopener" target="_blank">Issue ↗</a>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <a class="contrib-see-all" href="contributions/">View all contributions with full details ↗</a>
         </div>
       </section>
 
