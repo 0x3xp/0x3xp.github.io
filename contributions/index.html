@@ -3,23 +3,23 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Contributions | Piyusha Akash</title>
-  <meta name="description" content="Open source contributions by Piyusha Akash to libslirp — memory safety, resource leak, concurrency, and protocol correctness fixes in production networking infrastructure.">
+  <title>Upstream Contributions &amp; Vulnerability Disclosures | Piyusha Akash</title>
+  <meta name="description" content="Upstream security contributions, vulnerability disclosures (CVE-2026-115449), and memory safety fixes by Piyusha Akash to libslirp — production networking infrastructure powering QEMU virtualization.">
   <meta name="author" content="Piyusha Akash">
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="https://0x3xp.github.io/contributions/">
 
   <!-- Open Graph -->
   <meta property="og:type" content="website">
-  <meta property="og:title" content="Contributions | Piyusha Akash">
-  <meta property="og:description" content="Upstream contributions to libslirp — memory safety, resource leak, concurrency, and protocol correctness fixes in production networking infrastructure.">
+  <meta property="og:title" content="Upstream Contributions &amp; Vulnerability Disclosures | Piyusha Akash">
+  <meta property="og:description" content="Upstream contributions and security advisories (CVE-2026-115449) by Piyusha Akash to libslirp — memory safety, resource leak, concurrency, and protocol correctness fixes in production networking infrastructure.">
   <meta property="og:url" content="https://0x3xp.github.io/contributions/">
   <meta property="og:site_name" content="Piyusha Akash">
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="Contributions | Piyusha Akash">
-  <meta name="twitter:description" content="Upstream contributions to libslirp by Piyusha Akash.">
+  <meta name="twitter:title" content="Upstream Contributions &amp; Vulnerability Disclosures | Piyusha Akash">
+  <meta name="twitter:description" content="Upstream contributions and security advisories (CVE-2026-115449) to libslirp by Piyusha Akash.">
 
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -56,20 +56,143 @@
       <section class="page-intro">
         <div class="section-label">Upstream</div>
         <div class="intro-content">
-          <span class="eyebrow">Open Source · Memory Safety · Systems Research</span>
-          <h1>Contributions</h1>
-          <p class="page-summary">Upstream contributions to production open source projects — finding and fixing real bugs in networking and systems libraries used across major infrastructure. All 7 contributions merged into <strong style="color:var(--text);font-weight:600;">libslirp</strong> (freedesktop.org), the user-mode TCP/IP stack powering QEMU and other virtualization platforms.</p>
+          <span class="eyebrow">Open Source · Vulnerability Research · Systems Engineering</span>
+          <h1>Contributions &amp; Advisories</h1>
+          <p class="page-summary">Upstream security research, vulnerability disclosures, and code patches across production networking and systems infrastructure. All 7 contributions merged into <strong style="color:var(--text);font-weight:600;">libslirp</strong> (freedesktop.org), the user-mode TCP/IP stack powering QEMU, VirtualBox, and major virtualization platforms. Includes <strong>CVE-2026-115449</strong>, acknowledged and published by Red Hat Product Security.</p>
         </div>
       </section>
 
-      <!-- 01 / libslirp -->
+      <!-- 01 / Vulnerability Disclosure -->
       <section class="section-block">
-        <div class="section-label">01 / libslirp</div>
+        <div class="section-label">01 / Advisory</div>
         <div class="section-content">
           <div class="section-heading">
-            <h2>freedesktop.org / libslirp</h2>
-            <span class="meta">C · Networking · Oct 2026</span>
+            <h2>Vulnerability Disclosure</h2>
+            <span class="meta">CVE-2026-115449 · Disclosed Oct 2026</span>
           </div>
+
+          <!-- Featured CVE Card -->
+          <article class="cve-featured-card" style="margin-bottom: 24px;">
+            <div class="cve-top">
+              <div class="cve-top-left">
+                <div class="cve-badges">
+                  <span class="cve-id-badge">
+                    <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0a8 8 0 100 16A8 8 0 008 0zm.75 4.75a.75.75 0 00-1.5 0v4.5a.75.75 0 001.5 0v-4.5zm0 7.5a.75.75 0 10-1.5 0 .75.75 0 001.5 0z"/></svg>
+                    CVE-2026-115449
+                  </span>
+                  <span class="cve-target-badge">freedesktop.org / libslirp</span>
+                  <span class="type-badge type-info">CWE-200 · Information Disclosure</span>
+                  <span class="cve-metric-badge">CVSS:3.1 3.5 (Low)</span>
+                  <span class="contrib-merged-pill">
+                    <svg width="8" height="8" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z"/></svg>
+                    Merged
+                  </span>
+                </div>
+                <h3 class="cve-title">Libslirp: ICMP Echo Reply Length Desynchronization Leaks Host IP to Guest</h3>
+              </div>
+              <div class="cve-top-right">
+                <span class="cve-date">Oct 2026</span>
+                <span class="contrib-full-lang">C · Protocol Security</span>
+              </div>
+            </div>
+
+            <div class="cve-body">
+              <div class="cve-credit-quote">
+                <div class="cve-credit-label">Official Acknowledgement</div>
+                <p class="cve-credit-text">"Red Hat would like to thank <strong>Piyusha Akash</strong> for reporting this issue."</p>
+                <div class="cve-credit-source">Red Hat Product Security Advisory · Bugzilla RHBZ#2558916</div>
+              </div>
+
+              <div class="cve-desc">
+                <p>During source code auditing of <code>libslirp</code>, a flaw was discovered in how ICMP echo requests are handled in user-mode networking. When the fallback ICMP socket path is engaged, the reply packet length field is not updated to match the actual data received from the host operating system.</p>
+                <p>Under specific conditions, this length desynchronization causes uninitialized packet buffer contents containing the host's real IP address to be returned in the echo reply packet to the guest virtual machine. This breaks the network address translation (NAT) isolation boundary that user-mode networking is designed to enforce, leaking host network topology to unprivileged virtual machines.</p>
+              </div>
+
+              <div class="contrib-full-diff">
+                <div class="contrib-full-diff-header">src/ip_icmp.c &amp; src/ip6_icmp.c — Echo Reply Length Synchronization</div>
+                <pre><code><span class="diff-ctx">     } else {</span>
+<span class="diff-add">+        m->m_len = hlen + len;</span>
+<span class="diff-add">+        ip->ip_len = htons(hlen + len);</span>
+<span class="diff-add">+</span>
+<span class="diff-ctx">         icmp_reflect(m);</span>
+<span class="diff-ctx">         so->so_m = NULL; /* Don't m_free() it again! */</span>
+<span class="diff-ctx">     }</span></code></pre>
+              </div>
+
+              <div class="cve-ref-header">
+                <span>Advisories &amp; Database Records</span>
+                <span>Official sources</span>
+              </div>
+
+              <div class="cve-ref-grid">
+                <a class="cve-ref-pill cve-pill-authority" href="https://access.redhat.com/security/cve/cve-2026-115449" rel="noreferrer noopener" target="_blank">Red Hat Advisory ↗</a>
+                <a class="cve-ref-pill cve-pill-authority" href="https://bugzilla.redhat.com/show_bug.cgi?id=2558916" rel="noreferrer noopener" target="_blank">Red Hat Bugzilla #2558916 ↗</a>
+                <a class="cve-ref-pill cve-pill-authority" href="https://nvd.nist.gov/vuln/detail/cve-2026-115449" rel="noreferrer noopener" target="_blank">NIST NVD ↗</a>
+                <a class="cve-ref-pill cve-pill-authority" href="https://www.cve.org/CVERecord?id=CVE-2026-115449" rel="noreferrer noopener" target="_blank">CVE.org Official Record ↗</a>
+                <a class="cve-ref-pill" href="https://github.com/advisories/GHSA-pg96-xmqg-mmpv" rel="noreferrer noopener" target="_blank">GitHub Advisory (GHSA-pg96-xmqg-mmpv) ↗</a>
+                <a class="cve-ref-pill" href="https://www.tenable.com/cve/CVE-2026-115449" rel="noreferrer noopener" target="_blank">Tenable CVE ↗</a>
+                <a class="cve-ref-pill" href="https://www.rapid7.com/db/vulnerabilities/cve-2026-115449/" rel="noreferrer noopener" target="_blank">Rapid7 Vulnerability DB ↗</a>
+                <a class="cve-ref-pill" href="https://cve.now/CVE-2026-115449" rel="noreferrer noopener" target="_blank">CVE Now ↗</a>
+                <a class="cve-ref-pill" href="https://radar.offseq.com/threat/cve-2026-115449-exposure-of-sensitive-information-to-an-unauthorized-actor-in-red-hat-red-hat-150d0c701cb10340" rel="noreferrer noopener" target="_blank">OffSec Threat Radar ↗</a>
+                <a class="cve-ref-pill cve-pill-code" href="https://gitlab.freedesktop.org/slirp/libslirp/-/commit/262c9be27bc79e16b369807b460be77e23c3d788" rel="noreferrer noopener" target="_blank">GitLab Upstream Commit ↗</a>
+                <a class="cve-ref-pill" href="https://gitlab.freedesktop.org/slirp/libslirp/-/work_items/105" rel="noreferrer noopener" target="_blank">GitLab Issue #105 ↗</a>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- 02 / Upstream Patches -->
+      <section class="section-block">
+        <div class="section-label">02 / Merged Fixes</div>
+        <div class="section-content">
+          <div class="section-heading">
+            <h2>Upstream libslirp Commits</h2>
+            <span class="meta">freedesktop.org · 7 commits merged</span>
+          </div>
+
+          <!-- #105 — Echo Reply Length Desync (CVE-2026-115449) -->
+          <article class="contrib-full-card">
+            <div class="contrib-full-top">
+              <div class="contrib-full-top-left">
+                <div class="contrib-full-badges">
+                  <span class="contrib-merged-pill">
+                    <svg width="8" height="8" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z"/></svg>
+                    Merged
+                  </span>
+                  <span class="cve-id-badge" style="font-size: 10px; padding: 2px 7px;">CVE-2026-115449</span>
+                  <span class="type-badge type-info">Info Disclosure</span>
+                </div>
+                <h3 class="contrib-full-title">Echo reply length desynchronization in <code>icmp_receive()</code> and <code>icmp6_receive()</code></h3>
+              </div>
+              <div class="contrib-full-top-right">
+                <span class="contrib-full-date">Oct 2026</span>
+                <span class="contrib-full-lang">C · Protocol Security</span>
+              </div>
+            </div>
+            <div class="contrib-full-body">
+              <div class="contrib-full-finding">
+                <strong>Finding &amp; Impact</strong>
+                <p>In both <code>icmp_receive()</code> and <code>icmp6_receive()</code>, the length field of echo reply packets is not correctly synchronized with actual received payload size. Under specific conditions where the normal ICMP socket is unavailable, this causes trailing uninitialized buffer bytes containing the host's actual IP to be emitted to the guest, breaking NAT isolation.</p>
+              </div>
+              <div class="contrib-full-diff">
+                <div class="contrib-full-diff-header">src/ip_icmp.c — icmp_receive()</div>
+                <pre><code><span class="diff-ctx">     } else {</span>
+<span class="diff-add">+        m->m_len = hlen + len;</span>
+<span class="diff-add">+        ip->ip_len = htons(hlen + len);</span>
+<span class="diff-add">+</span>
+<span class="diff-ctx">         icmp_reflect(m);</span>
+<span class="diff-ctx">         so->so_m = NULL; /* Don't m_free() it again! */</span>
+<span class="diff-ctx">     }</span></code></pre>
+              </div>
+              <div class="contrib-full-links">
+                <a class="contrib-full-link" href="https://gitlab.freedesktop.org/slirp/libslirp/-/commit/262c9be27bc79e16b369807b460be77e23c3d788" rel="noreferrer noopener" target="_blank">GitLab Commit 262c9be ↗</a>
+                <a class="contrib-full-link" href="https://gitlab.freedesktop.org/slirp/libslirp/-/work_items/105" rel="noreferrer noopener" target="_blank">Work Item #105 ↗</a>
+                <a class="contrib-full-link" href="https://access.redhat.com/security/cve/cve-2026-115449" rel="noreferrer noopener" target="_blank">Red Hat Advisory ↗</a>
+                <a class="contrib-full-link" href="https://nvd.nist.gov/vuln/detail/cve-2026-115449" rel="noreferrer noopener" target="_blank">NVD Record ↗</a>
+              </div>
+            </div>
+          </article>
 
           <!-- #99 — Memory Leak -->
           <article class="contrib-full-card">
@@ -103,8 +226,8 @@
 <span class="diff-ctx"> g_free(slirp);</span></code></pre>
               </div>
               <div class="contrib-full-links">
-                <a class="contrib-full-link" href="https://gitlab.freedesktop.org/slirp/libslirp/-/commit/fe2501e799862d6fa6adb4c5e1358567ebd8c065" rel="noreferrer noopener" target="_blank">Commit ↗</a>
-                <a class="contrib-full-link" href="https://gitlab.freedesktop.org/slirp/libslirp/-/work_items/99" rel="noreferrer noopener" target="_blank">Issue #99 ↗</a>
+                <a class="contrib-full-link" href="https://gitlab.freedesktop.org/slirp/libslirp/-/commit/fe2501e799862d6fa6adb4c5e1358567ebd8c065" rel="noreferrer noopener" target="_blank">GitLab Commit fe2501e ↗</a>
+                <a class="contrib-full-link" href="https://gitlab.freedesktop.org/slirp/libslirp/-/work_items/99" rel="noreferrer noopener" target="_blank">Work Item #99 ↗</a>
               </div>
             </div>
           </article>
@@ -130,11 +253,11 @@
             <div class="contrib-full-body">
               <div class="contrib-full-finding">
                 <strong>Finding</strong>
-                <p>When a TFTP read request (<code>RRQ</code>) is received with an empty filename, <code>tftp_handle_rrq()</code> performs pointer arithmetic that results in a buffer underflow — reading memory before the start of the allocated buffer. This can cause undefined behavior and potential information exposure.</p>
+                <p>When a TFTP read request (<code>RRQ</code>) is received with an empty filename, <code>tftp_handle_rrq()</code> performs pointer arithmetic that results in a buffer underflow — reading memory before the start of the allocated buffer. This can cause undefined behavior and potential memory exposure.</p>
               </div>
               <div class="contrib-full-links">
-                <a class="contrib-full-link" href="https://gitlab.freedesktop.org/slirp/libslirp/-/commit/9fd2fa698886a9c222090424d6e708709db13d8d" rel="noreferrer noopener" target="_blank">Commit ↗</a>
-                <a class="contrib-full-link" href="https://gitlab.freedesktop.org/slirp/libslirp/-/work_items/100" rel="noreferrer noopener" target="_blank">Issue #100 ↗</a>
+                <a class="contrib-full-link" href="https://gitlab.freedesktop.org/slirp/libslirp/-/commit/9fd2fa698886a9c222090424d6e708709db13d8d" rel="noreferrer noopener" target="_blank">GitLab Commit 9fd2fa6 ↗</a>
+                <a class="contrib-full-link" href="https://gitlab.freedesktop.org/slirp/libslirp/-/work_items/100" rel="noreferrer noopener" target="_blank">Work Item #100 ↗</a>
               </div>
             </div>
           </article>
@@ -163,8 +286,8 @@
                 <p>In <code>icmp6_receive()</code>, an IPv4 <code>ICMP_UNREACH</code> error is incorrectly emitted using the ICMPv6 send path. This protocol type mismatch causes malformed packets to be constructed and sent, breaking network error signaling for IPv4 unreachable conditions handled through the IPv6 receive path.</p>
               </div>
               <div class="contrib-full-links">
-                <a class="contrib-full-link" href="https://gitlab.freedesktop.org/slirp/libslirp/-/commit/0bda8ef0c47d2a45980a2d480312c000e6bc9b11" rel="noreferrer noopener" target="_blank">Commit ↗</a>
-                <a class="contrib-full-link" href="https://gitlab.freedesktop.org/slirp/libslirp/-/work_items/101" rel="noreferrer noopener" target="_blank">Issue #101 ↗</a>
+                <a class="contrib-full-link" href="https://gitlab.freedesktop.org/slirp/libslirp/-/commit/0bda8ef0c47d2a45980a2d480312c000e6bc9b11" rel="noreferrer noopener" target="_blank">GitLab Commit 0bda8ef ↗</a>
+                <a class="contrib-full-link" href="https://gitlab.freedesktop.org/slirp/libslirp/-/work_items/101" rel="noreferrer noopener" target="_blank">Work Item #101 ↗</a>
               </div>
             </div>
           </article>
@@ -190,11 +313,11 @@
             <div class="contrib-full-body">
               <div class="contrib-full-finding">
                 <strong>Finding</strong>
-                <p>In <code>fork_exec()</code>, when argument parsing fails after a socket pair has already been created, both socket file descriptors are returned without being closed. This causes a double file descriptor leak on every failed invocation, gradually exhausting the process file descriptor table.</p>
+                <p>In <code>fork_exec()</code>, two connected socket descriptors allocated via <code>slirp_socketpair_with_oob()</code> are never closed if argument parsing fails prior to the fork. Repeated failures in callers will exhaust the host process file descriptor table, resulting in denial of service for guest networking.</p>
               </div>
               <div class="contrib-full-links">
-                <a class="contrib-full-link" href="https://gitlab.freedesktop.org/slirp/libslirp/-/commit/8bb18d3043eeb463955856c3242fef9a788d4280" rel="noreferrer noopener" target="_blank">Commit ↗</a>
-                <a class="contrib-full-link" href="https://gitlab.freedesktop.org/slirp/libslirp/-/work_items/102" rel="noreferrer noopener" target="_blank">Issue #102 ↗</a>
+                <a class="contrib-full-link" href="https://gitlab.freedesktop.org/slirp/libslirp/-/commit/8bb18d3043eeb463955856c3242fef9a788d4280" rel="noreferrer noopener" target="_blank">GitLab Commit 8bb18d3 ↗</a>
+                <a class="contrib-full-link" href="https://gitlab.freedesktop.org/slirp/libslirp/-/work_items/102" rel="noreferrer noopener" target="_blank">Work Item #102 ↗</a>
               </div>
             </div>
           </article>
@@ -210,7 +333,7 @@
                   </span>
                   <span class="type-badge type-leak">Resource Leak</span>
                 </div>
-                <h3 class="contrib-full-title">Socket heap memory &amp; buffer leak in <code>slirp_state_load()</code> on deserialization or validation failure</h3>
+                <h3 class="contrib-full-title">Socket heap memory &amp; buffer leak in <code>slirp_state_load()</code> on deserialization failure</h3>
               </div>
               <div class="contrib-full-top-right">
                 <span class="contrib-full-date">Oct 2026</span>
@@ -220,11 +343,11 @@
             <div class="contrib-full-body">
               <div class="contrib-full-finding">
                 <strong>Finding</strong>
-                <p>In <code>slirp_state_load()</code>, if deserialization or validation of a socket fails partway through, the already-allocated socket structure and its associated send/receive buffers are not freed before returning an error. This results in heap memory and buffer leaks on every failed state restore operation.</p>
+                <p>In <code>slirp_state_load()</code>, if deserialization or validation of a socket fails partway through, the already-allocated socket structure and its associated send/receive buffers are not freed before returning an error. This results in heap memory and buffer leaks on failed state restore operations.</p>
               </div>
               <div class="contrib-full-links">
-                <a class="contrib-full-link" href="https://gitlab.freedesktop.org/slirp/libslirp/-/commit/7e571d1e0f6d2750f9e0c7272512e6f0c78bf3c8" rel="noreferrer noopener" target="_blank">Commit ↗</a>
-                <a class="contrib-full-link" href="https://gitlab.freedesktop.org/slirp/libslirp/-/work_items/103" rel="noreferrer noopener" target="_blank">Issue #103 ↗</a>
+                <a class="contrib-full-link" href="https://gitlab.freedesktop.org/slirp/libslirp/-/commit/7e571d1e0f6d2750f9e0c7272512e6f0c78bf3c8" rel="noreferrer noopener" target="_blank">GitLab Commit 7e571d1 ↗</a>
+                <a class="contrib-full-link" href="https://gitlab.freedesktop.org/slirp/libslirp/-/work_items/103" rel="noreferrer noopener" target="_blank">Work Item #103 ↗</a>
               </div>
             </div>
           </article>
@@ -250,41 +373,11 @@
             <div class="contrib-full-body">
               <div class="contrib-full-finding">
                 <strong>Finding</strong>
-                <p><code>tcp_emu()</code> uses a <code>static</code> local variable to maintain parser state across calls. Because static local variables are shared across all call sites in a process, concurrent or interleaved sessions corrupt each other's protocol parser state — causing silent protocol parsing failures and undefined behavior in multi-instance libslirp environments.</p>
+                <p><code>tcp_emu()</code> used a <code>static</code> local variable to maintain parser state across calls. Because static local variables are shared across all call sites in a process, concurrent or interleaved sessions corrupted each other's protocol parser state — causing silent protocol parsing failures in multi-instance libslirp environments.</p>
               </div>
               <div class="contrib-full-links">
-                <a class="contrib-full-link" href="https://gitlab.freedesktop.org/slirp/libslirp/-/commit/5a49e5e290093e2ff83b388330501e20de0bddcf" rel="noreferrer noopener" target="_blank">Commit ↗</a>
-                <a class="contrib-full-link" href="https://gitlab.freedesktop.org/slirp/libslirp/-/work_items/104" rel="noreferrer noopener" target="_blank">Issue #104 ↗</a>
-              </div>
-            </div>
-          </article>
-
-          <!-- #105 — Echo Reply Length Desync -->
-          <article class="contrib-full-card">
-            <div class="contrib-full-top">
-              <div class="contrib-full-top-left">
-                <div class="contrib-full-badges">
-                  <span class="contrib-merged-pill">
-                    <svg width="8" height="8" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z"/></svg>
-                    Merged
-                  </span>
-                  <span class="type-badge type-info">Info Disclosure</span>
-                </div>
-                <h3 class="contrib-full-title">Echo reply length desynchronization in <code>icmp_receive()</code> and <code>icmp6_receive()</code></h3>
-              </div>
-              <div class="contrib-full-top-right">
-                <span class="contrib-full-date">Oct 2026</span>
-                <span class="contrib-full-lang">C · Protocol</span>
-              </div>
-            </div>
-            <div class="contrib-full-body">
-              <div class="contrib-full-finding">
-                <strong>Finding</strong>
-                <p>In both <code>icmp_receive()</code> and <code>icmp6_receive()</code>, the length field of echo reply packets is not correctly synchronized with the actual payload size. This desynchronization causes malformed ICMP echo replies to be emitted, which can expose uninitialized buffer contents to the network peer — a potential information disclosure condition.</p>
-              </div>
-              <div class="contrib-full-links">
-                <a class="contrib-full-link" href="https://gitlab.freedesktop.org/slirp/libslirp/-/commit/262c9be27bc79e16b369807b460be77e23c3d788" rel="noreferrer noopener" target="_blank">Commit ↗</a>
-                <a class="contrib-full-link" href="https://gitlab.freedesktop.org/slirp/libslirp/-/work_items/105" rel="noreferrer noopener" target="_blank">Issue #105 ↗</a>
+                <a class="contrib-full-link" href="https://gitlab.freedesktop.org/slirp/libslirp/-/commit/5a49e5e290093e2ff83b388330501e20de0bddcf" rel="noreferrer noopener" target="_blank">GitLab Commit 5a49e5e ↗</a>
+                <a class="contrib-full-link" href="https://gitlab.freedesktop.org/slirp/libslirp/-/work_items/104" rel="noreferrer noopener" target="_blank">Work Item #104 ↗</a>
               </div>
             </div>
           </article>
@@ -292,17 +385,17 @@
         </div>
       </section>
 
-      <!-- 02 / About libslirp -->
+      <!-- 03 / About libslirp -->
       <section class="section-block">
-        <div class="section-label">02 / Project</div>
+        <div class="section-label">03 / Project</div>
         <div class="section-content">
           <div class="section-heading">
             <h2>About libslirp</h2>
             <span class="meta">freedesktop.org</span>
           </div>
           <div class="bio-copy">
-            <p>libslirp is the user-mode TCP/IP networking stack used by QEMU, VirtualBox, and other major virtualization and emulation platforms. It implements a full network stack in user space, translating guest network traffic without requiring elevated OS privileges. Issues in libslirp directly affect the reliability and security of any system running virtual machines through QEMU.</p>
-            <p>All contributions above were identified through manual source-level code review, reported upstream with reproduction context and fix proposals, and subsequently merged into the project.</p>
+            <p>libslirp is the user-mode TCP/IP networking stack used by QEMU, VirtualBox, and major virtualization and emulation platforms. It implements a complete network stack in user space, translating guest network traffic without requiring elevated host operating system privileges. Security and memory safety issues in libslirp directly affect host-guest containment and hypervisor reliability.</p>
+            <p>All contributions documented above were identified through manual source-level code review, reported upstream with reproduction context and fix proposals, and subsequently merged into the main project repository.</p>
           </div>
           <div class="contrib-full-links" style="margin-top:16px;">
             <a class="contrib-full-link" href="https://gitlab.freedesktop.org/slirp/libslirp" rel="noreferrer noopener" target="_blank">libslirp repository ↗</a>

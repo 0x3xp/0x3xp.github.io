@@ -186,132 +186,31 @@
         </div>
       </section>
 
-      <!-- 03 / Open Source Contributions -->
+      <!-- 03 / Upstream Security & Open Source -->
       <section class="section-block">
-        <div class="section-label">03 / Open Source</div>
+        <div class="section-label">03 / Upstream</div>
         <div class="section-content">
           <div class="section-heading">
-            <h2>Upstream contributions</h2>
-            <span class="meta">freedesktop.org · libslirp · 7 merged</span>
+            <h2>Upstream security research</h2>
+            <span class="meta">libslirp · CVE-2026-115449</span>
           </div>
-
-          <div class="contrib-list">
-
-            <div class="contrib-row">
-              <div class="contrib-row-left">
-                <span class="contrib-row-title">Memory leak of <code>tftp_server_name</code> in <code>slirp_cleanup()</code></span>
-                <div class="contrib-row-meta">
-                  <span class="type-badge type-security">Security</span>
-                  <span class="contrib-row-project">libslirp · #99</span>
-                </div>
-              </div>
-              <div class="contrib-row-right">
-                <div class="contrib-row-links">
-                  <a class="contrib-row-link" href="https://gitlab.freedesktop.org/slirp/libslirp/-/commit/fe2501e799862d6fa6adb4c5e1358567ebd8c065" rel="noreferrer noopener" target="_blank">Commit ↗</a>
-                  <a class="contrib-row-link" href="https://gitlab.freedesktop.org/slirp/libslirp/-/work_items/99" rel="noreferrer noopener" target="_blank">Issue ↗</a>
-                </div>
+          <div class="upstream-overview-card">
+            <div class="upstream-overview-content">
+              <h3>Vulnerability Research &amp; Upstream Systems Fixes</h3>
+              <p>Looking for open source security engineering and vulnerability disclosures? View the <strong>CVE-2026-115449</strong> advisory, official Red Hat acknowledgements, upstream git commits, and code diffs in the dedicated contributions section.</p>
+              <div class="upstream-overview-tags">
+                <span class="tag">CVE-2026-115449</span>
+                <span class="tag">7 Merged Commits</span>
+                <span class="tag">libslirp</span>
+                <span class="tag">Memory Safety</span>
               </div>
             </div>
-
-            <div class="contrib-row">
-              <div class="contrib-row-left">
-                <span class="contrib-row-title">Buffer underflow in <code>tftp_handle_rrq()</code> when handling empty filename</span>
-                <div class="contrib-row-meta">
-                  <span class="type-badge type-security">Security</span>
-                  <span class="contrib-row-project">libslirp · #100</span>
-                </div>
-              </div>
-              <div class="contrib-row-right">
-                <div class="contrib-row-links">
-                  <a class="contrib-row-link" href="https://gitlab.freedesktop.org/slirp/libslirp/-/commit/9fd2fa698886a9c222090424d6e708709db13d8d" rel="noreferrer noopener" target="_blank">Commit ↗</a>
-                  <a class="contrib-row-link" href="https://gitlab.freedesktop.org/slirp/libslirp/-/work_items/100" rel="noreferrer noopener" target="_blank">Issue ↗</a>
-                </div>
-              </div>
+            <div class="upstream-overview-action">
+              <a class="upstream-overview-btn" href="../contributions/">
+                View Contributions &amp; Commits ↗
+              </a>
             </div>
-
-            <div class="contrib-row">
-              <div class="contrib-row-left">
-                <span class="contrib-row-title">Protocol type mismatch in <code>icmp6_receive()</code>: IPv4 ICMP_UNREACH emitted as ICMPv6</span>
-                <div class="contrib-row-meta">
-                  <span class="type-badge type-bug">Bug</span>
-                  <span class="contrib-row-project">libslirp · #101</span>
-                </div>
-              </div>
-              <div class="contrib-row-right">
-                <div class="contrib-row-links">
-                  <a class="contrib-row-link" href="https://gitlab.freedesktop.org/slirp/libslirp/-/commit/0bda8ef0c47d2a45980a2d480312c000e6bc9b11" rel="noreferrer noopener" target="_blank">Commit ↗</a>
-                  <a class="contrib-row-link" href="https://gitlab.freedesktop.org/slirp/libslirp/-/work_items/101" rel="noreferrer noopener" target="_blank">Issue ↗</a>
-                </div>
-              </div>
-            </div>
-
-            <div class="contrib-row">
-              <div class="contrib-row-left">
-                <span class="contrib-row-title">Double socket descriptor leak in <code>fork_exec()</code> on argument parsing failure</span>
-                <div class="contrib-row-meta">
-                  <span class="type-badge type-leak">Resource Leak</span>
-                  <span class="contrib-row-project">libslirp · #102</span>
-                </div>
-              </div>
-              <div class="contrib-row-right">
-                <div class="contrib-row-links">
-                  <a class="contrib-row-link" href="https://gitlab.freedesktop.org/slirp/libslirp/-/commit/8bb18d3043eeb463955856c3242fef9a788d4280" rel="noreferrer noopener" target="_blank">Commit ↗</a>
-                  <a class="contrib-row-link" href="https://gitlab.freedesktop.org/slirp/libslirp/-/work_items/102" rel="noreferrer noopener" target="_blank">Issue ↗</a>
-                </div>
-              </div>
-            </div>
-
-            <div class="contrib-row">
-              <div class="contrib-row-left">
-                <span class="contrib-row-title">Socket heap memory &amp; buffer leak in <code>slirp_state_load()</code> on deserialization failure</span>
-                <div class="contrib-row-meta">
-                  <span class="type-badge type-leak">Resource Leak</span>
-                  <span class="contrib-row-project">libslirp · #103</span>
-                </div>
-              </div>
-              <div class="contrib-row-right">
-                <div class="contrib-row-links">
-                  <a class="contrib-row-link" href="https://gitlab.freedesktop.org/slirp/libslirp/-/commit/7e571d1e0f6d2750f9e0c7272512e6f0c78bf3c8" rel="noreferrer noopener" target="_blank">Commit ↗</a>
-                  <a class="contrib-row-link" href="https://gitlab.freedesktop.org/slirp/libslirp/-/work_items/103" rel="noreferrer noopener" target="_blank">Issue ↗</a>
-                </div>
-              </div>
-            </div>
-
-            <div class="contrib-row">
-              <div class="contrib-row-left">
-                <span class="contrib-row-title">Non-reentrant static variable in <code>tcp_emu()</code> corrupts protocol parser across sessions</span>
-                <div class="contrib-row-meta">
-                  <span class="type-badge type-concurrency">Concurrency</span>
-                  <span class="contrib-row-project">libslirp · #104</span>
-                </div>
-              </div>
-              <div class="contrib-row-right">
-                <div class="contrib-row-links">
-                  <a class="contrib-row-link" href="https://gitlab.freedesktop.org/slirp/libslirp/-/commit/5a49e5e290093e2ff83b388330501e20de0bddcf" rel="noreferrer noopener" target="_blank">Commit ↗</a>
-                  <a class="contrib-row-link" href="https://gitlab.freedesktop.org/slirp/libslirp/-/work_items/104" rel="noreferrer noopener" target="_blank">Issue ↗</a>
-                </div>
-              </div>
-            </div>
-
-            <div class="contrib-row">
-              <div class="contrib-row-left">
-                <span class="contrib-row-title">Echo reply length desynchronization in <code>icmp_receive()</code> and <code>icmp6_receive()</code></span>
-                <div class="contrib-row-meta">
-                  <span class="type-badge type-info">Info Disclosure</span>
-                  <span class="contrib-row-project">libslirp · #105</span>
-                </div>
-              </div>
-              <div class="contrib-row-right">
-                <div class="contrib-row-links">
-                  <a class="contrib-row-link" href="https://gitlab.freedesktop.org/slirp/libslirp/-/commit/262c9be27bc79e16b369807b460be77e23c3d788" rel="noreferrer noopener" target="_blank">Commit ↗</a>
-                  <a class="contrib-row-link" href="https://gitlab.freedesktop.org/slirp/libslirp/-/work_items/105" rel="noreferrer noopener" target="_blank">Issue ↗</a>
-                </div>
-              </div>
-            </div>
-
           </div>
-
-          <a class="contrib-see-all" href="../contributions/">View full details for all contributions ↗</a>
         </div>
       </section>
 

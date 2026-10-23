@@ -15,18 +15,18 @@
 
     <style>
         :root {
-            --acid:   #00ff9d;
-            --acid2:  #00e5ff;
+            --acid:   #58a6ff;
+            --acid2:  #79b8ff;
             --red:    #ff2d55;
-            --bg:     #060608;
-            --bg2:    #0a0a0f;
-            --surface:  #0e0e16;
-            --surface2: #14141f;
-            --border:        rgba(0,255,157,0.10);
-            --border-bright: rgba(0,255,157,0.38);
-            --text:     #c8ccd8;
-            --text-dim: #555870;
-            --white:    #f0f2ff;
+            --bg:     #0e1117;
+            --bg2:    #131722;
+            --surface:  #161b26;
+            --surface2: #1c2230;
+            --border:        rgba(255, 255, 255, 0.08);
+            --border-bright: rgba(88, 166, 255, 0.35);
+            --text:     #e2e8f0;
+            --text-dim: #798799;
+            --white:    #f0f3f6;
             --prose-width: 740px;
             --code-bg: #0c0c14;
         }
@@ -37,7 +37,7 @@
         body {
             background:var(--bg); color:var(--text);
             font-family:'Newsreader',Georgia,serif;
-            overflow-x:hidden; cursor:none;
+            overflow-x:hidden; 
         }
 
         .cursor {
@@ -45,12 +45,12 @@
             background:var(--acid); border-radius:50%;
             pointer-events:none; z-index:9999;
             transform:translate(-50%,-50%);
-            box-shadow:0 0 12px var(--acid),0 0 30px rgba(0,255,157,.3);
+            box-shadow:0 0 12px var(--acid),0 0 30px rgba(88,166,255,.3);
             transition:transform .1s;
         }
         .cursor-ring {
             position:fixed; width:32px; height:32px;
-            border:1px solid rgba(0,255,157,.5); border-radius:50%;
+            border:1px solid rgba(88,166,255,.5); border-radius:50%;
             pointer-events:none; z-index:9998;
             transform:translate(-50%,-50%); transition:all .15s ease;
         }
@@ -64,14 +64,14 @@
         .grid-bg {
             position:fixed; inset:0;
             background-image:
-                linear-gradient(rgba(0,255,157,.02) 1px,transparent 1px),
-                linear-gradient(90deg,rgba(0,255,157,.02) 1px,transparent 1px);
+                linear-gradient(rgba(88,166,255,.02) 1px,transparent 1px),
+                linear-gradient(90deg,rgba(88,166,255,.02) 1px,transparent 1px);
             background-size:60px 60px; pointer-events:none;
         }
 
         .scanline {
             position:fixed; width:100%; height:1px;
-            background:linear-gradient(90deg,transparent,rgba(0,255,157,.2) 50%,transparent);
+            background:linear-gradient(90deg,transparent,rgba(88,166,255,.2) 50%,transparent);
             animation:scan 8s linear infinite; pointer-events:none; z-index:2;
         }
         @keyframes scan { 0%{top:-1px} 100%{top:100%} }
@@ -101,7 +101,7 @@
             height:2px; width:0%;
             background:linear-gradient(90deg,var(--acid),var(--acid2));
             transition:width .1s linear;
-            box-shadow:0 0 8px rgba(0,255,157,.5);
+            box-shadow:0 0 8px rgba(88,166,255,.5);
         }
 
         .post-wrap {
@@ -187,8 +187,8 @@
 
         .post-body code {
             font-family:'Fira Code',monospace; font-size:.82em;
-            color:var(--acid); background:rgba(0,255,157,.07);
-            border:1px solid rgba(0,255,157,.15);
+            color:var(--acid); background:rgba(88,166,255,.07);
+            border:1px solid rgba(88,166,255,.15);
             padding:2px 7px; border-radius:2px;
         }
 
@@ -221,7 +221,7 @@
 
         .post-body blockquote {
             border-left:3px solid var(--acid);
-            background:rgba(0,255,157,.04);
+            background:rgba(88,166,255,.04);
             padding:20px 24px; margin:28px 0;
             font-style:italic; color:var(--text-dim);
         }
@@ -236,7 +236,7 @@
 
         .post-body a {
             color:var(--acid); text-decoration:underline;
-            text-decoration-color:rgba(0,255,157,.3);
+            text-decoration-color:rgba(88,166,255,.3);
             text-underline-offset:3px; transition:text-decoration-color .2s;
         }
         .post-body a:hover { text-decoration-color:var(--acid); }
@@ -260,13 +260,13 @@
             font-family:'Fira Code',monospace; font-size:13px; line-height:1.7;
         }
         .callout-title { font-weight:700; letter-spacing:.1em; margin-bottom:8px; font-size:11px; }
-        .callout-info    { border-color:var(--acid2); background:rgba(0,229,255,.06); }
+        .callout-info    { border-color:var(--acid2); background:rgba(121,184,255,.06); }
         .callout-info .callout-title { color:var(--acid2); }
         .callout-warn    { border-color:#f59e0b; background:rgba(245,158,11,.06); }
         .callout-warn .callout-title { color:#f59e0b; }
         .callout-danger  { border-color:var(--red); background:rgba(255,45,85,.06); }
         .callout-danger .callout-title { color:var(--red); }
-        .callout-tip     { border-color:var(--acid); background:rgba(0,255,157,.06); }
+        .callout-tip     { border-color:var(--acid); background:rgba(88,166,255,.06); }
         .callout-tip .callout-title { color:var(--acid); }
 
         .post-footer {
@@ -290,7 +290,7 @@
             border:1px solid var(--border); padding:12px 24px;
             letter-spacing:.1em; transition:all .3s;
         }
-        .pf-back:hover { border-color:var(--border-bright); color:var(--acid); background:rgba(0,255,157,.04); }
+        .pf-back:hover { border-color:var(--border-bright); color:var(--acid); background:rgba(88,166,255,.04); }
         .pf-back::before { content:'←'; color:var(--acid); opacity:.7; }
 
         #particles-canvas { position:fixed; inset:0; pointer-events:none; z-index:1; opacity:.25; }
@@ -306,18 +306,13 @@
 <body>
 
 <div id="reading-progress"></div>
-<div class="cursor" id="cursor"></div>
-<div class="cursor-ring" id="cursorRing"></div>
-<canvas id="particles-canvas"></canvas>
-<div class="grid-bg"></div>
-<div class="scanline"></div>
-
 <nav>
     <a href="../../" class="nav-logo">[<span>0x3xp</span>] <span style="color:var(--text-dim)">~</span></a>
     <div class="nav-right">
-        <a href="../" class="nav-link">blog</a>
-        <a href="../../#projects" class="nav-link">projects</a>
         <a href="../../" class="nav-link">home</a>
+        <a href="../../projects/projects.html" class="nav-link">projects</a>
+        <a href="../../contributions/" class="nav-link">contributions</a>
+        <a href="../blog.html" class="nav-link">blog</a>
     </div>
 </nav>
 
@@ -899,8 +894,8 @@ let mx=0,my=0,rx=0,ry=0;
 document.addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY; cursor.style.left=mx+'px'; cursor.style.top=my+'px'; });
 (function animRing(){ rx+=(mx-rx)*.12; ry+=(my-ry)*.12; ring.style.left=rx+'px'; ring.style.top=ry+'px'; requestAnimationFrame(animRing); })();
 document.querySelectorAll('a,button,code').forEach(el => {
-    el.addEventListener('mouseenter', () => { cursor.style.transform='translate(-50%,-50%) scale(2)'; ring.style.transform='translate(-50%,-50%) scale(1.4)'; ring.style.borderColor='rgba(0,255,157,.8)'; });
-    el.addEventListener('mouseleave', () => { cursor.style.transform='translate(-50%,-50%) scale(1)'; ring.style.transform='translate(-50%,-50%) scale(1)'; ring.style.borderColor='rgba(0,255,157,.5)'; });
+    el.addEventListener('mouseenter', () => { cursor.style.transform='translate(-50%,-50%) scale(2)'; ring.style.transform='translate(-50%,-50%) scale(1.4)'; ring.style.borderColor='rgba(88,166,255,.8)'; });
+    el.addEventListener('mouseleave', () => { cursor.style.transform='translate(-50%,-50%) scale(1)'; ring.style.transform='translate(-50%,-50%) scale(1)'; ring.style.borderColor='rgba(88,166,255,.5)'; });
 });
 
 (function(){
@@ -916,7 +911,7 @@ document.querySelectorAll('a,button,code').forEach(el => {
             p.pulse+=.018;
             const a=p.alpha*(.6+.4*Math.sin(p.pulse));
             ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
-            ctx.fillStyle=`rgba(0,255,157,${a})`; ctx.fill();
+            ctx.fillStyle=`rgba(88,166,255,${a})`; ctx.fill();
             p.x+=p.dx; p.y+=p.dy;
             if(p.y<-5){p.y=H+5;p.x=Math.random()*W;}
             if(p.x<-5)p.x=W+5; if(p.x>W+5)p.x=-5;

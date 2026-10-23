@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Projects | Piyusha Akash</title>
+  <meta name="description" content="Security research and engineering projects by Piyusha Akash — AV/EDR evasion, Windows kernel research, syscall frameworks, offensive tooling, open source contributions, and exploit development.">
+  <meta name="author" content="Piyusha Akash">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://0x3xp.github.io/projects/projects.html">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Projects | Piyusha Akash">
+  <meta property="og:description" content="Security research and engineering projects focused on AV/EDR evasion, Windows internals, reverse engineering, offensive tooling, and open source contributions.">
+  <meta property="og:url" content="https://0x3xp.github.io/projects/projects.html">
+  <meta property="og:site_name" content="Piyusha Akash">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Projects | Piyusha Akash">
+  <meta name="twitter:description" content="Security research and engineering projects by Piyusha Akash.">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;600;650;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <link rel="icon" type="image/png" href="../assets/img/favicon.png">
+  <link rel="stylesheet" href="../assets/css/site.css">
+</head>
+<body>
+
+  <!-- ── Header ─────────────────────────────────────────────── -->
+  <header class="site-header">
+    <div class="site-shell header-inner">
+      <a class="brand" href="../" aria-label="Piyusha Akash home">
+        <span class="brand-name">Piyusha Akash</span>
+        <span class="brand-handle">/0x3xp</span>
+      </a>
+      <button class="nav-toggle" type="button" data-nav-toggle aria-expanded="false" aria-controls="site-nav" aria-label="Open navigation">Menu</button>
+      <nav class="site-nav" id="site-nav" data-nav aria-label="Primary navigation">
+        <a href="../">Home</a>
+        <a href="./" aria-current="page">Projects</a>
+        <a href="../contributions/">Contributions</a>
+        <a href="../blog/blog.html">Blog</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ── Main ───────────────────────────────────────────────── -->
+  <main class="page-main">
+    <div class="site-shell">
+
+      <!-- Page Intro -->
+      <section class="page-intro">
+        <div class="section-label">Portfolio</div>
+        <div class="intro-content">
+          <span class="eyebrow">AV/EDR Evasion · Windows Internals · Offensive R&amp;D</span>
+          <h1>Projects</h1>
+          <p class="page-summary">Selected research and engineering work covering endpoint visibility, Windows internals, reverse engineering, malware development, offensive security tooling, and open source contributions.</p>
+        </div>
+      </section>
+
+      <!-- 01 / Featured -->
+      <section class="section-block">
+        <div class="section-label">01 / Featured</div>
+        <div class="section-content">
+          <article class="project-card project-featured">
+            <div class="project-topline">
+              <span>Active research</span>
+              <span>Windows kernel research</span>
+            </div>
+            <h2>Lethe</h2>
+            <p>Lethe is a Windows kernel-mode research and red team tool centered on a KTIMER, KDPC, and IO_WORKITEM execution chain. The project investigates kernel-mode execution, process and token structures, driver visibility and loading constraints, endpoint detection surfaces, and the defensive boundaries around kernel-level activity.</p>
+            <div class="project-note">
+              <strong>Research scope</strong>
+              <p>Project documentation records technical findings alongside limitations and defensive surfaces, including kernel telemetry, direct memory inspection, HVCI, driver blocklists, and protected process constraints. Built with C and the Windows Driver Development Kit.</p>
+            </div>
+            <div class="tag-row">
+              <span class="tag">C</span>
+              <span class="tag">Windows WDK</span>
+              <span class="tag">Kernel APIs</span>
+              <span class="tag">Windows Internals</span>
+              <span class="tag">AV/EDR Research</span>
+              <span class="tag">DPC</span>
+              <span class="tag">KTIMER</span>
+            </div>
+            <div class="project-links">
+              <a class="link-primary" href="https://github.com/0x3xp/Lethe" rel="noreferrer noopener" target="_blank">Repository ↗</a>
+              <a href="https://github.com/0x3xp/Lethe/blob/main/WIKI.md" rel="noreferrer noopener" target="_blank">Technical Wiki ↗</a>
+              <a href="https://github.com/0x3xp/Lethe/blob/main/BYOVD.md" rel="noreferrer noopener" target="_blank">BYOVD Notes ↗</a>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- 02 / Selected Work -->
+      <section class="section-block">
+        <div class="section-label">02 / Selected work</div>
+        <div class="section-content">
+          <div class="project-list">
+
+            <article class="project-card">
+              <div class="project-topline"><span>Active research</span><span>Syscall research toolkit</span></div>
+              <h2>Artemis</h2>
+              <p>A modular C and x86-64 Assembly framework for Windows NT research. Covers system service number resolution, direct and indirect syscall stub generation, and payload encoding components. Designed for controlled research into syscall dispatch mechanics.</p>
+              <div class="tag-row">
+                <span class="tag">C</span>
+                <span class="tag">x64 Assembly</span>
+                <span class="tag">MASM</span>
+                <span class="tag">Windows NT</span>
+                <span class="tag">Syscalls</span>
+              </div>
+              <div class="project-links">
+                <a href="https://github.com/0x3xp/Artemis" rel="noreferrer noopener" target="_blank">Repository ↗</a>
+              </div>
+            </article>
+
+            <article class="project-card">
+              <div class="project-topline"><span>Research toolkit</span><span>Windows offensive tooling</span></div>
+              <h2>Native Adversary Framework</h2>
+              <p>A low-level Windows research collection covering native API usage, PE parsing, process injection techniques, shellcode execution, and assembly-level resolution. Also includes SetupAPI callback redirection research for EDR evasion surface analysis.</p>
+              <div class="tag-row">
+                <span class="tag">C</span>
+                <span class="tag">x64 Assembly</span>
+                <span class="tag">Win32</span>
+                <span class="tag">NT Native API</span>
+                <span class="tag">PE Parsing</span>
+              </div>
+              <div class="project-links">
+                <a href="https://github.com/0x3xp/Native-Adversary-Framework" rel="noreferrer noopener" target="_blank">Repository ↗</a>
+                <a href="https://github.com/0x3xp/Native-Adversary-Framework/tree/main/Malware-Dev/Injection/SetupAPI-Callback-Redirection" rel="noreferrer noopener" target="_blank">SetupAPI Research ↗</a>
+              </div>
+            </article>
+
+            <article class="project-card">
+              <div class="project-topline"><span>Ongoing</span><span>Windows security knowledge base</span></div>
+              <h2>WinSec</h2>
+              <p>A consolidated Windows security research and learning archive covering WinAPI internals, native APIs, PE structures, assembly, shellcode, processes and memory, reverse engineering, and endpoint security research.</p>
+              <div class="tag-row">
+                <span class="tag">Windows</span>
+                <span class="tag">Win32</span>
+                <span class="tag">NT API</span>
+                <span class="tag">PE Structures</span>
+                <span class="tag">Assembly</span>
+              </div>
+              <div class="project-links">
+                <a href="https://github.com/0x3xp/WinSec" rel="noreferrer noopener" target="_blank">Repository ↗</a>
+                <a href="https://0x3xp.github.io/WinSec/" rel="noreferrer noopener" target="_blank">Pages ↗</a>
+              </div>
+            </article>
+
+            <article class="project-card">
+              <div class="project-topline"><span>Active development</span><span>Windows reconnaissance</span></div>
+              <h2>SENTINEX</h2>
+              <p>A modular Windows reconnaissance framework written in C for security testing, system enumeration, network discovery, and endpoint visibility research. Designed for operator use in controlled test environments.</p>
+              <div class="tag-row">
+                <span class="tag">C</span>
+                <span class="tag">Windows x64</span>
+                <span class="tag">Reconnaissance</span>
+                <span class="tag">Enumeration</span>
+              </div>
+              <div class="project-links">
+                <a href="https://github.com/0x3xp/SENTINEX" rel="noreferrer noopener" target="_blank">Repository ↗</a>
+              </div>
+            </article>
+
+            <article class="project-card">
+              <div class="project-topline"><span>Published work</span><span>Exploit development research</span></div>
+              <h2>Linux ExploitDev</h2>
+              <p>A practical knowledge base for Linux x64 exploit development covering memory layout, assembly concepts, shellcode construction, and the mechanics of classic exploitation techniques. Includes GDB-based analysis workflows.</p>
+              <div class="tag-row">
+                <span class="tag">C</span>
+                <span class="tag">x86-64</span>
+                <span class="tag">Linux</span>
+                <span class="tag">GDB</span>
+                <span class="tag">Exploit Dev</span>
+              </div>
+              <div class="project-links">
+                <a href="https://github.com/0x3xp/Linux-ExploitDev" rel="noreferrer noopener" target="_blank">Repository ↗</a>
+              </div>
+            </article>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- 03 / Upstream Security & Open Source -->
+      <section class="section-block">
+        <div class="section-label">03 / Upstream</div>
+        <div class="section-content">
+          <div class="section-heading">
+            <h2>Upstream security research</h2>
+            <span class="meta">libslirp · CVE-2026-115449</span>
+          </div>
+          <div class="upstream-overview-card">
+            <div class="upstream-overview-content">
+              <h3>Vulnerability Research &amp; Upstream Systems Fixes</h3>
+              <p>Looking for open source security engineering and vulnerability disclosures? View the <strong>CVE-2026-115449</strong> advisory, official Red Hat acknowledgements, upstream git commits, and code diffs in the dedicated contributions section.</p>
+              <div class="upstream-overview-tags">
+                <span class="tag">CVE-2026-115449</span>
+                <span class="tag">7 Merged Commits</span>
+                <span class="tag">libslirp</span>
+                <span class="tag">Memory Safety</span>
+              </div>
+            </div>
+            <div class="upstream-overview-action">
+              <a class="upstream-overview-btn" href="../contributions/">
+                View Contributions &amp; Commits ↗
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- ── Footer ─────────────────────────────────────────────── -->
+  <footer class="site-footer">
+    <div class="site-shell footer-inner">
+      <span>© <span data-year></span> Piyusha Akash / 0x3xp &middot; Manifold Operations</span>
+      <div class="footer-links">
+        <a href="https://github.com/0x3xp" rel="noreferrer noopener" target="_blank">GitHub</a>
+        <a href="https://www.linkedin.com/in/piyusha-akash" rel="noreferrer noopener" target="_blank">LinkedIn</a>
+        <a href="https://manifoldoperations.vercel.app" rel="noreferrer noopener" target="_blank">Manifold Ops</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../main/render.js" defer></script>
+  <script src="../main/site.js" defer></script>
+</body>
+</html>
